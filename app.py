@@ -1,5 +1,5 @@
 import pygame
-from grafo2 import Grafo
+from src.grafo2 import Grafo  # Asegúrate de que la ruta sea correcta
 from views.Interfaz import Visualizador
 
 # Inicialización de Pygame

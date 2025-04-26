@@ -8,8 +8,13 @@ class Visualizador:
         self.screen = pygame.display.set_mode((ancho, alto))
         pygame.display.set_caption("Visualizador de Grafos Escalable")
         self.clock = pygame.time.Clock()
-        self.area_mapa = pygame.Rect(0, 0, ancho * 0.50, alto)  # 75% del ancho para el mapa
-        self.area_control = pygame.Rect(ancho * 0.75, 0, ancho * 0.50, alto)  # 25% para controles
+        
+        #Area titulo
+        self.altura_titulo = 50
+        self.area_titulo = pygame.Rect(0, 0, ancho, self.altura_titulo)  # Área del título
+        margen =10
+        self.area_mapa = pygame.Rect(margen, self.altura_titulo+margen, ancho * 0.60 -2 * margen, alto-self.altura_titulo-2 * margen)  # 75% del ancho para el mapa
+        self.area_control = pygame.Rect(ancho * 0.60, 0, ancho * 0.4, alto)  # 25% para controles
         self.nodo_seleccionado = None
         self.running = True
 
@@ -23,6 +28,18 @@ class Visualizador:
 
         # Fondo
         self.screen.fill(BLANCO)
+
+        #Titulo
+        font = pygame.font.Font(None, 36)
+        texto_mapa = font.render("MAPA", True, NEGRO)
+        ancho_texto = texto_mapa.get_width()
+        pos_x = (self.ancho *0.6 / 2) - (ancho_texto / 2)  # Centrado horizontalmente
+        pos_y = (self.altura_titulo / 2) - (texto_mapa.get_height() / 2)  # Centrado verticalmente
+        self.screen.blit(texto_mapa, (pos_x, pos_y))
+        
+        ## Dibujar el borde negro del área del mapa
+        pygame.draw.rect(self.screen, NEGRO, self.area_mapa,2)  # Grosor del borde: 2 píxeles
+
         pygame.draw.rect(self.screen, GRIS, self.area_control)  # Área de control en gris
 
         # Dibujar aristas
