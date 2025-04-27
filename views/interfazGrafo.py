@@ -120,3 +120,8 @@ class InterfazGrafo:
         punto3 = (fin[0] - largo * math.cos(angulo + math.pi/6), fin[1] - largo * math.sin(angulo + math.pi/6))
         pygame.draw.polygon(self.screen, color, [punto1, punto2, punto3])        
         
+    def dibujar(self):
+        """Dibuja el grafo completo."""
+        self.dibujar_aristas()
+        self.dibujar_nodos()
+        

@@ -49,10 +49,8 @@ class Visualizador:
         pygame.draw.rect(self.screen, NEGRO, self.area_mapa, 2)
         pygame.draw.rect(self.screen, GRIS, self.area_control)
         
-        # Dibujar aristas
-        self.interfaz_grafo.dibujar_aristas()
-        # Dibujar nodos
-        self.interfaz_grafo.dibujar_nodos()
+        # Dibujar grafo
+        self.interfaz_grafo.dibujar()
         
         #Botones
         botones = [("Cargar mapa", 20, 50, 150, 40)]
