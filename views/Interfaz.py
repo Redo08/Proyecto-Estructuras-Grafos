@@ -1,5 +1,6 @@
 import pygame
 from src.helpers import Helpers
+from views.interfazGrafo import InterfazGrafo
 
 
 class Visualizador:
@@ -18,12 +19,11 @@ class Visualizador:
         self.area_mapa = pygame.Rect(margen, self.altura_titulo+margen, ancho * 0.60 -2 * margen, alto-self.altura_titulo-2 * margen)  # 75% del ancho para el mapa
         self.area_control = pygame.Rect(ancho * 0.60, 0, ancho * 0.4, alto)  # 25% para controles
         
-        
+        #Grafo
+        self.interfaz_grafo = InterfazGrafo(self.grafo, self.area_mapa, self.screen)
         
         #Estado
-        self.nodo_seleccionado = None
         self.running = True
-            
     
     def dibujar(self):
         """Dibuja el grafo y la interfaz en la pantalla"""
@@ -49,11 +49,20 @@ class Visualizador:
         pygame.draw.rect(self.screen, NEGRO, self.area_mapa, 2)
         pygame.draw.rect(self.screen, GRIS, self.area_control)
         
- 
-
-       
-
+        # Dibujar grafo
+        self.interfaz_grafo.dibujar()
         
+        #Botones
+        botones = [("Cargar mapa", 20, 50, 150, 40)]
+        for i in botones:
+            self.generar_botones(i[0], i[1], i[2], i[3], i[4])
+
+    def generar_botones(self, nombre_boton, p1, p2, p3, p4):
+        boton = pygame.Rect(self.area_control.x + p1, p2, p3, p4)
+        pygame.draw.rect(self.screen, (0,0,0), boton)
+        texto_cargar = pygame.font.Font(None, 24).render(nombre_boton, True, (255, 255, 255))
+        self.screen.blit(texto_cargar, (boton.x + 10, boton.y + 10))
+ 
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""
         for event in pygame.event.get():
@@ -69,8 +78,7 @@ class Visualizador:
                     grafo = Helpers.cargar_texto()
                     if grafo:    
                         self.grafo = grafo
-                        
-                    #    self.posiciones_nodos = self.calcular_posiciones() #Actualizar cada vez que se cargue uno nuevo
+                        self.interfaz_grafo = InterfazGrafo(grafo, self.area_mapa, self.screen)
                         
                     
     def ejecutar(self):
