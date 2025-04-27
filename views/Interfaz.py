@@ -1,6 +1,7 @@
 import pygame
 from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
+from views.boton import Boton
 
 class Visualizador:
     def __init__(self, grafo, ancho, alto):
@@ -20,6 +21,12 @@ class Visualizador:
         
         #Grafo
         self.interfaz_grafo = InterfazGrafo(self.grafo, self.area_mapa, self.screen)
+        
+        #Botones
+        self.botones = [
+            Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen)
+        ]
         
         #Estado
         self.running = True
@@ -52,33 +59,32 @@ class Visualizador:
         # Dibujar grafo
         self.interfaz_grafo.dibujar()
         
-        #Botones
-        botones = [("Cargar mapa", 20, 50, 150, 40)]
-        for i in botones:
-            self.generar_botones(i[0], i[1], i[2], i[3], i[4])
-
-    def generar_botones(self, nombre_boton, p1, p2, p3, p4):
-        boton = pygame.Rect(self.area_control.x + p1, p2, p3, p4)
-        pygame.draw.rect(self.screen, (0,0,0), boton)
-        texto_cargar = pygame.font.Font(None, 24).render(nombre_boton, True, (255, 255, 255))
-        self.screen.blit(texto_cargar, (boton.x + 10, boton.y + 10))
- 
+        #Dibujar botones
+        for boton in self.botones:
+            boton.dibujar()
+            
+    def cargar_mapa(self):
+        grafo = Helpers.cargar_texto()
+        if grafo:
+            self.grafo = grafo
+            self.interfaz_grafo = InterfazGrafo(grafo, self.area_mapa, self.screen)
+            
+    def guardar_mapa(self):
+        grafo = self.grafo
+        if grafo:
+            Helpers.guardar_texto(grafo)
+            print("Si se guardo bien")
+  
+            
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-                
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                posicion = event.pos
-                
-                # Verificar si el clic está en cargar mapa
-                boton_rect = pygame.Rect(self.area_control.x + 20, 50, 150, 40)
-                if boton_rect.collidepoint(posicion):
-                    grafo = Helpers.cargar_texto()
-                    if grafo:    
-                        self.grafo = grafo
-                        self.interfaz_grafo = InterfazGrafo(grafo, self.area_mapa, self.screen)
+            
+            #Verificar botones
+            for boton in self.botones:
+                boton.manejar_evento(event)                
                         
                     
     def ejecutar(self):
