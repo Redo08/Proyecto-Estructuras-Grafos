@@ -3,6 +3,7 @@ from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
 
+
 class Visualizador:
     def __init__(self, grafo, ancho, alto):
         self.grafo = grafo
@@ -30,7 +31,6 @@ class Visualizador:
         
         #Estado
         self.running = True
-
     
     def dibujar(self):
         """Dibuja el grafo y la interfaz en la pantalla"""
