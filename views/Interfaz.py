@@ -3,6 +3,7 @@ from src.models.grafo import Grafo
 from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
+from views.FormularioNodo import FormularioNodo
 
 
 class Visualizador:
@@ -27,8 +28,12 @@ class Visualizador:
         #Botones
         self.botones = [
             Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen)
+            Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.guardar_nodo, self.screen)
         ]
+        
+        #Formulario
+        self.formulario = None
         
         #Estado
         self.running = True
@@ -64,7 +69,11 @@ class Visualizador:
         for boton in self.botones:
             boton.dibujar()
             
-    def cargar_mapa(self):
+        # Dibujar formulario
+        if self.formulario:
+            self.formulario.dibujar(self.screen, pygame.font.Font(None, 30), self.area_mapa)
+            
+    def cargar_mapa(self, evento):
         datos = Helpers.cargar_texto()
         grafo = Grafo()
         
@@ -74,13 +83,28 @@ class Visualizador:
             self.grafo = grafo
             self.interfaz_grafo = InterfazGrafo(grafo, self.area_mapa, self.screen)
             
-    def guardar_mapa(self):
+    def guardar_mapa(self, evento):
         data = self.grafo.guardar_json()
         if data:
             Helpers.guardar_texto(data)
             print("Si se guardo bien")
   
-            
+    def guardar_nodo(self, evento): 
+        self.formulario = FormularioNodo()
+        #Mientars exista formulario activo
+        if self.formulario:
+            self.formulario.manejar_evento(evento)
+        
+            if self.formulario.esta_listo():
+                data = self.formulario.campos
+                if data['tipo'] == '0':
+                    self.grafo.agregar_nodo(data['id'], data['nombre'], data['descripcion'],None, data['tipo'],None,None,None, data['posicion'])
+                    
+                elif data['tipo'] == '1':
+                    self.grafo.agregar_nodo(data['id'],None,None,data['riesgo'], data['tipo'],  data['accidentalidad'], data['popularidad'], data['dificultad'], data['posicion'])
+                    
+                self.formulario = None #Reiniciamos el formulario
+                
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""
         for event in pygame.event.get():
@@ -91,7 +115,7 @@ class Visualizador:
             for boton in self.botones:
                 boton.manejar_evento(event)                
                         
-                    
+            
     def ejecutar(self):
         """Ejecuta el bucle principal del juego"""
         while self.running:

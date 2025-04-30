@@ -9,7 +9,7 @@ class InterfazGrafo:
         self.area_mapa = area_mapa
         self.posiciones_nodos = self.calcular_posiciones() 
         
-    
+        
     def calcular_posiciones(self):
         """Calcula posiciones automaticas de los nodos"""
         G = nx.Graph()
@@ -21,7 +21,7 @@ class InterfazGrafo:
 
         #Algoritmo que simula conexión entre nodos, el seed=42 asegura que siempre este igual, y ahi también se pone la escala el tamaño
         pos = nx.spring_layout(G, seed=42, scale=1.0)
-
+        print("POS:", pos)
         #Escalar y centrar
         min_x = min(x for x, y in pos.values()) 
         max_x = max(x for x, y in pos.values())

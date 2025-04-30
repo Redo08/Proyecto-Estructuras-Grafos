@@ -4,13 +4,13 @@ class Grafo:
     def __init__(self):
         self.nodos = {} #id -> Nodo
         
-    def agregar_nodo(self, id, nombre='', descripcion='', riesgo=1):
+    def agregar_nodo(self, id, nombre=None, descripcion=None, riesgo=None, tipo=0, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
         if id not in self.nodos:
-            self.nodos[id] = Nodo(id, nombre, descripcion, riesgo)
+            self.nodos[id] = Nodo(id, nombre, descripcion, riesgo, tipo, accidentalidad, popularidad, dificultad, posicion)
             
-    def agregar_arista(self, id_origen, id_destino, peso=1, riesgo=1, accidentalidad=1, popularidad=1, dificultad=1):
+    def agregar_arista(self, id_origen, id_destino, peso=1):
         if id_origen in self.nodos and id_destino in self.nodos:
-            arista = Arista(id_destino, peso, riesgo, accidentalidad, popularidad, dificultad)
+            arista = Arista(id_destino, peso)
             self.nodos[id_origen].vecinos[id_destino] = arista
     
     def cargar_json(self, datos):
@@ -20,7 +20,12 @@ class Grafo:
                 id=nodo['id'],
                 nombre=nodo['nombre'],
                 descripcion=nodo['descripcion'],
-                riesgo=nodo['riesgo']
+                riesgo=nodo['riesgo'],
+                tipo=nodo['tipo'],
+                accidentalidad=nodo['accidentalidad'],
+                popularidad=nodo['popularidad'],
+                dificultad=nodo['dificultad'],
+                posicion=nodo.get('posicion')
             )
         
         #Agregar aristas
@@ -28,11 +33,7 @@ class Grafo:
             self.agregar_arista(
                 id_origen=arista['origen'],
                 id_destino=arista['destino'],
-                peso=arista['peso'],
-                riesgo=arista['riesgo'],
-                accidentalidad=arista['accidentalidad'],
-                popularidad=arista['popularidad'],
-                dificultad=arista['dificultad']
+                peso=arista['peso']
             )
         
     def guardar_json(self):
@@ -43,12 +44,30 @@ class Grafo:
         
         #Guardar nodos
         for nodo_id, nodo in self.nodos.items():
-            data["nodos"].append({
-                "id": nodo.id,
-                "nombre": nodo.nombre,
-                "descripcion": nodo.descripcion,
-                "riesgo": nodo.riesgo
-            })
+            if nodo.tipo == 0:
+                data["nodos"].append({
+                    "id": nodo.id,
+                    "nombre": nodo.nombre,
+                    "descripcion": nodo.descripcion,
+                    "riesgo": None,
+                    "tipo": nodo.tipo,
+                    "accidentalidad": None,
+                    "popularidad": None,
+                    "dificultad": None,
+                    "posicion": nodo.posicion
+                })
+            elif nodo.tipo == 1:
+                data["nodos"].append({
+                    "id": nodo.id,
+                    "nombre": None,
+                    "descripcion": None,
+                    "riesgo": nodo.riesgo,
+                    "tipo": nodo.tipo,
+                    "accidentalidad": nodo.accidentalidad,
+                    "popularidad": nodo.popularidad,
+                    "dificultad": nodo.dificultad,
+                    "posicion": nodo.posicion
+                })
             
         # Guardar aristas
         aristas_guardadas = set()
@@ -62,11 +81,7 @@ class Grafo:
                 data["aristas"].append({
                     "origen": origen_id,
                     "destino": destino_id,
-                    "peso": arista.peso,
-                    "riesgo": arista.riesgo,
-                    "accidentalidad": arista.accidentalidad,
-                    "popularidad": arista.popularidad,
-                    "dificultad": arista.dificultad
+                    "peso": arista.peso
                 })
             
         return data

@@ -4,72 +4,73 @@
             "id": "C",
             "nombre": "Cable Plaza",
             "descripcion": "Centro comercial grande",
-            "tipo": 0,
             "riesgo": null,
+            "tipo": 0,
             "accidentalidad": null,
+            "popularidad": null,
             "dificultad": null,
-            "popularidad": null
+            "posicion": null
         },
         {
             "id": "M",
             "nombre": "Milan",
             "descripcion": "Barrio pupi, muchos restaurantes",
-            "tipo": 0,
             "riesgo": null,
+            "tipo": 0,
             "accidentalidad": null,
+            "popularidad": null,
             "dificultad": null,
-            "popularidad": null
+            "posicion": null
         },
         {
             "id": "D",
             "nombre": "D1",
             "descripcion": "Tienda para comprar cosas",
-            "tipo": 0,
             "riesgo": null,
+            "tipo": 0,
             "accidentalidad": null,
+            "popularidad": null,
             "dificultad": null,
-            "popularidad": null
-        }, 
+            "posicion": null
+        },
         {
             "id": "C1",
             "nombre": null,
             "descripcion": null,
-            "tipo": 1,
             "riesgo": 3,
+            "tipo": 1,
             "accidentalidad": 2,
             "popularidad": 4,
-            "dificultad": 1
+            "dificultad": 1,
+            "posicion": null
         },
         {
             "id": "C2",
             "nombre": null,
             "descripcion": null,
-            "tipo": 1,
             "riesgo": 4,
+            "tipo": 1,
             "accidentalidad": 4,
             "popularidad": 3,
-            "dificultad": 2
+            "dificultad": 2,
+            "posicion": null
         },
         {
             "id": "C3",
             "nombre": null,
             "descripcion": null,
-            "tipo": 1,
             "riesgo": 3,
+            "tipo": 1,
             "accidentalidad": 2,
             "popularidad": 2,
-            "dificultad": 2
+            "dificultad": 2,
+            "posicion": null
         }
     ],
     "aristas": [
         {
             "origen": "C",
             "destino": "C1",
-            "peso": 5     
-        },
-        {
-            "origen": "C1",
-            "destino": "M",
             "peso": 5
         },
         {
@@ -78,14 +79,24 @@
             "peso": 7
         },
         {
-            "origen": "C2",
-            "destino": "D",
-            "peso": 7
-        },
-        {
             "origen": "D",
             "destino": "C3",
             "peso": 6
+        },
+        {
+            "origen": "D",
+            "destino": "C1",
+            "peso": 4
+        },
+        {
+            "origen": "C1",
+            "destino": "M",
+            "peso": 5
+        },
+        {
+            "origen": "C2",
+            "destino": "D",
+            "peso": 7
         },
         {
             "origen": "C3",
@@ -93,9 +104,9 @@
             "peso": 6
         },
         {
-            "origen": "D",
-            "destino": "C1",
-            "peso": 4
+            "origen": "M",
+            "destino": "C3",
+            "peso": 3
         }
     ]
 }
