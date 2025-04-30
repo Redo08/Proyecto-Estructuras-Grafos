@@ -77,12 +77,12 @@ class InterfazGrafo:
                     self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)  # Superior y a la izquierda
                     self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta.peso)  # Inferior y a la derecha
                         
-                    dibujadas.add((nodo, id_destino))
-                    dibujadas.add((id_destino, nodo))
+                    dibujadas.add((nodo.id, id_destino))
+                    dibujadas.add((id_destino, nodo.id))
                 else:
                     #Solo una dirección
                     self.dibujar_arista_con_flecha(inicio, fin, arista.peso)
-                    dibujadas.add((nodo, id_destino))
+                    dibujadas.add((nodo.id, id_destino))
                     
                 
     def dibujar_arista_con_flecha(self, inicio, fin, peso, color=(0,0,0)):
