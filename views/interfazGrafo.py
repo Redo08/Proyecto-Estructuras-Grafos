@@ -29,14 +29,17 @@ class InterfazGrafo:
         max_y = max(y for x, y in pos.values())
 
         posiciones = {}
-        for nodo, (x, y) in pos.items():
-            # Normalizar a [0,1]
-            x_norm = (x - min_x) / (max_x - min_x) if max_x != min_x else 0.5
-            y_norm = (y - min_y) / (max_y - min_y) if max_y != min_y else 0.5
-            posiciones[nodo] = (
-                int(self.area_mapa.x + 20 + x_norm * (self.area_mapa.width - 40)),
-                int(self.area_mapa.y + 20 + y_norm * (self.area_mapa.height - 40))
-            ) 
+        for id_nodo, nodo in self.grafo.nodos.items():
+            if nodo.posicion:  # Usar posición definida si existe
+                posiciones[id_nodo] = nodo.posicion
+            else:  # Calcular posición automática
+                x, y = pos[id_nodo]
+                x_norm = (x - min_x) / (max_x - min_x) if max_x != min_x else 0.5
+                y_norm = (y - min_y) / (max_y - min_y) if max_y != min_y else 0.5
+                posiciones[id_nodo] = (
+                    int(self.area_mapa.x + 20 + x_norm * (self.area_mapa.width - 40)),
+                    int(self.area_mapa.y + 20 + y_norm * (self.area_mapa.height - 40))
+                )
 
         return posiciones
 

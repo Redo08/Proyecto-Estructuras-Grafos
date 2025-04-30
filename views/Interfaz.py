@@ -34,6 +34,8 @@ class Visualizador:
         
         #Formulario
         self.formulario = None
+        self.esperando_posicion_nodo =False # Agregado estefania
+        self.posicion_nuevo_nodo = None # Agregado estefania
         
         #Estado
         self.running = True
@@ -90,32 +92,45 @@ class Visualizador:
             print("Si se guardo bien")
   
     def guardar_nodo(self, evento): 
-        self.formulario = FormularioNodo()
-        #Mientars exista formulario activo
-        if self.formulario:
-            self.formulario.manejar_evento(evento)
+        self.esperando_posicion_nodo = True # Agregado estefania
         
-            if self.formulario.esta_listo():
-                data = self.formulario.campos
-                if data['tipo'] == '0':
-                    self.grafo.agregar_nodo(data['id'], data['nombre'], data['descripcion'],None, data['tipo'],None,None,None, data['posicion'])
-                    
-                elif data['tipo'] == '1':
-                    self.grafo.agregar_nodo(data['id'],None,None,data['riesgo'], data['tipo'],  data['accidentalidad'], data['popularidad'], data['dificultad'], data['posicion'])
-                    
-                self.formulario = None #Reiniciamos el formulario
-                
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            
+            # Delegar la lógica del nuevo nodo y formulario a la función separada
+            self.manejar_evento_nuevo_nodo(event)
+
             #Verificar botones
             for boton in self.botones:
                 boton.manejar_evento(event)                
                         
-            
+    def manejar_evento_nuevo_nodo(self, event):
+        """Maneja los eventos relacionados con la creación de un nuevo nodo."""
+        # Si estamos esperando la posición del nuevo nodo
+        if self.esperando_posicion_nodo:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.area_mapa.collidepoint(event.pos):
+                    self.posicion_nuevo_nodo = event.pos
+                    print(f"Posición del nuevo nodo: {self.posicion_nuevo_nodo}")
+                    self.esperando_posicion_nodo = False
+                    self.formulario = FormularioNodo()  # Mostrar formulario
+        
+        # Si hay un formulario activo
+        elif self.formulario:
+            self.formulario.manejar_evento(event)
+            if self.formulario.esta_listo():
+                data = self.formulario.campos
+                posicion = self.posicion_nuevo_nodo
+                if data['tipo'] == '0':
+                    self.grafo.agregar_nodo(data['id'], data['nombre'], data['descripcion'], None, data['tipo'], None, None, None, posicion)
+                elif data['tipo'] == '1':
+                    self.grafo.agregar_nodo(data['id'], None, None, data['riesgo'], data['tipo'], data['accidentalidad'], data['popularidad'], data['dificultad'], posicion)
+                self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()  # Actualizar posiciones
+                self.formulario = None
+                self.posicion_nuevo_nodo = None
+                    
     def ejecutar(self):
         """Ejecuta el bucle principal del juego"""
         while self.running:
