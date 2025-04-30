@@ -42,17 +42,28 @@ class InterfazGrafo:
 
     def dibujar_nodos(self):
         for nodo, pos in self.posiciones_nodos.items():
+            #Crear circulo
             pygame.draw.circle(self.screen, (255, 0, 0), pos, 15)
+            
+            #Crear el texto del nodo
             texto_nodo = pygame.font.Font(None, 20).render(nodo, True, (255, 255, 255))
-            self.screen.blit(texto_nodo, (pos[0] - 10, pos[1] - 10))
+            
+            #Posicionar en el centro del nodo
+            texto_rect = texto_nodo.get_rect(center=pos)
+            
+            #Poner el texto en el centro del nodo
+            self.screen.blit(texto_nodo, texto_rect)
+    
     
     def dibujar_aristas(self):
+        """Dibuja las aristas entre los nodos, evitando la superposición de dos aristas."""
         dibujadas = set() #Para evitar repetidas
 
         for nodo, vecinos in self.grafo.items():
             for vecino, peso in vecinos.items():
                 if (nodo, vecino) in dibujadas:
                     continue # Ya esta
+                
                 inicio = self.posiciones_nodos[nodo]
                 fin = self.posiciones_nodos[vecino]
 
@@ -60,9 +71,9 @@ class InterfazGrafo:
                 vuelta = self.grafo.get(vecino, {}).get(nodo)
 
                 if vuelta is not None:
-                    #Se desplazan las 2 
-                    self.dibujar_arista_desplazada(inicio, fin, peso, desplazamiento=8)
-                    self.dibujar_arista_desplazada(fin, inicio, vuelta, desplazamiento=-8)
+                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), peso)  # Superior y a la izquierda
+                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta)  # Inferior y a la derecha
+                        
                     dibujadas.add((nodo, vecino))
                     dibujadas.add((vecino, nodo))
                 else:
@@ -70,41 +81,27 @@ class InterfazGrafo:
                     self.dibujar_arista_con_flecha(inicio, fin, peso)
                     dibujadas.add((nodo, vecino))
                     
+                
     def dibujar_arista_con_flecha(self, inicio, fin, peso, color=(0,0,0)):
+        #Dibuja la linea
         pygame.draw.line(self.screen, color, inicio, fin, 2)
-        self.dibujar_flecha(fin, inicio, color)
+        #Dibujar la flecha
+        
+        #Calcular dirección
+        dx = fin[0] - inicio[0]
+        dy = fin[1] - inicio[1]
+        distancia = (dx**2 + dy**2)**0.5  #Formula de distancia euclidiana
+        
+        #Retroceder un poco el final para que la flecha no tape
+        offset = 20
+        fin_flecha = (fin[0] - dx / distancia * offset, fin[1] - dy / distancia * offset)
+        
+        #Dibujar la flecha
+        self.dibujar_flecha(fin_flecha, inicio, color)
 
         # Dibujar el peso
         texto_peso = pygame.font.Font(None, 20).render(str(peso), True, (0, 255, 0))
         medio = ((inicio[0] + fin[0]) // 2, (inicio[1] + fin[1]) // 2)
-        self.screen.blit(texto_peso, medio)
-        
-
-    def dibujar_arista_desplazada(self, inicio, fin, peso, desplazamiento=8, color=(0,0,0)):
-        dx = fin[0] - inicio[0]
-        dy = fin[1] - inicio[1]
-        normal = (dy, dx)
-        norma = (normal[0]**2 + normal[1]**2)**0.5
-        if norma != 0:
-            normal_unitario = (normal[0]/norma, normal[1]/norma)
-        else:
-            normal_unitario = (0, 0)
-
-        inicio_desplazado = (
-            inicio[0] + normal_unitario[0]*desplazamiento,
-            inicio[1] + normal_unitario[1]*desplazamiento
-        )
-        fin_desplazado = (
-            fin[0] + normal_unitario[0]*desplazamiento,
-            fin[1] + normal_unitario[1]*desplazamiento
-        )
-
-        pygame.draw.line(self.screen, color, inicio_desplazado, fin_desplazado, 2)
-        self.dibujar_flecha(fin_desplazado, inicio_desplazado, color)
-
-        # Dibujar el peso
-        texto_peso = pygame.font.Font(None, 20).render(str(peso), True, (0, 255, 0))
-        medio = ((inicio_desplazado[0] + fin_desplazado[0]) // 2, (inicio_desplazado[1] + fin_desplazado[1]) // 2)
         self.screen.blit(texto_peso, medio)
         
         
@@ -119,6 +116,7 @@ class InterfazGrafo:
         punto2 = (fin[0] - largo * math.cos(angulo - math.pi/6), fin[1] - largo * math.sin(angulo - math.pi/6))
         punto3 = (fin[0] - largo * math.cos(angulo + math.pi/6), fin[1] - largo * math.sin(angulo + math.pi/6))
         pygame.draw.polygon(self.screen, color, [punto1, punto2, punto3])        
+        
         
     def dibujar(self):
         """Dibuja el grafo completo."""
