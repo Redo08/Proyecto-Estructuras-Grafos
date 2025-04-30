@@ -1,10 +1,51 @@
 {
-    "C": {
-        "M": 10,
-        "D": 15
-    },
-    "M": {
-        "C": 12
-    },
-    "D": {}
+    "nodos": [
+        {
+            "id": "C",
+            "nombre": "Cable Plaza",
+            "descripcion": "Centro comercial grande",
+            "riesgo": 1
+        },
+        {
+            "id": "M",
+            "nombre": "Milan",
+            "descripcion": "Barrio pupi, muchos restaurantes",
+            "riesgo": 1   
+        },
+        {
+            "id": "D",
+            "nombre": "D1",
+            "descripcion": "Tienda para comprar cosas",
+            "riesgo": 3
+        }
+    ],
+    "aristas": [
+        {
+            "origen": "C",
+            "destino": "M",
+            "peso": 10,
+            "riesgo": 3,
+            "accidentalidad": 2,
+            "popularidad": 4,
+            "dificultad": 1
+        },
+        {
+            "origen": "C",
+            "destino": "D",
+            "peso": 15,
+            "riesgo": 4,
+            "accidentalidad": 4,
+            "popularidad": 3,
+            "dificultad": 2
+        },
+        {
+            "origen": "M",
+            "destino": "C",
+            "peso": 12,
+            "riesgo": 3,
+            "accidentalidad": 2,
+            "popularidad": 2,
+            "dificultad": 2
+        }
+    ]
 }
