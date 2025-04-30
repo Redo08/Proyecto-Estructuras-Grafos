@@ -5,6 +5,14 @@ class Helpers:
     def __init__(self):
         pass
     
+    def cargar_texto_manual(self, ruta):
+        if ruta:
+            with open(ruta, 'r', encoding='utf-8') as archivo:
+                grafo = json.load(archivo)
+                return grafo
+        print("No me entro nada we")
+        return None
+    
     def cargar_texto():
         """Carga el texto, abriendo solo JSON"""
         Tk().withdraw()
@@ -13,8 +21,6 @@ class Helpers:
             with open(ruta, 'r', encoding="utf-8") as archivo:
                 grafo = json.load(archivo)
                 print("grafo cargado", grafo)
-                print("Items grafo:", grafo.items())
-                print("Keys del grafo:", grafo.keys())
                 return grafo
         return None
     

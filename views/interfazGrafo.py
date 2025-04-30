@@ -13,11 +13,11 @@ class InterfazGrafo:
     def calcular_posiciones(self):
         """Calcula posiciones automaticas de los nodos"""
         G = nx.Graph()
-        for nodo, vecinos in self.grafo.items():
-            print(nodo, vecinos)
-            for vecino, peso in vecinos.items():
-                print(vecino, peso)
-                G.add_edge(nodo, vecino, weight=peso)
+        for id_nodo, nodo in self.grafo.nodos.items():
+            print(id_nodo, f"nodo:  {nodo}")
+            for id_destino, arista in nodo.vecinos.items():
+                print(id_destino, f"arista: {arista}")
+                G.add_edge(nodo.id, id_destino, weight=arista.peso)
 
         #Algoritmo que simula conexión entre nodos, el seed=42 asegura que siempre este igual, y ahi también se pone la escala el tamaño
         pos = nx.spring_layout(G, seed=42, scale=1.0)
@@ -59,27 +59,30 @@ class InterfazGrafo:
         """Dibuja las aristas entre los nodos, evitando la superposición de dos aristas."""
         dibujadas = set() #Para evitar repetidas
 
-        for nodo, vecinos in self.grafo.items():
-            for vecino, peso in vecinos.items():
-                if (nodo, vecino) in dibujadas:
+        for id_nodo, nodo in self.grafo.nodos.items():
+            for id_destino, arista in nodo.vecinos.items():
+                if (id_nodo, id_destino) in dibujadas:
                     continue # Ya esta
                 
-                inicio = self.posiciones_nodos[nodo]
-                fin = self.posiciones_nodos[vecino]
+                inicio = self.posiciones_nodos[id_nodo]
+                fin = self.posiciones_nodos[id_destino]
 
                 #Si existe doble conexión
-                vuelta = self.grafo.get(vecino, {}).get(nodo)
+                nodo_destino = self.grafo.nodos.get(id_destino)
+                if nodo_destino:
+                    #Verificar si el nodo destino tiene una arista que apunta al nodo actual
+                    vuelta = nodo_destino.vecinos.get(nodo.id)
 
                 if vuelta is not None:
-                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), peso)  # Superior y a la izquierda
-                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta)  # Inferior y a la derecha
+                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)  # Superior y a la izquierda
+                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta.peso)  # Inferior y a la derecha
                         
-                    dibujadas.add((nodo, vecino))
-                    dibujadas.add((vecino, nodo))
+                    dibujadas.add((nodo, id_destino))
+                    dibujadas.add((id_destino, nodo))
                 else:
                     #Solo una dirección
-                    self.dibujar_arista_con_flecha(inicio, fin, peso)
-                    dibujadas.add((nodo, vecino))
+                    self.dibujar_arista_con_flecha(inicio, fin, arista.peso)
+                    dibujadas.add((nodo, id_destino))
                     
                 
     def dibujar_arista_con_flecha(self, inicio, fin, peso, color=(0,0,0)):

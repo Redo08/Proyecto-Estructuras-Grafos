@@ -1,4 +1,5 @@
 import pygame
+from src.models.grafo import Grafo
 from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
@@ -64,15 +65,19 @@ class Visualizador:
             boton.dibujar()
             
     def cargar_mapa(self):
-        grafo = Helpers.cargar_texto()
+        datos = Helpers.cargar_texto()
+        grafo = Grafo()
+        
+        grafo.cargar_json(datos)
+        
         if grafo:
             self.grafo = grafo
             self.interfaz_grafo = InterfazGrafo(grafo, self.area_mapa, self.screen)
             
     def guardar_mapa(self):
-        grafo = self.grafo
-        if grafo:
-            Helpers.guardar_texto(grafo)
+        data = self.grafo.guardar_json()
+        if data:
+            Helpers.guardar_texto(data)
             print("Si se guardo bien")
   
             
