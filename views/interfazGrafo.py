@@ -9,7 +9,7 @@ class InterfazGrafo:
         self.area_mapa = area_mapa
         self.posiciones_nodos = self.calcular_posiciones() 
         
-    
+        
     def calcular_posiciones(self):
         """Calcula posiciones automaticas de los nodos"""
         G = nx.Graph()
@@ -21,7 +21,7 @@ class InterfazGrafo:
 
         #Algoritmo que simula conexión entre nodos, el seed=42 asegura que siempre este igual, y ahi también se pone la escala el tamaño
         pos = nx.spring_layout(G, seed=42, scale=1.0)
-
+        print("POS:", pos)
         #Escalar y centrar
         min_x = min(x for x, y in pos.values()) 
         max_x = max(x for x, y in pos.values())
@@ -77,12 +77,12 @@ class InterfazGrafo:
                     self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)  # Superior y a la izquierda
                     self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta.peso)  # Inferior y a la derecha
                         
-                    dibujadas.add((nodo, id_destino))
-                    dibujadas.add((id_destino, nodo))
+                    dibujadas.add((nodo.id, id_destino))
+                    dibujadas.add((id_destino, nodo.id))
                 else:
                     #Solo una dirección
                     self.dibujar_arista_con_flecha(inicio, fin, arista.peso)
-                    dibujadas.add((nodo, id_destino))
+                    dibujadas.add((nodo.id, id_destino))
                     
                 
     def dibujar_arista_con_flecha(self, inicio, fin, peso, color=(0,0,0)):
