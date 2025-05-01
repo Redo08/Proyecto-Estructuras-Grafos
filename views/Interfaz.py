@@ -29,7 +29,8 @@ class Visualizador:
         self.botones = [
             Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.guardar_nodo, self.screen)
+            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.guardar_nodo, self.screen),
+           # Mirar para hacer el recorrido normalito: Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Recorrido normalito", self.recorrido_normalito, self.screen)
         ]
         
         #Formulario
@@ -74,8 +75,9 @@ class Visualizador:
         # Dibujar formulario
         if self.formulario:
             self.formulario.dibujar(self.screen, pygame.font.Font(None, 30), self.area_mapa)
-            
-    def cargar_mapa(self, evento):
+ 
+ 
+    def cargar_mapa(self):
         datos = Helpers.cargar_texto()
         grafo = Grafo()
         
@@ -85,13 +87,13 @@ class Visualizador:
             self.grafo = grafo
             self.interfaz_grafo = InterfazGrafo(grafo, self.area_mapa, self.screen)
             
-    def guardar_mapa(self, evento):
+    def guardar_mapa(self):
         data = self.grafo.guardar_json()
         if data:
             Helpers.guardar_texto(data)
             print("Si se guardo bien")
   
-    def guardar_nodo(self, evento): 
+    def guardar_nodo(self): 
         self.esperando_posicion_nodo = True # Agregado estefania
         
     def manejar_eventos(self):

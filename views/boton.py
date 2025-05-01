@@ -22,6 +22,6 @@ class Boton:
         #Si suelta el mouse, osea da un click
         if evento.type == pygame.MOUSEBUTTONUP:
             if self.rect.collidepoint(evento.pos):
-                self.accion(evento) # Llama a la función asociada
+                self.accion() # Llama a la función asociada
                 
             
