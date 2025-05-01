@@ -101,13 +101,14 @@ class Visualizador:
         def on_finish(usuario_creado):
             self.usuario = usuario_creado
             self.modo_actual = None
-            print("Usuario creado:", self.usuario)
-            print("Usuario:", self.usuario.nombre)
-            print("Experiencia:", self.usuario.experiencia)
-            print("Riesgo:", self.usuario.riesgo_max)
-            print("Accidentalidad:", self.usuario.accidentalidad_max)
-            print("Dificultad:", self.usuario.dificultad_max)
-            print("Distancia:", self.usuario.distancia_max)
+            if self.usuario is not None:
+                print("Usuario creado:", self.usuario)
+                print("Usuario:", self.usuario.nombre)
+                print("Experiencia:", self.usuario.experiencia)
+                print("Riesgo:", self.usuario.riesgo_max)
+                print("Accidentalidad:", self.usuario.accidentalidad_max)
+                print("Dificultad:", self.usuario.dificultad_max)
+                print("Distancia:", self.usuario.distancia_max)
 
         
         self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)
