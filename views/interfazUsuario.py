@@ -49,7 +49,7 @@ class InterfazUsuario:
         if not nombre:
             raise ValueError("El nombre no puede estar vacío.")
         
-        experiencia = int(datos["Nivel de experiencia (1,5)"])
+        experiencia = int(datos["Nivel de experiencia (1,3)"])
         riesgo = int(datos["Riesgo máximo (1,5)"])
         accidentalidad = int(datos["Accidentalidad máxima (1,5)"])
         dificultad = int(datos["Dificultad máxima (1,5)"])
