@@ -1,17 +1,6 @@
 import pygame
 
 class Formulario:
-    def __init__(self,campos_iniciales,condiciones=None):
-        self.campos = {campo: "" for campo in campos_iniciales}
-        self.orden_campos = list(campos_iniciales)
-        self.condiciones = condiciones or {}
-        self.indice_campo_actual = 0
-        self.completo = False
-        self.cancelado = False
-        self.form_rect = None
-    import pygame
-
-class Formulario:
     def __init__(self, campos_iniciales, condiciones=None):
         self.campos = {campo: "" for campo in campos_iniciales}
         self.orden_campos = list(campos_iniciales)
@@ -50,6 +39,7 @@ class Formulario:
     def dibujar(self, pantalla, fuente, area_mapa):
         self.form_rect = pygame.Rect(area_mapa.x + 100, area_mapa.y + 100, 400, 300)
         pygame.draw.rect(pantalla, (200, 200, 200), self.form_rect)
+        
         instruccion = "Ingrese los datos solicitados"
         superficie_inst = fuente.render(instruccion, True, (0, 0, 0))
         pantalla.blit(superficie_inst, (self.form_rect.x + 20, self.form_rect.y + 20))
