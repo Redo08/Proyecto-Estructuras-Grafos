@@ -4,6 +4,7 @@ from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
 from views.InterfazNodo import InterfazNodo
+from views.interfazUsuario import InterfazUsuario
 
 class Visualizador:
     def __init__(self, grafo, ancho, alto):
@@ -11,7 +12,7 @@ class Visualizador:
         self.ancho = ancho
         self.alto = alto
         self.screen = pygame.display.set_mode((ancho, alto))
-        pygame.display.set_caption("Visualizador de Grafos Escalable")
+        pygame.display.set_caption("Visualizador de Grafos")
         self.clock = pygame.time.Clock()
         
         #Configuración Areas
@@ -24,12 +25,15 @@ class Visualizador:
         #Grafo
         self.interfaz_grafo = InterfazGrafo(self.grafo, self.area_mapa, self.screen)
         
+        #Usuario
+        self.usuario = None #Aqui se guarda el objeot Uusario
+        
         #Botones
         self.botones = [
             Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Recorrido", None, self.screen)
+            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen)
         ]
         
        
@@ -92,7 +96,22 @@ class Visualizador:
         def on_finish():
             self.modo_actual = None
         self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish)
+    
+    def iniciar_crear_usuario(self):
+        def on_finish(usuario_creado):
+            self.usuario = usuario_creado
+            self.modo_actual = None
+            print("Usuario creado:", self.usuario)
+            print("Usuario:", self.usuario.nombre)
+            print("Experiencia:", self.usuario.experiencia)
+            print("Riesgo:", self.usuario.riesgo_max)
+            print("Accidentalidad:", self.usuario.accidentalidad_max)
+            print("Dificultad:", self.usuario.dificultad_max)
+            print("Distancia:", self.usuario.distancia_max)
+
         
+        self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)
+    
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""
         for event in pygame.event.get():
