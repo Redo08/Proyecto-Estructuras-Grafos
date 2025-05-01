@@ -8,6 +8,17 @@ class Grafo:
         if id not in self.nodos:
             self.nodos[id] = Nodo(id, nombre, descripcion, riesgo, tipo, accidentalidad, popularidad, dificultad, posicion)
             
+    def proximo_id(self):
+        max_id = 0
+        for id_nodo in self.nodos:
+            try:
+                num_id = int(id_nodo)
+                if num_id > max_id:
+                    max_id = num_id
+            except ValueError:
+                pass
+        return str(max_id + 1)
+    
     def agregar_arista(self, id_origen, id_destino, peso=1):
         if id_origen in self.nodos and id_destino in self.nodos:
             arista = Arista(id_destino, peso)
