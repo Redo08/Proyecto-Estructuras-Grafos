@@ -1,37 +1,28 @@
 import pygame
-class FormularioNodo:
-    def __init__(self):
-        self.campos = {"tipo": ""}
-        self.orden_campos = ["tipo"]
+class Formulario:
+    def __init__(self, campos_iniciales, condiciones=None):
+        self.campos = {campo: "" for campo in campos_iniciales}
+        self.orden_campos = list(campos_iniciales)
+        self.condiciones = condiciones or {}
         self.indice_campo_actual = 0
         self.completo = False
         self.cancelado = False
         self.form_rect = None
-        self.tipo_seleccionado = None
 
     def manejar_evento(self, evento):
         if evento.type == pygame.KEYDOWN:
             campo_actual = self.orden_campos[self.indice_campo_actual]
             if evento.key == pygame.K_RETURN:
-                if campo_actual == "tipo":
-                    tipo_ingresado = self.campos["tipo"]
-                    if tipo_ingresado == "0":  # Punto de Interés
-                        self.tipo_seleccionado = 0
-                        self.campos.update({ "nombre": "", "descripcion": ""})
-                        self.orden_campos = ["tipo", "nombre", "descripcion"]
-                        self.indice_campo_actual += 1
-                    elif tipo_ingresado == "1": # Punto de Control
-                        self.tipo_seleccionado = 1
-                        self.campos.update({ "riesgo": "", "accidentalidad": "", "popularidad": "", "dificultad": ""})
-                        self.orden_campos = ["tipo", "riesgo", "accidentalidad", "popularidad", "dificultad"]
-                        self.indice_campo_actual += 1
-                    else:
-                        self.campos["tipo"] = ""  # Resetear si es inválido
-                        print("Error: Ingrese solo 0 (Punto de Interés) o 1 (Punto de Control)")
-                else:
-                    self.indice_campo_actual += 1
-                    if self.indice_campo_actual >= len(self.orden_campos):
-                        self.completo = True
+                # Verificar si el campo actual tiene condiciones
+                if campo_actual in self.condiciones and self.campos[campo_actual] in self.condiciones[campo_actual]:
+                    nuevos_campos = self.condiciones[campo_actual][self.campos[campo_actual]]
+                    for campo in nuevos_campos:
+                        if campo not in self.campos:
+                            self.campos[campo] = ""
+                            self.orden_campos.append(campo)
+                self.indice_campo_actual += 1
+                if self.indice_campo_actual >= len(self.orden_campos):
+                    self.completo = True
             elif evento.key == pygame.K_BACKSPACE:
                 self.campos[campo_actual] = self.campos[campo_actual][:-1]
             else:
@@ -47,8 +38,7 @@ class FormularioNodo:
     def dibujar(self, pantalla, fuente, area_mapa):
         self.form_rect = pygame.Rect(area_mapa.x + 100, area_mapa.y + 100, 400, 300)
         pygame.draw.rect(pantalla, (200, 200, 200), self.form_rect)
-        # Instrucción inicial
-        instruccion = "Ingrese tipo: 0 - Punto de Interés, 1 - Punto de Control"
+        instruccion = "Ingrese los datos solicitados"
         superficie_inst = fuente.render(instruccion, True, (0, 0, 0))
         pantalla.blit(superficie_inst, (self.form_rect.x + 20, self.form_rect.y + 20))
         
@@ -63,13 +53,11 @@ class FormularioNodo:
             superficie = fuente.render(texto, True, (0, 0, 0))
             pantalla.blit(superficie, (x, y + i * 30))
 
-        #Boton guardar
         guardar_rect = pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40)
         pygame.draw.rect(pantalla, (0, 255, 0), guardar_rect)
         texto_guardar = fuente.render("Guardar", True, (0, 0, 0))
         pantalla.blit(texto_guardar, (guardar_rect.x + 10, guardar_rect.y + 10))
 
-        #Boton cancelar
         cancelar_rect = pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40)
         pygame.draw.rect(pantalla, (255, 0, 0), cancelar_rect)
         texto_cancelar = fuente.render("Cancelar", True, (0, 0, 0))
@@ -79,4 +67,4 @@ class FormularioNodo:
         return self.completo
 
     def fue_cancelado(self):
-        return self.cancelado
+        return self.cancelado 

@@ -4,7 +4,7 @@ from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
 from views.FormularioNodo import FormularioNodo
-
+from views.InterfazNodo import InterfazNodo
 
 class Visualizador:
     def __init__(self, grafo, ancho, alto):
@@ -29,18 +29,19 @@ class Visualizador:
         self.botones = [
             Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.guardar_nodo, self.screen),
-           # Mirar para hacer el recorrido normalito: Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Recorrido normalito", self.recorrido_normalito, self.screen)
+            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen)
         ]
         
-        #Formulario
-        self.formulario = None
-        self.esperando_posicion_nodo =False # Agregado estefania
-        self.posicion_nuevo_nodo = None # Agregado estefania
-        
+       
         #Estado
+        self.modo_actual = None  # Modo actual (puede ser "nuevo_nodo" o "editar_nodo")      
         self.running = True
-    
+
+    def iniciar_agregar_nodo(self, evento):
+        def on_finish():
+            self.modo_actual = None
+        self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish)
+
     def dibujar(self):
         """Dibuja el grafo y la interfaz en la pantalla"""
         # Colores
@@ -73,10 +74,9 @@ class Visualizador:
             boton.dibujar()
             
         # Dibujar formulario
-        if self.formulario:
-            self.formulario.dibujar(self.screen, pygame.font.Font(None, 30), self.area_mapa)
- 
- 
+        if self.modo_actual:
+            self.modo_actual.dibujar()
+            
     def cargar_mapa(self):
         datos = Helpers.cargar_texto()
         grafo = Grafo()
@@ -93,8 +93,10 @@ class Visualizador:
             Helpers.guardar_texto(data)
             print("Si se guardo bien")
   
-    def guardar_nodo(self): 
-        self.esperando_posicion_nodo = True # Agregado estefania
+    def iniciar_agregar_nodo(self): 
+        def on_finish():
+            self.modo_actual = None
+        self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish)
         
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""
@@ -102,36 +104,15 @@ class Visualizador:
             if event.type == pygame.QUIT:
                 self.running = False
             # Delegar la lógica del nuevo nodo y formulario a la función separada
-            self.manejar_evento_nuevo_nodo(event)
+            # self.manejar_evento_nuevo_nodo(event)
 
             #Verificar botones
             for boton in self.botones:
-                boton.manejar_evento(event)                
+                boton.manejar_evento(event)
+
+            if self.modo_actual:
+                self.modo_actual.manejar_evento(event)               
                         
-    def manejar_evento_nuevo_nodo(self, event):
-        """Maneja los eventos relacionados con la creación de un nuevo nodo."""
-        # Si estamos esperando la posición del nuevo nodo
-        if self.esperando_posicion_nodo:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.area_mapa.collidepoint(event.pos):
-                    self.posicion_nuevo_nodo = event.pos
-                    print(f"Posición del nuevo nodo: {self.posicion_nuevo_nodo}")
-                    self.esperando_posicion_nodo = False
-                    self.formulario = FormularioNodo()  # Mostrar formulario
-        
-        # Si hay un formulario activo
-        elif self.formulario:
-            self.formulario.manejar_evento(event)
-            if self.formulario.esta_listo():
-                data = self.formulario.campos
-                posicion = self.posicion_nuevo_nodo
-                if data['tipo'] == '0':
-                    self.grafo.agregar_nodo(data['id'], data['nombre'], data['descripcion'], None, data['tipo'], None, None, None, posicion)
-                elif data['tipo'] == '1':
-                    self.grafo.agregar_nodo(data['id'], None, None, data['riesgo'], data['tipo'], data['accidentalidad'], data['popularidad'], data['dificultad'], posicion)
-                self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()  # Actualizar posiciones
-                self.formulario = None
-                self.posicion_nuevo_nodo = None
                     
     def ejecutar(self):
         """Ejecuta el bucle principal del juego"""

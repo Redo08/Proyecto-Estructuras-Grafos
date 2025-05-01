@@ -44,12 +44,26 @@ class InterfazGrafo:
         return posiciones
 
     def dibujar_nodos(self):
-        for nodo, pos in self.posiciones_nodos.items():
+        for nodo_id, pos in self.posiciones_nodos.items():
+            # Obtener el objeto Nodo
+            nodo = self.grafo.nodos[nodo_id]
+
             #Crear circulo
             pygame.draw.circle(self.screen, (255, 0, 0), pos, 15)
             
+            # Determinar la etiqueta
+            if nodo.tipo == 0 and nodo.nombre:  # Punto de Interés con nombre
+                etiqueta = nodo.nombre[:2] if len(nodo.nombre) >= 2 else nodo.nombre
+            elif nodo.tipo == 1:  # Punto de Control con riesgo
+                if nodo.riesgo is not None:
+                    # Usar el valor de riesgo como etiqueta
+                    etiqueta = str(nodo.riesgo)
+                else:
+                    etiqueta = "CP"  # Valor predeterminado si riesgo es None
+            else:
+                etiqueta = "CP"  # Valor predeterminado para nodos sin nombre o riesgo
             #Crear el texto del nodo
-            texto_nodo = pygame.font.Font(None, 20).render(nodo, True, (255, 255, 255))
+            texto_nodo = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
             
             #Posicionar en el centro del nodo
             texto_rect = texto_nodo.get_rect(center=pos)

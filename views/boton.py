@@ -6,6 +6,7 @@ class Boton:
         self.texto = texto
         self.accion = accion #Acción asociada al botón
         
+        
     def dibujar(self):
         #Dibujamos el botón
         pygame.draw.rect(self.screen, (0,0,0), self.rect)
