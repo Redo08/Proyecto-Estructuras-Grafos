@@ -28,7 +28,8 @@ class Visualizador:
         self.botones = [
             Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen)
+            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Recorrido", None, self.screen)
         ]
         
        
