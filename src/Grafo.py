@@ -326,27 +326,27 @@ def test_graph():
     print("BFS from node 'A':", g.bfs('35'))
     print("DFS from node 'A':", g.dfs('35'))
 
-    #print("Primm from node 'A':", g.prim('A'))
+    print("Primm from node 'A':", g.prim('A'))
 
-    #print("Kruskal:", g.kruskal())
+    print("Kruskal:", g.kruskal())
 
-    #print("Minimum distances from node 'A' (Dijkstra):", g.dijkstra('35'))
-    print("Ejercicio preparcial anchura:", g.ejercicio_preparcial_anchura('35',2))
-    print("Ejercicio preparcial dijsktra", g.ejercicio_preparcial_dijkstra('35',2))
+    print("Minimum distances from node 'A' (Dijkstra):", g.dijkstra('35'))
+    # print("Ejercicio preparcial anchura:", g.ejercicio_preparcial_anchura('35',2))
+    # print("Ejercicio preparcial dijsktra", g.ejercicio_preparcial_dijkstra('35',2))
 
-    # print("Minimum distances all-pair of nodes (Floyd-Warshall):")
-    # floyd_distances = g.floyd_warshall()
-    # for u in floyd_distances:
-    #     for v in floyd_distances[u]:
-    #         print(f"Distance from {u} to {v}: {floyd_distances[u][v]}")
+    print("Minimum distances all-pair of nodes (Floyd-Warshall):")
+    floyd_distances = g.floyd_warshall()
+    for u in floyd_distances:
+        for v in floyd_distances[u]:
+            print(f"Distance from {u} to {v}: {floyd_distances[u][v]}")
 
-    # print("Minimum distances from node 'A' (Bellman-Ford):", g.bellman_ford('A'))
+    print("Minimum distances from node 'A' (Bellman-Ford):", g.bellman_ford('A'))
 
-    # try:
-    #     max_flow = g.ford_fulkerson('A', 'E')
-    #     print("Maximum flow from node A to node E (Ford-Fulkerson):", max_flow)
-    # except ValueError as e:
-    #     print("Error:", e)
+    try:
+        max_flow = g.ford_fulkerson('A', 'E')
+        print("Maximum flow from node A to node E (Ford-Fulkerson):", max_flow)
+    except ValueError as e:
+        print("Error:", e)
 
 if __name__ == "__main__":
     test_graph()
