@@ -22,11 +22,11 @@ class InterfazNodo:
 
     def manejar_evento(self, event):
         if self.esperando_posicion:
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONUP:
                 if self.area_mapa.collidepoint(event.pos):
                     self.posicion_nuevo_nodo = event.pos
                     self.esperando_posicion = False
-                    self.formulario = Formulario(self.campos_iniciales, self.condiciones)
+                    self.formulario = Formulario(self.screen, self.campos_iniciales, self.condiciones, self.area_mapa)
         elif self.formulario:
             self.formulario.manejar_evento(event)
             if self.formulario.fue_cancelado():
@@ -45,4 +45,4 @@ class InterfazNodo:
 
     def dibujar(self):
         if self.formulario:
-            self.formulario.dibujar(self.screen, pygame.font.Font(None, 30), self.area_mapa)
+            self.formulario.dibujar()

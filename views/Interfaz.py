@@ -3,7 +3,6 @@ from src.models.grafo import Grafo
 from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
-from views.FormularioNodo import FormularioNodo
 from views.InterfazNodo import InterfazNodo
 
 class Visualizador:
@@ -36,11 +35,6 @@ class Visualizador:
         #Estado
         self.modo_actual = None  # Modo actual (puede ser "nuevo_nodo" o "editar_nodo")      
         self.running = True
-
-    def iniciar_agregar_nodo(self, evento):
-        def on_finish():
-            self.modo_actual = None
-        self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish)
 
     def dibujar(self):
         """Dibuja el grafo y la interfaz en la pantalla"""
@@ -103,9 +97,7 @@ class Visualizador:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            # Delegar la lógica del nuevo nodo y formulario a la función separada
-            # self.manejar_evento_nuevo_nodo(event)
-
+                
             #Verificar botones
             for boton in self.botones:
                 boton.manejar_evento(event)
