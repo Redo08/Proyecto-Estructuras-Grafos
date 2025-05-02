@@ -77,11 +77,14 @@ class Recorridos:
         """
         # Validación de tipo de nodo
         if self.grafo.nodos[inicio].tipo == 1 or self.grafo.nodos[fin].tipo == 1: #Si son puntos de control
-            raise ValueError("Error, El nodo de inicio y fin no pueden ser puntos de control")
+            print("Error, El nodo de inicio y fin no pueden ser puntos de control")
+            return [], float('inf'), []
+
                 
         # Si no hay camino, retornamos vacío
         if self.distancias[inicio][fin] == float('inf'):
-            raise ValueError("Error: No existe camino entre los 2 nodos indicados")
+            print("Error: No existe camino entre los 2 nodos indicados")
+            return [], float('inf'), []
         
         # Reconstruir camino completo
         camino = self.reconstruccion_camino(inicio, fin, self.caminos)

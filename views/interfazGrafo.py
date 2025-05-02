@@ -123,7 +123,7 @@ class InterfazGrafo:
         texto_peso = pygame.font.Font(None, 20).render(str(peso), True, (0, 255, 0))
         medio = ((inicio[0] + fin[0]) // 2, (inicio[1] + fin[1]) // 2)
         self.screen.blit(texto_peso, medio)
-        
+
     def resaltar_arista(self, id_origen, id_destino):
         if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
             inicio = self.posiciones_nodos[id_origen]
