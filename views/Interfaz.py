@@ -1,5 +1,6 @@
 import pygame
 from src.models.grafo import Grafo
+from src.models.recorridos import Recorridos
 from src.helpers import Helpers
 from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
@@ -109,6 +110,8 @@ class Visualizador:
                 print("Accidentalidad:", self.usuario.accidentalidad_max)
                 print("Dificultad:", self.usuario.dificultad_max)
                 print("Distancia:", self.usuario.distancia_max)
+                recorridos = Recorridos(self.grafo, self.usuario)
+                print(recorridos.camino_menor_distancia('C', 'M'))
 
         
         self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)

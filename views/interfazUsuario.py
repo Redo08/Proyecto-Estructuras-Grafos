@@ -11,7 +11,7 @@ class InterfazUsuario:
     def iniciar_formulario(self):
         campos = [
             "Nombre",
-            "Nivel de experiencia (1,5)",
+            "Nivel de experiencia (1,3)",
             "Distancia máxima",
             "Riesgo máximo (1,5)",
             "Accidentalidad máxima (1,5)",
@@ -30,7 +30,7 @@ class InterfazUsuario:
                 try:
                     usuario = Usuario(
                         nombre = datos["Nombre"],
-                        experiencia = int(datos["Nivel de experiencia (1,5)"]),
+                        experiencia = int(datos["Nivel de experiencia (1,3)"]),
                         distancia_max = int(datos["Distancia máxima"]),
                         riesgo_max = int(datos["Riesgo máximo (1,5)"]),
                         accidentalidad_max = int(datos["Accidentalidad máxima (1,5)"]),
@@ -56,7 +56,6 @@ class InterfazUsuario:
         distancia = float(datos["Distancia máxima"])
         
         for campo, valor in [
-            ("nivel de experiencia", experiencia),
             ("riesgo", riesgo),
             ("accidentalidad", accidentalidad),
             ("dificultad", dificultad),
@@ -65,7 +64,8 @@ class InterfazUsuario:
                 raise ValueError(f"El campo '{campo}' debe ser un entero entre 1 y 5.")
         if distancia <= 0:
             raise ValueError("La distancia debe ser mayor a 0.")
-
+        if not 1 <= experiencia <= 3:
+            raise ValueError("El nivel de experiencia debe ser entre 1 y 3")
         return True
     
     def dibujar(self):

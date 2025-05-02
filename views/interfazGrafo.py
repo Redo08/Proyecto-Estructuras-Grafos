@@ -55,9 +55,9 @@ class InterfazGrafo:
             if nodo.tipo == 0 and nodo.nombre:  # Punto de Interés con nombre
                 etiqueta = nodo.nombre[:2] if len(nodo.nombre) >= 2 else nodo.nombre
             elif nodo.tipo == 1:  # Punto de Control con riesgo
-                if nodo.riesgo is not None:
+                if nodo_id is not None:
                     # Usar el valor de riesgo como etiqueta
-                    etiqueta = str(nodo.riesgo)
+                    etiqueta = str(nodo_id)
                 else:
                     etiqueta = "CP"  # Valor predeterminado si riesgo es None
             else:
