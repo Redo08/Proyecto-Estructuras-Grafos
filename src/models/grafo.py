@@ -7,7 +7,7 @@ class Grafo:
     def agregar_nodo(self, id, nombre=None, descripcion=None, riesgo=None, tipo=0, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
         if id not in self.nodos:
             self.nodos[id] = Nodo(id, nombre, descripcion, riesgo, tipo, accidentalidad, popularidad, dificultad, posicion)
-            
+
     def proximo_id(self):
         max_id = 0
         for id_nodo in self.nodos:
@@ -23,7 +23,21 @@ class Grafo:
         if id_origen in self.nodos and id_destino in self.nodos:
             arista = Arista(id_destino, peso)
             self.nodos[id_origen].vecinos[id_destino] = arista
-    
+    def eliminar_nodo(self, id_nodo):
+        if id_nodo in self.nodos:
+            # Eliminar aristas que salen del nodo y las que llegan a él
+            for vecino in list(self.nodos[id_nodo].vecinos.keys()):
+                if vecino in self.nodos:
+                    self.nodos[vecino].vecinos.pop(id_nodo, None)
+            # Eliminar el nodo
+            del self.nodos[id_nodo]
+
+    def validar_eliminacion_nodo(self, nodo_id):
+        if nodo_id not in self.nodos:
+            return False, "Nodo no existe"
+        if len(self.nodos) == 1:
+            return False, "No se puede eliminar el único nodo"
+        return True, None
     def cargar_json(self, datos):
         #Agregar nodos
         for nodo in datos['nodos']:

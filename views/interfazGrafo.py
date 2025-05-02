@@ -142,4 +142,10 @@ class InterfazGrafo:
         """Dibuja el grafo completo."""
         self.dibujar_aristas()
         self.dibujar_nodos()
-        
+    
+    def obtener_nodo_seleccionado(self, mouse_pos):
+        for nodo_id, pos in self.posiciones_nodos.items():
+            distancia = math.hypot(pos[0] - mouse_pos[0], pos[1] - mouse_pos[1])
+            if distancia <= 15:
+                return nodo_id
+        return None

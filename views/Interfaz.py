@@ -33,6 +33,7 @@ class Visualizador:
             Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 200, 110, 150, 40), "Eliminar nodo", self.iniciar_eliminar_nodo, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen)
         ]
         
@@ -95,7 +96,11 @@ class Visualizador:
     def iniciar_agregar_nodo(self): 
         def on_finish():
             self.modo_actual = None
-        self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish)
+        self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish, modo="agregar")
+    def iniciar_eliminar_nodo(self):
+        def on_finish():
+            self.modo_actual = None
+        self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish, modo="eliminar")
     
     def iniciar_crear_usuario(self):
         def on_finish(usuario_creado):
