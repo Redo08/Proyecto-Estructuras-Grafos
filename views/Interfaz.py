@@ -131,6 +131,7 @@ class Visualizador:
                 print("Distancia:", self.usuario.distancia_max)
                 recorridos = Recorridos(self.grafo, self.usuario)
                 print(recorridos.camino_menor_distancia('C', 'M'))
+                print(recorridos.camino_mas_apropiado_experiencia())
 
         
         self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)

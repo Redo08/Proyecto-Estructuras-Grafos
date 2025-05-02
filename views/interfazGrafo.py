@@ -55,9 +55,9 @@ class InterfazGrafo:
             if nodo.tipo == 0 and nodo.nombre:  # Punto de Interés con nombre
                 etiqueta = nodo.nombre[:2] if len(nodo.nombre) >= 2 else nodo.nombre
             elif nodo.tipo == 1:  # Punto de Control con riesgo
-                if nodo_id is not None:
+                if nodo.id is not None:
                     # Usar el valor de riesgo como etiqueta
-                    etiqueta = str(nodo_id)
+                    etiqueta = str(nodo.id)
                 else:
                     etiqueta = "CP"  # Valor predeterminado si riesgo es None
             else:
@@ -124,11 +124,6 @@ class InterfazGrafo:
         medio = ((inicio[0] + fin[0]) // 2, (inicio[1] + fin[1]) // 2)
         self.screen.blit(texto_peso, medio)
         
-    def resaltar_arista(self, id_origen, id_destino):
-        if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
-            inicio = self.posiciones_nodos[id_origen]
-            fin = self.posiciones_nodos[id_origen]
-            pygame.draw.line(self.screen, (0, 255, 0), inicio, fin, 4)  # Línea verde más gruesa   
         
     def dibujar_flecha(self, fin, inicio, color=(0,0,0)):
         dx = fin[0] - inicio[0]
@@ -147,10 +142,4 @@ class InterfazGrafo:
         """Dibuja el grafo completo."""
         self.dibujar_aristas()
         self.dibujar_nodos()
-    
-    def obtener_nodo_seleccionado(self, mouse_pos):
-        for nodo_id, pos in self.posiciones_nodos.items():
-            distancia = math.hypot(pos[0] - mouse_pos[0], pos[1] - mouse_pos[1])
-            if distancia <= 15:
-                return nodo_id
-        return None
+        
