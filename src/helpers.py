@@ -10,6 +10,7 @@ class Helpers:
             with open(ruta, 'r', encoding='utf-8') as archivo:
                 grafo = json.load(archivo)
                 return grafo
+            
         print("No me entro nada we")
         return None
     

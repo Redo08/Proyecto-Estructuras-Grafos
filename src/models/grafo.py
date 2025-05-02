@@ -61,27 +61,30 @@ class Grafo:
             return False, "No se puede eliminar el único nodo"
         return True, None
     def cargar_json(self, datos):
-        #Agregar nodos
-        for nodo in datos['nodos']:
-            self.agregar_nodo(
-                id=nodo['id'],
-                nombre=nodo['nombre'],
-                descripcion=nodo['descripcion'],
-                riesgo=nodo['riesgo'],
-                tipo=nodo['tipo'],
-                accidentalidad=nodo['accidentalidad'],
-                popularidad=nodo['popularidad'],
-                dificultad=nodo['dificultad'],
-                posicion=nodo.get('posicion')
-            )
-        
-        #Agregar aristas
-        for arista in datos['aristas']:
-            self.agregar_arista(
-                id_origen=arista['origen'],
-                id_destino=arista['destino'],
-                peso=arista['peso']
-            )
+        if datos is not None:
+            #Agregar nodos
+            for nodo in datos['nodos']:
+                self.agregar_nodo(
+                    id=nodo['id'],
+                    nombre=nodo['nombre'],
+                    descripcion=nodo['descripcion'],
+                    riesgo=nodo['riesgo'],
+                    tipo=nodo['tipo'],
+                    accidentalidad=nodo['accidentalidad'],
+                    popularidad=nodo['popularidad'],
+                    dificultad=nodo['dificultad'],
+                    posicion=nodo.get('posicion')
+                )
+
+            #Agregar aristas
+            for arista in datos['aristas']:
+                self.agregar_arista(
+                    id_origen=arista['origen'],
+                    id_destino=arista['destino'],
+                    peso=arista['peso']
+                )
+        else:
+            pass
         
     def guardar_json(self):
         data = {

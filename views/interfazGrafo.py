@@ -11,35 +11,10 @@ class InterfazGrafo:
         
         
     def calcular_posiciones(self):
-        """Calcula posiciones automaticas de los nodos"""
-        G = nx.Graph()
-        for id_nodo, nodo in self.grafo.nodos.items():
-            print(id_nodo, f"nodo:  {nodo}")
-            for id_destino, arista in nodo.vecinos.items():
-                print(id_destino, f"arista: {arista}")
-                G.add_edge(nodo.id, id_destino, weight=arista.peso)
-
-        #Algoritmo que simula conexión entre nodos, el seed=42 asegura que siempre este igual, y ahi también se pone la escala el tamaño
-        pos = nx.spring_layout(G, seed=42, scale=1.0)
-        print("POS:", pos)
-        #Escalar y centrar
-        min_x = min(x for x, y in pos.values()) 
-        max_x = max(x for x, y in pos.values())
-        min_y = min(y for x, y in pos.values())
-        max_y = max(y for x, y in pos.values())
-
         posiciones = {}
         for id_nodo, nodo in self.grafo.nodos.items():
             if nodo.posicion:  # Usar posición definida si existe
                 posiciones[id_nodo] = nodo.posicion
-            else:  # Calcular posición automática
-                x, y = pos[id_nodo]
-                x_norm = (x - min_x) / (max_x - min_x) if max_x != min_x else 0.5
-                y_norm = (y - min_y) / (max_y - min_y) if max_y != min_y else 0.5
-                posiciones[id_nodo] = (
-                    int(self.area_mapa.x + 20 + x_norm * (self.area_mapa.width - 40)),
-                    int(self.area_mapa.y + 20 + y_norm * (self.area_mapa.height - 40))
-                )
 
         return posiciones
 
