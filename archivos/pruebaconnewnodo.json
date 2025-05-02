@@ -68,16 +68,16 @@
         },
         {
             "id": "1",
-            "nombre": "Mi casa",
-            "descripcion": "Mi casita",
+            "nombre": "Chipre",
+            "descripcion": "Mirador",
             "riesgo": null,
             "tipo": 0,
             "accidentalidad": null,
             "popularidad": null,
             "dificultad": null,
             "posicion": [
-                287,
-                206
+                504,
+                187
             ]
         }
     ],
