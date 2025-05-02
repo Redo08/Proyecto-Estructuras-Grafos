@@ -5,6 +5,7 @@ from views.interfazGrafo import InterfazGrafo
 from views.boton import Boton
 from views.InterfazNodo import InterfazNodo
 from views.interfazUsuario import InterfazUsuario
+from views.InterfazArista import InterfazArista
 
 class Visualizador:
     def __init__(self, grafo, ancho, alto):
@@ -34,7 +35,9 @@ class Visualizador:
             Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 110, 150, 40), "Eliminar nodo", self.iniciar_eliminar_nodo, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen)
+            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 20, 230, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 200, 230, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen)
         ]
         
        
@@ -97,11 +100,22 @@ class Visualizador:
         def on_finish():
             self.modo_actual = None
         self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish, modo="agregar")
+
     def iniciar_eliminar_nodo(self):
         def on_finish():
             self.modo_actual = None
         self.modo_actual = InterfazNodo(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish, modo="eliminar")
-    
+
+    def iniciar_agregar_arista(self):
+        def on_finish():
+            self.modo_actual = None
+        self.modo_actual = InterfazArista(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish, modo="agregar_arista")
+
+    def iniciar_eliminar_arista(self):
+        def on_finish():
+            self.modo_actual = None
+        self.modo_actual = InterfazArista(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish, modo="eliminar_arista")
+
     def iniciar_crear_usuario(self):
         def on_finish(usuario_creado):
             self.usuario = usuario_creado

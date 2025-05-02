@@ -124,6 +124,11 @@ class InterfazGrafo:
         medio = ((inicio[0] + fin[0]) // 2, (inicio[1] + fin[1]) // 2)
         self.screen.blit(texto_peso, medio)
         
+    def resaltar_arista(self, id_origen, id_destino):
+        if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
+            inicio = self.posiciones_nodos[id_origen]
+            fin = self.posiciones_nodos[id_origen]
+            pygame.draw.line(self.screen, (0, 255, 0), inicio, fin, 4)  # Línea verde más gruesa   
         
     def dibujar_flecha(self, fin, inicio, color=(0,0,0)):
         dx = fin[0] - inicio[0]

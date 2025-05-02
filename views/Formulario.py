@@ -8,37 +8,44 @@ class Formulario:
         self.campos = {campo: "" for campo in (campos_iniciales or [])}  # Manejar None
         self.orden_campos = list(campos_iniciales or [])  # Manejar None
         self.condiciones = condiciones or {}
-        self.indice_campo_actual = 0 if campos_iniciales else -1  # -1 para eliminación
+        self.indice_campo_actual = 0 if campos_iniciales else -1  # -1 para eliminación/error
         self.completo = False
         self.cancelado = False
-        self.accion = accion  # "agregar", "eliminar" o "error"
+        self.accion = accion  # "agregar", "eliminar", "agregar_arista", "eliminar_arista", "error"
         self.mensaje_confirmacion = mensaje_confirmacion
         self.form_rect = pygame.Rect(area_mapa.x + 100, area_mapa.y + 100, 400, 300)
         # Botones
-        boton_confirmar_texto = "Guardar" if accion == "agregar" else "Sí"
+        boton_confirmar_texto = "Guardar" if accion in ["agregar", "agregar_arista"] else "Sí"
         self.botones = [
             Boton(
                 pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40),
                 boton_confirmar_texto,
                 self.marcar_completo,
                 self.screen,
-                color_fondo=(0, 255, 0)
+                color_fondo=(0, 255, 0),
+                color_texto=(255, 255, 255)
             ),
             Boton(
                 pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40),
                 "Cancelar",
                 self.marcar_cancelado,
                 self.screen,
-                color_fondo=(255, 0, 0)
+                color_fondo=(255, 0, 0),
+                color_texto=(255, 255, 255)
             )
         ]
 
     def manejar_evento(self, evento):
-        if self.accion == "agregar" and self.indice_campo_actual >= 0:
+        if self.accion in ["agregar", "agregar_arista"] and self.indice_campo_actual >= 0:
             campo_actual = self.orden_campos[self.indice_campo_actual]
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_RETURN:
                     if self.campos[campo_actual]:
+                        if self.accion == "agregar_arista" and campo_actual == "peso":
+                            try:
+                                float(self.campos[campo_actual])
+                            except ValueError:
+                                return  # No avanzar si el peso no es válido
                         if campo_actual in self.condiciones and self.campos[campo_actual] in self.condiciones[campo_actual]:
                             nuevos_campos = self.condiciones[campo_actual][self.campos[campo_actual]]
                             for campo in nuevos_campos:
@@ -53,7 +60,11 @@ class Formulario:
                 else:
                     char = evento.unicode
                     if char.isprintable():
-                        self.campos[campo_actual] += char
+                        if self.accion == "agregar_arista" and campo_actual == "peso":
+                            if char.isdigit() or char == ".":
+                                self.campos[campo_actual] += char
+                        else:
+                            self.campos[campo_actual] += char
         # Manejar botones
         for boton in self.botones:
             boton.manejar_evento(evento)
@@ -61,7 +72,7 @@ class Formulario:
     def dibujar(self):
         pygame.draw.rect(self.screen, (200, 200, 200), self.form_rect)
         fuente = pygame.font.Font(None, 30)
-        if self.accion == "agregar":
+        if self.accion in ["agregar", "agregar_arista"]:
             instruccion = "Ingrese los datos solicitados"
             superficie_inst = fuente.render(instruccion, True, (0, 0, 0))
             self.screen.blit(superficie_inst, (self.form_rect.x + 20, self.form_rect.y + 20))
@@ -75,8 +86,8 @@ class Formulario:
                     texto = f"{campo}: "
                 superficie = fuente.render(texto, True, (0, 0, 0))
                 self.screen.blit(superficie, (x, y + i * 30))
-        elif self.accion == "eliminar" or self.accion == "error":
-            mensaje = self.mensaje_confirmacion or "¿Está seguro de eliminar este nodo?"
+        elif self.accion in ["eliminar", "eliminar_arista", "error"]:
+            mensaje = self.mensaje_confirmacion or "¿Está seguro?"
             superficie_mensaje = fuente.render(mensaje, True, (0, 0, 0))
             self.screen.blit(superficie_mensaje, (self.form_rect.x + 20, self.form_rect.y + 20))
         for boton in self.botones:

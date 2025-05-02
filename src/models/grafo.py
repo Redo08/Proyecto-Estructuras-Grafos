@@ -23,6 +23,28 @@ class Grafo:
         if id_origen in self.nodos and id_destino in self.nodos:
             arista = Arista(id_destino, peso)
             self.nodos[id_origen].vecinos[id_destino] = arista
+    
+    def eliminar_arista(self, id_origen, id_destino):
+        if id_origen in self.nodos and id_destino in self.nodos:
+            if id_destino in self.nodos[id_origen].vecinos:
+                del self.nodos[id_origen].vecinos[id_destino]
+
+    def validar_agregar_arista(self, id_origen, id_destino):
+        if len(self.nodos) < 2:
+            return False, "Se necesitan al menos dos nodos para agregar una arista."
+        if id_origen not in self.nodos or id_destino not in self.nodos:
+            return False, "Uno o ambos nodos no existen."
+        if id_origen == id_destino:
+            return False, "No se pueden agregar aristas de un nodo a sí mismo."
+        if id_destino in self.nodos[id_origen].vecinos:
+            return False, "Ya existe una arista entre estos nodos."
+        return True, None
+    def validar_eliminar_arista(self, id_origen, id_destino):
+        if id_origen not in self.nodos or id_destino not in self.nodos:
+            return False, "Uno o ambos nodos no existen."
+        if id_destino not in self.nodos[id_origen].vecinos:
+            return False, "No existe una arista entre estos nodos."
+        return True, None         
     def eliminar_nodo(self, id_nodo):
         if id_nodo in self.nodos:
             # Eliminar aristas que salen del nodo y las que llegan a él
