@@ -13,11 +13,14 @@ class InterfazGrafo:
     def calcular_posiciones(self):
         """Calcula posiciones automaticas de los nodos"""
         G = nx.Graph()
+        
         for id_nodo, nodo in self.grafo.nodos.items():
             print(id_nodo, f"nodo:  {nodo}")
             for id_destino, arista in nodo.vecinos.items():
                 print(id_destino, f"arista: {arista}")
                 G.add_edge(nodo.id, id_destino, weight=arista.peso)
+        if len(G.nodes) == 0:
+            return {}
 
         #Algoritmo que simula conexión entre nodos, el seed=42 asegura que siempre este igual, y ahi también se pone la escala el tamaño
         pos = nx.spring_layout(G, seed=42, scale=1.0)

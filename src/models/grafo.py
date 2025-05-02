@@ -57,8 +57,8 @@ class Grafo:
     def validar_eliminacion_nodo(self, nodo_id):
         if nodo_id not in self.nodos:
             return False, "Nodo no existe"
-        if len(self.nodos) == 1:
-            return False, "No se puede eliminar el único nodo"
+        ##if len(self.nodos) == 1:
+            ##return False, "No se puede eliminar el único nodo"
         return True, None
     def cargar_json(self, datos):
         #Agregar nodos
