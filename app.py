@@ -10,7 +10,7 @@ ANCHO, ALTO = 1300, 650
 # Instancias
 helpers = Helpers()
 grafo = Grafo()
-data = helpers.cargar_texto_manual("archivos/pordefecto.json")
+data = helpers.cargar_texto_manual("archivos/MapaxVacio.json")
 grafo.cargar_json(data)
 
 visualizador = Visualizador(grafo, ANCHO, ALTO)
