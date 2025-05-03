@@ -76,8 +76,8 @@ class Grafo:
     def validar_eliminacion_nodo(self, nodo_id):
         if nodo_id not in self.nodos:
             return False, "Nodo no existe"
-        if len(self.nodos) == 1:
-            return False, "No se puede eliminar el único nodo"
+        ##if len(self.nodos) == 1:
+            ##return False, "No se puede eliminar el único nodo"
         return True, None
     def cargar_json(self, datos):
         if datos is not None:
@@ -137,14 +137,8 @@ class Grafo:
                 })
             
         # Guardar aristas
-        aristas_guardadas = set()
         for origen_id, nodo in self.nodos.items():
             for destino_id, arista in nodo.vecinos.items():
-                clave = tuple(sorted([origen_id, destino_id]))
-                if clave in aristas_guardadas:
-                    continue
-                aristas_guardadas.add(clave)
-
                 data["aristas"].append({
                     "origen": origen_id,
                     "destino": destino_id,
