@@ -1,12 +1,10 @@
 from src.models.arista import Arista
 from src.models.nodo import Nodo
+from src.models.recorridos import Recorridos
 class Grafo:
     def __init__(self):
         self.nodos = {} #id -> Nodo
-        
-    def agregar_nodo(self, id, nombre=None, descripcion=None, riesgo=None, tipo=0, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
-        if id not in self.nodos:
-            self.nodos[id] = Nodo(id, nombre, descripcion, riesgo, tipo, accidentalidad, popularidad, dificultad, posicion)
+        self.recorridos = Recorridos(self,None) #Recorridos del grafo
 
     def proximo_id(self, tipo, nombre=""):
         max_id = 0
@@ -37,6 +35,77 @@ class Grafo:
 
         return f"{prefix}{max_id + 1}" #Retornamos el prefijo más el siguietne numreo
     
+        
+    def agregar_nodo(self, id, nombre=None, descripcion=None, riesgo=None, tipo=0, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
+        if id not in self.nodos:
+            self.nodos[id] = Nodo(id, nombre, descripcion, riesgo, tipo, accidentalidad, popularidad, dificultad, posicion)
+
+    def eliminar_nodo(self, id_nodo):
+        if id_nodo in self.nodos:
+            # Eliminar aristas que salen del nodo y las que llegan a él
+            for vecino in list(self.nodos[id_nodo].vecinos.keys()):
+                self.eliminar_arista(id_nodo, vecino)
+            # Eliminar todas las aristas que terminen en el nodo a eliminar
+            for otro_nodo in list(self.nodos.keys()):
+                if otro_nodo != id_nodo and id_nodo in self.nodos[otro_nodo].vecinos:
+                    self.eliminar_arista(otro_nodo, id_nodo)
+            # Eliminar el nodo
+            del self.nodos[id_nodo]
+
+    def validar_eliminacion_nodo(self, nodo_id):
+        if nodo_id not in self.nodos:
+            return False, "Nodo no existe"
+        ##if len(self.nodos) == 1:
+            ##return False, "No se puede eliminar el único nodo"
+        return True, None
+
+    def validar_nodo(self, id_nodo):
+        nodo = self.nodos.get(id_nodo)
+        if not nodo:
+            return False, "Nodo no existe"
+        
+        if nodo.tipo == 1:  # Punto de control (amarillo)
+            # Restricción 1: Al menos 2 vecinos distintos (entrantes o salientes)
+            vecinos_salientes = set(nodo.vecinos.keys())  # Nodos a los que apunta
+            vecinos_entrantes = set()
+            for otro_nodo in self.nodos.values():
+                if id_nodo in otro_nodo.vecinos:
+                    vecinos_entrantes.add(otro_nodo.id)
+            vecinos_totales = vecinos_salientes.union(vecinos_entrantes)
+            if len(vecinos_totales) < 2:
+                return False, f"El nodo {id_nodo} debe tener al menos 2 vecinos distintos"
+            
+            # Restricción 2: Verificar conectividad indirecta a nodos tipo 0
+            self.recorridos = Recorridos(self, None)  # Reiniciar recorridos para reflejar cambios
+            distancias, _ = self.recorridos.menor_distancia()
+            tiene_conexion_indirecta = False
+            for otro_nodo in self.nodos:
+                if self.nodos[otro_nodo].tipo == 0 and distancias[id_nodo][otro_nodo] < float('inf'):
+                    tiene_conexion_indirecta = True
+                    break
+            
+            if not tiene_conexion_indirecta:
+                return False, f"El nodo {id_nodo} no tiene conexión directa o indirecta a ningún nodo tipo 0"
+            
+            return True, None
+        
+        return True, None  # Nodos tipo 0 (rojos) siempre son válidos
+
+    
+    def validar_todos_con_boton(self):
+        """Valida todos los nodos tipo 1 y elimina los que no cumplen al presionar un botón."""
+        nodos_a_eliminar = []
+        for id_nodo in self.nodos:
+            if self.nodos[id_nodo].tipo == 1:
+                valido, mensaje = self.validar_nodo(id_nodo)
+                if not valido:
+                    print(f"Error: {mensaje}. Marcando nodo {id_nodo} para eliminación.")
+                    nodos_a_eliminar.append(id_nodo)
+        for id_nodo in nodos_a_eliminar:
+            self.eliminar_nodo(id_nodo)
+        if not nodos_a_eliminar:
+            print("Todos los nodos tipo 1 cumplen las restricciones.")
+
     def agregar_arista(self, id_origen, id_destino, peso=1):
         if id_origen in self.nodos and id_destino in self.nodos:
             arista = Arista(id_destino, peso)
@@ -57,6 +126,7 @@ class Grafo:
         if id_destino in self.nodos[id_origen].vecinos:
             return False, "Ya existe una arista entre estos nodos."
         return True, None
+    
     def validar_eliminar_arista(self, id_origen, id_destino):
         if id_origen not in self.nodos or id_destino not in self.nodos:
             return False, "Uno o ambos nodos no existen."
@@ -64,21 +134,7 @@ class Grafo:
             return False, "No existe una arista entre estos nodos."
         return True, None      
        
-    def eliminar_nodo(self, id_nodo):
-        if id_nodo in self.nodos:
-            # Eliminar aristas que salen del nodo y las que llegan a él
-            for vecino in list(self.nodos[id_nodo].vecinos.keys()):
-                if vecino in self.nodos:
-                    self.nodos[vecino].vecinos.pop(id_nodo, None)
-            # Eliminar el nodo
-            del self.nodos[id_nodo]
-
-    def validar_eliminacion_nodo(self, nodo_id):
-        if nodo_id not in self.nodos:
-            return False, "Nodo no existe"
-        ##if len(self.nodos) == 1:
-            ##return False, "No se puede eliminar el único nodo"
-        return True, None
+    
     def cargar_json(self, datos):
         if datos is not None:
             #Agregar nodos
