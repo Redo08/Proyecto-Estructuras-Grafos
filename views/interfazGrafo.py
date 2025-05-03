@@ -8,6 +8,9 @@ class InterfazGrafo:
         self.grafo = grafo
         self.area_mapa = area_mapa
         self.posiciones_nodos = self.calcular_posiciones() 
+        self.aristas_resaltadas = []  # Lista de (id_origen, id_destino, color, grosor)
+        self.nodos_resaltados = []  # Lista de (id_nodo, color, grosor)
+        
         
         
     def calcular_posiciones(self):
@@ -15,8 +18,48 @@ class InterfazGrafo:
         for id_nodo, nodo in self.grafo.nodos.items():
             if nodo.posicion:  # Usar posición definida si existe
                 posiciones[id_nodo] = nodo.posicion
-
         return posiciones
+
+    def seleccionar_nodo(self, event):
+        """Selecciona un nodo basado en un evento de Pygame."""
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if self.area_mapa.collidepoint(event.pos):
+                nodo_id = self.obtener_nodo_seleccionado(event.pos)
+                if nodo_id:
+                    print(f"Nodo seleccionado: {nodo_id}")
+                    return nodo_id
+                else:
+                    print("No se seleccionó un nodo válido.")
+            else:
+                print(f"Clic fuera del area_mapa:")
+        return None
+    
+    def resaltar_arista(self, id_origen, id_destino, color=(255,255,0), grosor=4):
+        if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
+            # Evitar duplicados
+            self.aristas_resaltadas = [arista for arista in self.aristas_resaltadas
+                                      if not (arista[0] == id_origen and arista[1] == id_destino)]
+            self.aristas_resaltadas.append((id_origen, id_destino, color, grosor))
+            print(f"Arista resaltada: {id_origen} -> {id_destino}, color: {color}, grosor: {grosor}")
+        else:
+            print(f"No se puede resaltar arista: Posiciones no disponibles para {id_origen}, {id_destino}")
+
+    def resaltar_nodo(self, id_nodo, color=(0, 255, 0), grosor=2):
+        """Añade un nodo a la lista de resaltados."""
+        if id_nodo in self.posiciones_nodos:
+            # Evitar duplicados
+            self.nodos_resaltados = [nodo for nodo in self.nodos_resaltados
+                                    if nodo[0] != id_nodo]
+            self.nodos_resaltados.append((id_nodo, color, grosor))
+            print(f"Nodo resaltado: {id_nodo}, color: {color}, grosor: {grosor}")
+        else:
+            print(f"No se puede resaltar nodo: Posición no disponible para {id_nodo}")
+
+    def limpiar_resaltado(self):
+        """Limpia todos los resaltados de aristas y nodos."""
+        print(f"Resaltado limpiado. Aristas anteriores: {self.aristas_resaltadas}, Nodos anteriores: {self.nodos_resaltados}")
+        self.aristas_resaltadas = []
+        self.nodos_resaltados = []
 
     def dibujar_nodos(self):
         for nodo_id, pos in self.posiciones_nodos.items():
@@ -45,7 +88,14 @@ class InterfazGrafo:
             
             #Poner el texto en el centro del nodo
             self.screen.blit(texto_nodo, texto_rect)
-    
+
+    def dibujar_nodos_resaltados(self):
+        """Dibuja los nodos resaltados."""
+        for id_nodo, color, grosor in self.nodos_resaltados:
+            if id_nodo in self.posiciones_nodos:
+                pos = self.posiciones_nodos[id_nodo]
+                pygame.draw.circle(self.screen, color, pos, 18, grosor)
+               
     
     def dibujar_aristas(self):
         """Dibuja las aristas entre los nodos, evitando la superposición de dos aristas."""
@@ -61,22 +111,24 @@ class InterfazGrafo:
 
                 #Si existe doble conexión
                 nodo_destino = self.grafo.nodos.get(id_destino)
-                if nodo_destino:
-                    #Verificar si el nodo destino tiene una arista que apunta al nodo actual
-                    vuelta = nodo_destino.vecinos.get(nodo.id)
-
-                if vuelta is not None:
-                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)  # Superior y a la izquierda
-                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta.peso)  # Inferior y a la derecha
-                        
+                if nodo_destino and nodo.id in nodo_destino.vecinos:
+                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)
+                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12), (inicio[0] + 12, inicio[1] + 12), nodo_destino.vecinos[nodo.id].peso)
                     dibujadas.add((nodo.id, id_destino))
                     dibujadas.add((id_destino, nodo.id))
                 else:
-                    #Solo una dirección
                     self.dibujar_arista_con_flecha(inicio, fin, arista.peso)
                     dibujadas.add((nodo.id, id_destino))
-                    
+
+    def dibujar_aristas_resaltadas(self):
+        """Dibuja las aristas resaltadas."""
+        for id_origen, id_destino, color, grosor in self.aristas_resaltadas:
+            if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
+                inicio = self.posiciones_nodos[id_origen]
+                fin = self.posiciones_nodos[id_destino]
+                pygame.draw.line(self.screen, color, inicio, fin, grosor)
                 
+
     def dibujar_arista_con_flecha(self, inicio, fin, peso, color=(0,0,0)):
         #Dibuja la linea
         pygame.draw.line(self.screen, color, inicio, fin, 2)
@@ -99,11 +151,6 @@ class InterfazGrafo:
         medio = ((inicio[0] + fin[0]) // 2, (inicio[1] + fin[1]) // 2)
         self.screen.blit(texto_peso, medio)
 
-    def resaltar_arista(self, id_origen, id_destino):
-        if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
-            inicio = self.posiciones_nodos[id_origen]
-            fin = self.posiciones_nodos[id_origen]
-            pygame.draw.line(self.screen, (0, 255, 0), inicio, fin, 4)  # Línea verde más gruesa   
         
     def dibujar_flecha(self, fin, inicio, color=(0,0,0)):
         dx = fin[0] - inicio[0]
@@ -122,6 +169,8 @@ class InterfazGrafo:
         """Dibuja el grafo completo."""
         self.dibujar_aristas()
         self.dibujar_nodos()
+        self.dibujar_aristas_resaltadas()
+        self.dibujar_nodos_resaltados()
     
     def obtener_nodo_seleccionado(self, mouse_pos):
         for nodo_id, pos in self.posiciones_nodos.items():
