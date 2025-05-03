@@ -71,17 +71,27 @@ class InterfazGrafo:
         for id_nodo, nodo in self.grafo.nodos.items():
             for id_destino, arista in nodo.vecinos.items():
                 if (id_nodo, id_destino) in dibujadas:
-                    continue 
+                    continue # Ya esta
                 
                 inicio = self.posiciones_nodos[id_nodo]
                 fin = self.posiciones_nodos[id_destino]
 
-                if id_destino in self.grafo.nodos[id_nodo].vecinos and id_nodo in self.grafo.nodos[id_destino].vecinos:
-                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)
-                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12), (inicio[0] + 12, inicio[1] + 12), self.grafo.nodos[id_destino].vecinos[id_nodo].peso)
+                #Si existe doble conexión
+                nodo_destino = self.grafo.nodos.get(id_destino)
+                if nodo_destino:
+                    #Verificar si el nodo destino tiene una arista que apunta al nodo actual
+                    vuelta = nodo_destino.vecinos.get(nodo.id)
+
+                if vuelta is not None:
+                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)  # Superior y a la izquierda
+                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta.peso)  # Inferior y a la derecha
+                        
+                    dibujadas.add((nodo.id, id_destino))
+                    dibujadas.add((id_destino, nodo.id))
                 else:
+                    #Solo una dirección
                     self.dibujar_arista_con_flecha(inicio, fin, arista.peso)
-                dibujadas.add((id_nodo, id_destino))
+                    dibujadas.add((nodo.id,id_destino))
 
     def dibujar_aristas_resaltadas(self):
         """Dibuja las aristas resaltadas."""
