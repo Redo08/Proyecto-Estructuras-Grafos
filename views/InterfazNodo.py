@@ -23,12 +23,14 @@ class InterfazNodo:
         self.campos_iniciales = ["tipo"] if self.modo == "agregar" else None
 
     def manejar_evento(self, event):
+        #Si es agregar
         if self.esperando_posicion:
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 if self.area_mapa.collidepoint(event.pos):
                     self.posicion_nuevo_nodo = event.pos
                     self.esperando_posicion = False
                     self.formulario = Formulario(self.screen, self.campos_iniciales, self.condiciones, self.area_mapa)
+        #Si es eliminar
         elif self.esperando_seleccion:
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 if self.area_mapa.collidepoint(event.pos):
@@ -42,6 +44,7 @@ class InterfazNodo:
                         self.formulario = Formulario(self.screen, None, None, self.area_mapa, mensaje, accion="eliminar")
                     else:
                         print("No se seleccionó ningún nodo.")
+        #Si ya le dio la posición del nodo:
         elif self.formulario:
             self.formulario.manejar_evento(event)
             if self.formulario.fue_cancelado():
@@ -66,11 +69,12 @@ class InterfazNodo:
                 self.on_finish()
 
     def procesar_nodo(self, data, posicion):
-        nuevo_id = self.grafo.proximo_id()
         if data['tipo'] == '0':
-            nombre = data['nombre'].strip() or "SinNombre"
+            nombre = data['nombre'].strip() or "Indefinido"
+            nuevo_id = self.grafo.proximo_id(0, nombre)
             self.grafo.agregar_nodo(nuevo_id, nombre, data['descripcion'], None, 0, None, None, None, posicion)
         elif data['tipo'] == '1':
+            nuevo_id = self.grafo.proximo_id(1)
             riesgo = str(data['riesgo']).strip() or "Desconocido"
             accidentalidad = str(data['accidentalidad']).strip() or "Desconocido"
             popularidad = str(data['popularidad']).strip() or "Desconocido"

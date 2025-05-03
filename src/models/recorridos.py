@@ -1,3 +1,4 @@
+import heapq
 class Recorridos:
     def __init__(self, grafo, usuario):
         self.grafo = grafo
@@ -61,6 +62,40 @@ class Recorridos:
             camino.append(inicio)
             
         return camino
+    
+    def dijkstra_por_riesgo(self, inicio, fin):
+        visitados = set()
+        heap = [(0, 0, inicio, [])] #Suma riesgo, cantidad_puntos_control, nodo_actual, camino
+        
+        while heap:
+            riesgo_acum, puntos_control, actual, camino = heapq.heappop(heap)
+        
+            if actual in visitados:
+                continue
+            
+            camino = camino + [actual]
+            visitados.add(actual)
+            
+            # Si termina el recorrido
+            if actual == fin:
+                #Calcular riesgo promedio
+                promedio = riesgo_acum / puntos_control if puntos_control > 0 else 0
+                nodos_control = [n for n in camino if self.grafo.nodos[n].tipo == 1]
+                return camino, promedio, nodos_control
+            
+            for vecino_id, arista in self.grafo.nodos[actual].vecinos.items():
+                if vecino_id not in visitados:
+                    vecino = self.grafo.nodos[vecino_id]
+                    nuevo_riesgo = riesgo_acum
+                    nuevo_pc = puntos_control
+                    
+                    if vecino.tipo == 1: #Si es un punto de control suammos su riesgo
+                        nuevo_riesgo += int(vecino.riesgo)
+                        nuevo_pc +=1
+                        
+                    heapq.heappush(heap, (nuevo_riesgo, nuevo_pc, vecino_id, camino))
+                    
+        return [], float('inf'), []
     
 ### ==== Rutas básicas ====
     def camino_menor_distancia(self, inicio, fin):
@@ -127,6 +162,70 @@ class Recorridos:
                             
         return mejor_camino, mejor_distancia, mejor_penalizacion, mejor_nodos_control
 
+    def camino_menos_peligroso(self):
+        """Encuentra el camino menos peligroso usando Dijkstra sumando riesgo de los puntos de control
+        
+        Returns:
+            tuple: (camino(list), promedio_riesgo (float), nodos_control (list))
+        """
+        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        mejor_camino = []
+        mejor_promedio_riesgo = float('inf')
+        mejor_nodos_control = []
+        
+        for inicio in nodos_validos:
+            for fin in nodos_validos:
+                if inicio != fin:
+                    camino, riesgo_promedio, nodos_control, = self.dijkstra_por_riesgo(inicio, fin)
+                    if camino and riesgo_promedio < mejor_promedio_riesgo:
+                        mejor_camino = camino
+                        mejor_promedio_riesgo = riesgo_promedio
+                        mejor_nodos_control = nodos_control
+                        
+        return mejor_camino, mejor_promedio_riesgo, mejor_nodos_control
+    
+    def camino_por_distancia_riesgo_dificultad_deseada(self):
+        """
+        Da el camino que esta más cerca de la distancia deseada por el usuario, y que no excede su
+        riesgo ni dificultad
+
+        Returns:
+            tuple: (camino (list), distancia_total (float), diferencia (float), nodos_control (list))
+        """
+        
+        distancia_deseada = self.usuario.distancia_max
+        dificultad_max = self.usuario.dificultad_max
+        riesgo_max = self.usuario.riesgo_max
+        
+        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        mejor_camino = []
+        mejor_distancia = float('inf')
+        mejor_diferencia = float('inf')
+        mejor_nodos_control = []
+        
+        for inicio in nodos_validos:
+            for fin in nodos_validos:
+                if inicio != fin:
+                    camino, distancia, nodos_control = self.camino_menor_distancia(inicio, fin)
+                    if camino:
+                        # Validar si todos los nodos cumplen con los requisitos de riesgo y dificultad
+                        valido = True
+                        for nodo_id in nodos_control:
+                            nodo = self.grafo.nodos[nodo_id]
+                            if int(nodo.riesgo) > riesgo_max or int(nodo.dificultad) > dificultad_max:
+                                valido = False
+                                break
+                            
+                        if valido:
+                            diferencia = abs(distancia_deseada - distancia)
+                            if diferencia < mejor_diferencia:
+                                mejor_camino = camino
+                                mejor_distancia = distancia
+                                mejor_diferencia = diferencia
+                                mejor_nodos_control = nodos_control
+                                
+        return mejor_camino, mejor_distancia, mejor_diferencia, mejor_nodos_control
+    
 ### ==== Evaluación de experiencia ====
     def evaluar_camino(self, camino):
         criterios = self.valores_segun_experiencia()

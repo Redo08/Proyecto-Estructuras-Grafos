@@ -130,8 +130,9 @@ class Visualizador:
                 print("Dificultad:", self.usuario.dificultad_max)
                 print("Distancia:", self.usuario.distancia_max)
                 recorridos = Recorridos(self.grafo, self.usuario)
-                print(recorridos.camino_menor_distancia('C', 'M'))
-                print(recorridos.camino_mas_apropiado_experiencia())
+                print("Mejor recorrido respecto exp:",recorridos.camino_mas_apropiado_experiencia())
+                print("Recorrido menos riesgo: ", recorridos.camino_menos_peligroso())
+                print("Mejor recorrido segun el usuario:", recorridos.camino_por_distancia_riesgo_dificultad_deseada())
 
         
         self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)

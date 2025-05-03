@@ -27,16 +27,17 @@ class InterfazGrafo:
             pygame.draw.circle(self.screen, (255, 0, 0), pos, 15)
             
             # Determinar la etiqueta
-            if nodo.tipo == 0 and nodo.nombre:  # Punto de Interés con nombre
-                etiqueta = nodo.nombre[:2] if len(nodo.nombre) >= 2 else nodo.nombre
-            elif nodo.tipo == 1:  # Punto de Control con riesgo
+            if nodo.tipo == 0 and nodo.id:  # Punto de Interés con id
+                etiqueta = nodo.id 
+            elif nodo.tipo == 1:  # Punto de Control 
                 if nodo_id is not None:
-                    # Usar el valor de riesgo como etiqueta
+                    # Usar el valor de id como etiqueta
                     etiqueta = str(nodo_id)
                 else:
-                    etiqueta = "CP"  # Valor predeterminado si riesgo es None
+                    etiqueta = "CP"  # Valor predeterminado si id es None
             else:
-                etiqueta = "CP"  # Valor predeterminado para nodos sin nombre o riesgo
+                etiqueta = "CP"  # Valor predeterminado para nodos sin nombre o id
+                
             #Crear el texto del nodo
             texto_nodo = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
             

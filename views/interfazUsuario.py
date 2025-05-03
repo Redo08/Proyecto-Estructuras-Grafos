@@ -1,6 +1,6 @@
 from src.models.usuario import Usuario
 from views.Formulario import Formulario
-import pygame
+
 class InterfazUsuario:
     def __init__(self, screen, area_mapa, on_finish):
         self.screen = screen

@@ -1,0 +1,158 @@
+{
+    "nodos": [
+        {
+            "id": "CA1",
+            "nombre": "Cable Plaza",
+            "descripcion": "Centro comercial grande",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                497,
+                495
+            ]
+        },
+        {
+            "id": "MI1",
+            "nombre": "Milan",
+            "descripcion": "Barrio pupi, muchos restaurantes",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                165,
+                593
+            ]
+        },
+        {
+            "id": "CH1",
+            "nombre": "Chipre",
+            "descripcion": "Mirador de chipre, zona turistica",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                623,
+                106
+            ]
+        },
+        {
+            "id": "PA1",
+            "nombre": "Parque Caldas",
+            "descripcion": "Centro comercial del centro",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                377,
+                182
+            ]
+        },
+        {
+            "id": "PC1",
+            "nombre": null,
+            "descripcion": null,
+            "riesgo": "2",
+            "tipo": 1,
+            "accidentalidad": "2",
+            "popularidad": "4",
+            "dificultad": "2",
+            "posicion": [
+                317,
+                552
+            ]
+        },
+        {
+            "id": "PC2",
+            "nombre": null,
+            "descripcion": null,
+            "riesgo": "3",
+            "tipo": 1,
+            "accidentalidad": "3",
+            "popularidad": "4",
+            "dificultad": "2",
+            "posicion": [
+                438,
+                335
+            ]
+        },
+        {
+            "id": "PC3",
+            "nombre": null,
+            "descripcion": null,
+            "riesgo": "2",
+            "tipo": 1,
+            "accidentalidad": "3",
+            "popularidad": "3",
+            "dificultad": "4",
+            "posicion": [
+                537,
+                122
+            ]
+        },
+        {
+            "id": "PC4",
+            "nombre": null,
+            "descripcion": null,
+            "riesgo": "3",
+            "tipo": 1,
+            "accidentalidad": "3",
+            "popularidad": "3",
+            "dificultad": "3",
+            "posicion": [
+                633,
+                312
+            ]
+        }
+    ],
+    "aristas": [
+        {
+            "origen": "CA1",
+            "destino": "PC1",
+            "peso": 5
+        },
+        {
+            "origen": "CA1",
+            "destino": "PC2",
+            "peso": 7
+        },
+        {
+            "origen": "CA1",
+            "destino": "PC4",
+            "peso": 7
+        },
+        {
+            "origen": "MI1",
+            "destino": "PC1",
+            "peso": 6
+        },
+        {
+            "origen": "CH1",
+            "destino": "PC4",
+            "peso": 8
+        },
+        {
+            "origen": "PA1",
+            "destino": "PC3",
+            "peso": 6
+        },
+        {
+            "origen": "PC2",
+            "destino": "PA1",
+            "peso": 6
+        },
+        {
+            "origen": "PC3",
+            "destino": "CH1",
+            "peso": 4
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 import pygame
+from src.helpers import Helpers
 from views.Formulario import Formulario
 
 class InterfazArista:
@@ -45,8 +46,8 @@ class InterfazArista:
                         elif self.modo == "eliminar_arista":
                             nodo1 = self.grafo.nodos[self.primer_nodo]
                             nodo2 = self.grafo.nodos[self.segundo_nodo]
-                            nombre1 = nodo1.nombre or "CP" if nodo1.tipo == 0 else f"CP (Riesgo: {nodo1.riesgo})"
-                            nombre2 = nodo2.nombre or "CP" if nodo2.tipo == 0 else f"CP (Riesgo: {nodo2.riesgo})"
+                            nombre1 = nodo1.nombre or "CP" if nodo1.tipo == 0 else f"CP (Id: {nodo1.id})"
+                            nombre2 = nodo2.nombre or "CP" if nodo2.tipo == 0 else f"CP (Id: {nodo2.id})"
                             mensaje = f"¿Eliminar arista entre {nombre1} y {nombre2}?"
                             self.formulario = Formulario(
                                 self.screen, None, None, self.area_mapa, mensaje,
@@ -62,7 +63,7 @@ class InterfazArista:
             elif self.formulario.esta_listo():
                 if self.modo == "agregar_arista":
                     try:
-                        peso = float(self.formulario.campos["peso"])
+                        peso = Helpers.quitar_decimales_si_no_hay(float(self.formulario.campos["peso"]))
                         if peso <= 0:
                             self.formulario = Formulario(
                                 self.screen, None, None, self.area_mapa,
