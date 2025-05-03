@@ -23,6 +23,7 @@ class InterfazNodo:
         self.campos_iniciales = ["tipo"] if self.modo == "agregar" else None
 
     def manejar_evento(self, event):
+        #Si es agregar
         if self.esperando_posicion:
             self._manejar_seleccion_posicion(event)
         elif self.esperando_seleccion:
@@ -83,11 +84,12 @@ class InterfazNodo:
             print(f"Excepción al eliminar nodo: {str(e)}")
 
     def procesar_nodo(self, data, posicion):
-        nuevo_id = self.grafo.proximo_id()
         if data['tipo'] == '0':
-            nombre = data['nombre'].strip() or "SinNombre"
+            nombre = data['nombre'].strip() or "Indefinido"
+            nuevo_id = self.grafo.proximo_id(0, nombre)
             self.grafo.agregar_nodo(nuevo_id, nombre, data['descripcion'], None, 0, None, None, None, posicion)
         elif data['tipo'] == '1':
+            nuevo_id = self.grafo.proximo_id(1)
             riesgo = str(data['riesgo']).strip() or "Desconocido"
             accidentalidad = str(data['accidentalidad']).strip() or "Desconocido"
             popularidad = str(data['popularidad']).strip() or "Desconocido"

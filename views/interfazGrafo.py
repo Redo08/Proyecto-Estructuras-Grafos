@@ -53,7 +53,8 @@ class InterfazGrafo:
         for nodo_id, pos in self.posiciones_nodos.items():
             nodo = self.grafo.nodos[nodo_id]
             pygame.draw.circle(self.screen, (255, 0, 0), pos, 15)
-            etiqueta = nodo.nombre[:2] if nodo.tipo == 0 and nodo.nombre else str(nodo_id) if nodo.tipo == 1 else "CP"
+            
+            etiqueta = nodo.id if nodo.tipo == 0 and nodo.id else str(nodo_id) if nodo.tipo == 1 else "CP"
             texto = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
             self.screen.blit(texto, texto.get_rect(center=pos))
 

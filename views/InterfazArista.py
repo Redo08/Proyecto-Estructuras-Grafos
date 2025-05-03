@@ -1,4 +1,5 @@
 import pygame
+from src.helpers import Helpers
 from views.Formulario import Formulario
 
 class InterfazArista:
@@ -69,7 +70,7 @@ class InterfazArista:
 
     def _procesar_agregar_arista(self):
         try:
-            peso = float(self.formulario.campos["peso"])
+            peso = Helpers.quitar_decimales_si_no_hay(float(self.formulario.campos["peso"]))
             if peso <= 0:
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, "El peso debe ser positivo.", accion="error")
                 return

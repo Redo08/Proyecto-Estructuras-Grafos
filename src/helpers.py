@@ -10,7 +10,6 @@ class Helpers:
             with open(ruta, 'r', encoding='utf-8') as archivo:
                 grafo = json.load(archivo)
                 return grafo
-            
         print("No me entro nada we")
         return None
     
@@ -32,3 +31,10 @@ class Helpers:
         if ruta:
             with open(ruta, 'w', encoding="utf-8") as archivo:
                 json.dump(grafo, archivo, indent=4)    
+
+    def quitar_decimales_si_no_hay(numero):
+        numero_str = str(numero)
+        if numero_str.endswith('.0'):
+            return int(numero)
+        return numero
+        
