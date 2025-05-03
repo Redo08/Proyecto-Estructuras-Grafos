@@ -145,6 +145,16 @@
             "peso": 6
         },
         {
+            "origen": "PC1",
+            "destino": "MI1",
+            "peso": 6
+        },
+        {
+            "origen": "PC1",
+            "destino": "CA1",
+            "peso": 6
+        },
+        {
             "origen": "PC2",
             "destino": "PA1",
             "peso": 6
@@ -153,6 +163,16 @@
             "origen": "PC3",
             "destino": "CH1",
             "peso": 4
+        },
+        {
+            "origen": "PC4",
+            "destino": "CA1",
+            "peso": 8
+        },
+        {
+            "origen": "PC4",
+            "destino": "CH1",
+            "peso": 2
         }
     ]
 }
