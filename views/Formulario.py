@@ -2,7 +2,7 @@ import pygame
 from views.boton import Boton
 
 class Formulario:
-    def __init__(self, screen, campos_iniciales=None, condiciones=None, area_mapa=None, mensaje_confirmacion=None, accion="agregar"):
+    def __init__(self, screen, campos_iniciales=None, condiciones=None, area_mapa=None, mensaje_confirmacion=None, accion="agregar", botones=None):
         self.screen = screen
         self.area_mapa = area_mapa
         self.campos = {campo: "" for campo in (campos_iniciales or [])}  # Manejar None
@@ -15,25 +15,28 @@ class Formulario:
         self.mensaje_confirmacion = mensaje_confirmacion
         self.form_rect = pygame.Rect(area_mapa.x + 100, area_mapa.y + 100, 400, 300)
         # Botones
-        boton_confirmar_texto = "Guardar" if accion in ["agregar", "agregar_arista"] else "Sí"
-        self.botones = [
-            Boton(
-                pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40),
-                boton_confirmar_texto,
-                self.marcar_completo,
-                self.screen,
-                color_fondo=(0, 255, 0),
-                color_texto=(255, 255, 255)
-            ),
-            Boton(
-                pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40),
-                "Cancelar",
-                self.marcar_cancelado,
-                self.screen,
-                color_fondo=(255, 0, 0),
-                color_texto=(255, 255, 255)
-            )
-        ]
+        if botones is None:
+            boton_confirmar_texto = "Guardar" if accion in ["agregar", "agregar_arista"] else "Sí"
+            self.botones = [
+                Boton(
+                    pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40),
+                    boton_confirmar_texto,
+                    self.marcar_completo,
+                    self.screen,
+                    color_fondo=(0, 255, 0),
+                    color_texto=(255, 255, 255)
+                ),
+                Boton(
+                    pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40),
+                    "Cancelar",
+                    self.marcar_cancelado,
+                    self.screen,
+                    color_fondo=(255, 0, 0),
+                    color_texto=(255, 255, 255)
+                 ) 
+            ]
+        else:
+            self.botones = botones
 
     def manejar_evento(self, evento):
         if self.accion in ["agregar", "agregar_arista"] and self.indice_campo_actual >= 0:

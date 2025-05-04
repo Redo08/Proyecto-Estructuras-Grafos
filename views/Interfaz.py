@@ -7,6 +7,7 @@ from views.boton import Boton
 from views.InterfazNodo import InterfazNodo
 from views.interfazUsuario import InterfazUsuario
 from views.InterfazArista import InterfazArista
+from views.interfazRecorridos import InterfazRecorridos
 
 class Visualizador:
     def __init__(self, grafo, ancho, alto):
@@ -37,13 +38,14 @@ class Visualizador:
             Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 110, 150, 40), "Eliminar nodo", self.iniciar_eliminar_nodo, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Recorridos", self.iniciar_recorridos, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 230, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 230, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen)
         ]
         
        
         #Estado
-        self.modo_actual = None  # Modo actual (puede ser "nuevo_nodo" o "editar_nodo")      
+        self.modo_actual = None  # Modo actual (puede ser "nuevo_nodo" o "eliminar_nodo" o "Recorridos")      
         self.running = True
 
     def dibujar(self):
@@ -133,10 +135,16 @@ class Visualizador:
                 print("Mejor recorrido respecto exp:",recorridos.camino_mas_apropiado_experiencia())
                 print("Recorrido menos riesgo: ", recorridos.camino_menos_peligroso())
                 print("Mejor recorrido segun el usuario:", recorridos.camino_por_distancia_riesgo_dificultad_deseada())
-
+                print("Mejor recorrido (El punto 7): ", recorridos.camino_distancia_dificultad_experiencia())
+                print("Distnacias minimas entre este nodo y todos: (CA1)", recorridos.camino_disntacias_minimas_desde_nodo_dado("CA1"))
         
         self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)
     
+    def iniciar_recorridos(self):
+        def on_finish():
+            self.modo_actual = None
+        self.modo_actual = InterfazRecorridos(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, self.usuario, on_finish)
+        
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""
         for event in pygame.event.get():

@@ -226,6 +226,83 @@ class Recorridos:
                                 
         return mejor_camino, mejor_distancia, mejor_diferencia, mejor_nodos_control
     
+    def camino_distancia_dificultad_experiencia(self):
+        """
+        Sugiere una ruta considerando la distancia y la dificultad del usuario deseadas además
+        de poner los otros valores por defecto respecto al nivel de experiencia
+        
+        Returns:
+            tuple : (camino (list), distancia_total (float), penalización_total (int), diferencia_distancia (float), nodos_control (list))
+        """
+        
+        distancia_deseada = self.usuario.distancia_max
+        dificultad_max = self.usuario.dificultad_max
+        criterios = self.valores_segun_experiencia()
+        
+        #Sacamos los nodos iterables (Tipo 0)
+        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        mejor_camino = []
+        mejor_distancia = float('inf')
+        mejor_penalizacion = float('inf')
+        mejor_diferencia = float('inf')
+        mejor_nodos_control = []
+        
+        for inicio in nodos_validos:
+            for fin in nodos_validos:
+                if inicio != fin:
+                    camino, distancia, nodos_control = self.camino_menor_distancia(inicio, fin)
+                    
+                    if camino:
+                        valido = True
+                        penalizaciones = 0
+                        
+                        for nodo_id in nodos_control:
+                            nodo = self.grafo.nodos[nodo_id]
+                            if int(nodo.dificultad) > dificultad_max:
+                                valido = False
+                                break
+                            
+                            if nodo.riesgo not in criterios['riesgo']:
+                                penalizaciones += 1
+                            if nodo.accidentalidad not in criterios['accidentalidad']:
+                                penalizaciones +=1
+                            if nodo.popularidad not in criterios['popularidad']:
+                                penalizaciones +=1
+                            
+                        if valido:
+                            diferencia = abs(distancia_deseada - distancia)
+                            if (penalizaciones < mejor_penalizacion) or \
+                                (penalizaciones == mejor_penalizacion and diferencia < mejor_diferencia):
+                                    mejor_camino = camino
+                                    mejor_distancia = distancia
+                                    mejor_diferencia = diferencia
+                                    mejor_penalizacion = penalizaciones
+                                    mejor_nodos_control = nodos_control
+        
+        return mejor_camino, mejor_distancia, mejor_penalizacion, mejor_diferencia, mejor_nodos_control
+    
+    def camino_disntacias_minimas_desde_nodo_dado(self, nodo_inicio):
+        """
+        Devuelve las distancias minimas dado un nodo, usando floyd-warshall
+
+        Args:
+            nodo_inicio (str): Id nodo inicial
+
+        Returns:
+            dict: {nodo_destino: (distancia, camino)}
+        """
+        resultados = {}
+        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        
+        for nodo in nodos_validos:
+            if nodo != nodo_inicio:
+                distancia = self.distancias[nodo_inicio][nodo]
+                camino = self.reconstruccion_camino(nodo_inicio, nodo, self.caminos)
+                resultados[nodo] = (distancia, camino)
+                
+        return resultados
+    
+    
 ### ==== Evaluación de experiencia ====
     def evaluar_camino(self, camino):
         criterios = self.valores_segun_experiencia()
