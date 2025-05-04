@@ -97,6 +97,8 @@ class Recorridos:
                     
         return [], float('inf'), []
     
+    def recalcular_usuario(self, usuario):
+        self.usuario = usuario
 ### ==== Rutas básicas ====
     def camino_menor_distancia(self, inicio, fin):
         """

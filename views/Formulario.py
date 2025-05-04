@@ -11,7 +11,7 @@ class Formulario:
         self.indice_campo_actual = 0 if campos_iniciales else -1  # -1 para eliminación/error
         self.completo = False
         self.cancelado = False
-        self.accion = accion  # "agregar", "eliminar", "agregar_arista", "eliminar_arista", "error"
+        self.accion = accion  # "agregar", "eliminar", "agregar_arista", "eliminar_arista", "error", "recorridos"
         self.mensaje_confirmacion = mensaje_confirmacion
         self.form_rect = pygame.Rect(area_mapa.x + 100, area_mapa.y + 100, 400, 300)
         # Botones
@@ -36,7 +36,7 @@ class Formulario:
                  ) 
             ]
         else:
-            self.botones = botones
+            self.botones = botones #Botones que voy a enviar por InterfazRecorridos
 
     def manejar_evento(self, evento):
         if self.accion in ["agregar", "agregar_arista"] and self.indice_campo_actual >= 0:
@@ -93,6 +93,12 @@ class Formulario:
             mensaje = self.mensaje_confirmacion or "¿Está seguro?"
             superficie_mensaje = fuente.render(mensaje, True, (0, 0, 0))
             self.screen.blit(superficie_mensaje, (self.form_rect.x + 20, self.form_rect.y + 20))
+            
+        elif self.accion == "recorridos":
+            instruccion = "Seleccione un tipo de recorrido"
+            superficie_inst = fuente.render(instruccion, True, (0,0,0))
+            self.screen.blit(superficie_inst, (self.form_rect.x + 20, self.form_rect.y + 20))
+            
         for boton in self.botones:
             boton.dibujar()
 

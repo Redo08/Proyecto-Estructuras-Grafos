@@ -2,13 +2,16 @@ from src.models.usuario import Usuario
 from views.Formulario import Formulario
 
 class InterfazUsuario:
-    def __init__(self, screen, area_mapa, on_finish):
+    def __init__(self, screen, area_mapa, on_finish, campos=None ):
         self.screen = screen
         self.area_mapa = area_mapa
         self.on_finish = on_finish
-        self.formulario = self.iniciar_formulario()
+        self.olvidar_validacion = False
+        if campos:
+            self.olvidar_validacion = True
+        self.formulario = self.iniciar_formulario(campos)
         
-    def iniciar_formulario(self):
+    def iniciar_formulario(self, campos=None):
         campos = [
             "Nombre",
             "Nivel de experiencia (1,3)",
@@ -16,7 +19,7 @@ class InterfazUsuario:
             "Riesgo máximo (1,5)",
             "Accidentalidad máxima (1,5)",
             "Dificultad máxima (1,5)"
-        ]
+        ] if campos is None else campos
         formulario = Formulario(self.screen, campos, area_mapa=self.area_mapa)
         return formulario
     
@@ -26,15 +29,15 @@ class InterfazUsuario:
         #Verificar si ya se completó o canceló
         if self.formulario.esta_listo():
             datos = self.formulario.campos
-            if self.verificacion(datos):
+            if self.verificacion(datos) or self.olvidar_validacion:
                 try:
                     usuario = Usuario(
-                        nombre = datos["Nombre"],
-                        experiencia = int(datos["Nivel de experiencia (1,3)"]),
-                        distancia_max = int(datos["Distancia máxima"]),
-                        riesgo_max = int(datos["Riesgo máximo (1,5)"]),
-                        accidentalidad_max = int(datos["Accidentalidad máxima (1,5)"]),
-                        dificultad_max = int(datos["Dificultad máxima (1,5)"])
+                        nombre = datos["Nombre"] if datos["Nombre"] is not None else "",
+                        experiencia = int(datos["Nivel de experiencia (1,3)"]) if datos["Nivel de experiencia (1,3)"] is not None else 1,
+                        distancia_max = int(datos["Distancia máxima"]) if datos["Distancia máxima"] else None,
+                        riesgo_max = int(datos["Riesgo máximo (1,5)"]) if datos["Riesgo máximo (1,5)"] else None,
+                        accidentalidad_max = int(datos["Accidentalidad máxima (1,5)"]) if datos["Accidentalidad máxima (1,5)"] else None,
+                        dificultad_max = int(datos["Dificultad máxima (1,5)"]) if datos["Dificultad máxima (1,5)"] else None
                     )
                     self.on_finish(usuario)
                 except Exception as e:
@@ -47,7 +50,8 @@ class InterfazUsuario:
     def verificacion(self, datos):
         nombre = datos["Nombre"].strip()
         if not nombre:
-            raise ValueError("El nombre no puede estar vacío.")
+            print("El nombre no puede estar vacío.")
+            return False
         
         experiencia = int(datos["Nivel de experiencia (1,3)"])
         riesgo = int(datos["Riesgo máximo (1,5)"])
@@ -61,11 +65,14 @@ class InterfazUsuario:
             ("dificultad", dificultad),
         ]:
             if not (1 <= valor <= 5):
-                raise ValueError(f"El campo '{campo}' debe ser un entero entre 1 y 5.")
+                print(f"El campo '{campo}' debe ser un entero entre 1 y 5.")
+                return False
         if distancia <= 0:
-            raise ValueError("La distancia debe ser mayor a 0.")
+            print("La distancia debe ser mayor a 0.")
+            return False
         if not 1 <= experiencia <= 3:
-            raise ValueError("El nivel de experiencia debe ser entre 1 y 3")
+            print("El nivel de experiencia debe ser entre 1 y 3")
+            return False
         return True
     
     def dibujar(self):
