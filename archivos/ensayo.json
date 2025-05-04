@@ -1,0 +1,169 @@
+{
+    "nodos": [
+        {
+            "id": "Ca1",
+            "nombre": "Cable",
+            "descripcion": "Cable",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                167,
+                166
+            ]
+        },
+        {
+            "id": "PC1",
+            "nombre": null,
+            "descripcion": null,
+            "riesgo": "1",
+            "tipo": 1,
+            "accidentalidad": "1",
+            "popularidad": "1",
+            "dificultad": "1",
+            "posicion": [
+                311,
+                166
+            ]
+        },
+        {
+            "id": "Mi1",
+            "nombre": "Milan",
+            "descripcion": "Milan",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                444,
+                161
+            ]
+        },
+        {
+            "id": "Ca2",
+            "nombre": "CASA A",
+            "descripcion": "Casa A",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                474,
+                269
+            ]
+        },
+        {
+            "id": "Su1",
+            "nombre": "Sultana",
+            "descripcion": "Sultana",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                470,
+                561
+            ]
+        },
+        {
+            "id": "PC2",
+            "nombre": null,
+            "descripcion": null,
+            "riesgo": "5",
+            "tipo": 1,
+            "accidentalidad": "5",
+            "popularidad": "2",
+            "dificultad": "5",
+            "posicion": [
+                463,
+                421
+            ]
+        },
+        {
+            "id": "PC3",
+            "nombre": null,
+            "descripcion": null,
+            "riesgo": "2",
+            "tipo": 1,
+            "accidentalidad": "2",
+            "popularidad": "5",
+            "dificultad": "2",
+            "posicion": [
+                237,
+                395
+            ]
+        }
+    ],
+    "aristas": [
+        {
+            "origen": "Ca1",
+            "destino": "PC1",
+            "peso": 1
+        },
+        {
+            "origen": "Ca1",
+            "destino": "PC3",
+            "peso": 10
+        },
+        {
+            "origen": "PC1",
+            "destino": "Mi1",
+            "peso": 1
+        },
+        {
+            "origen": "PC1",
+            "destino": "Ca1",
+            "peso": 1
+        },
+        {
+            "origen": "Mi1",
+            "destino": "PC1",
+            "peso": 0.5
+        },
+        {
+            "origen": "Mi1",
+            "destino": "Ca2",
+            "peso": 10
+        },
+        {
+            "origen": "Ca2",
+            "destino": "Mi1",
+            "peso": 11
+        },
+        {
+            "origen": "Ca2",
+            "destino": "PC2",
+            "peso": 20
+        },
+        {
+            "origen": "Su1",
+            "destino": "Ca2",
+            "peso": 15
+        },
+        {
+            "origen": "Su1",
+            "destino": "PC3",
+            "peso": 10
+        },
+        {
+            "origen": "PC2",
+            "destino": "Su1",
+            "peso": 10
+        },
+        {
+            "origen": "PC3",
+            "destino": "Su1",
+            "peso": 10
+        },
+        {
+            "origen": "PC3",
+            "destino": "Ca1",
+            "peso": 10
+        }
+    ]
+}

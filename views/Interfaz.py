@@ -40,7 +40,8 @@ class Visualizador:
             Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Recorridos", self.iniciar_recorridos, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 230, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 200, 230, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen)
+            Boton(pygame.Rect(self.area_control.x + 200, 230, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 20, 290, 150, 40), "Validar", self.validar_grafo, self.screen)  # Botón de validación
         ]
         
        
@@ -118,6 +119,13 @@ class Visualizador:
         def on_finish():
             self.modo_actual = None
         self.modo_actual = InterfazArista(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, on_finish, modo="eliminar_arista")
+
+    def validar_grafo(self):
+        """Llama al método de validación del grafo y muestra resultados"""
+        self.grafo.validar_todos_con_boton()
+        # Forzar sincronización completa después de la validación
+        self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()
+        self.interfaz_grafo.dibujar()  # Redibujar para reflejar cambios
 
     def iniciar_crear_usuario(self):
         def on_finish(usuario_creado):
