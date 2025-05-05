@@ -100,7 +100,4 @@ class InterfazNodo:
     def dibujar(self):
         if self.formulario:
             self.formulario.dibujar()
-        """elif self.nodo_seleccionado and self.modo == "eliminar":
-            pos = self.interfaz_grafo.posiciones_nodos.get(self.nodo_seleccionado)
-            if pos:
-                pygame.draw.circle(self.screen, (0, 0, 255), pos, 18, 4)  # Resaltar nodo"""
+       

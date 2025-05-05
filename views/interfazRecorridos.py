@@ -17,6 +17,8 @@ class InterfazRecorridos:
         self.botones = self.crear_botones()
         self.sub_interfaz_usuario = None 
         self.mensaje = ""
+        self.nodo_seleccionado = None #Almacena el nodo seleccionado para el recorrido
+        self.esperando_seleccion = False  # Estado para esperar selección de nodo
 
     def crear_botones(self):
         botones = [
@@ -63,24 +65,34 @@ class InterfazRecorridos:
         if tipo == "mejor_experiencia":
             #Recalcular datos usuario
             self.mostrar_subinterfaz(["Nivel de experiencia (1,3)"], self.actualizar_experiencia)
+            self.formulario = None
         elif tipo == "menos_peligroso":
             self.mostrar_subinterfaz(["Riesgo máximo (1,5)"], self.actualizar_riesgo)
+            self.formulario = None
         elif tipo == "balanceado":
+            
             self.mostrar_subinterfaz([
                 "Distancia máxima",
                 "Riesgo máximo (1,5)",
                 "Dificultad máxima (1,5)"
             ], self.actualizar_balanceado)
+            self.formulario = None
             
         elif tipo == "mejor_experiencia_distancia":
+            
             self.mostrar_subinterfaz([
                 "Nivel de experiencia (1,3)",
                 "Distancia máxima",
                 "Dificultad máxima (1,5)"
             ], self.actualizar_experiencia_distancia)
+            self.formulario = None
             
         elif tipo == "todos_todos":
-            self.todos_todos()
+            self.esperando_seleccion = True  # Activar estado de espera
+            self.mensaje = "Por favor, selecciona un nodo haciendo clic en el mapa."
+            self.nodo_seleccionado = None  # Reiniciar selección
+            self.formulario = None  # Ocultar el formulario
+           
 
     def actualizar_experiencia(self, nuevo_usuario):
         if nuevo_usuario:
@@ -148,12 +160,16 @@ class InterfazRecorridos:
         self.sub_interfaz_usuario = None
     
     def todos_todos(self):
+        if self.nodo_seleccionado is None:
+            self.mensaje = "Por favor, selecciona un nodo haciendo clic en el mapa."
+            return
         #Sacar nodo clickeado (Esto esta en interfazGrafo)
         #Llamar recorrido de floyd-warshall y mostrarlo
-        camino = self.recorrido.camino_disntacias_minimas_desde_nodo_dado() 
-        print("Caminooo", camino)
+        camino = self.recorrido.camino_disntacias_minimas_desde_nodo_dado(self.nodo_seleccionado) 
+        print("Camino: ", camino)
         #Mostrarlo en interfaz
         self.interfaz_grafo.mostrar_camino(camino)
+        self.esperando_seleccion = False 
         self.on_finish()        
         
     
@@ -216,8 +232,15 @@ class InterfazRecorridos:
             self.sub_interfaz_usuario.manejar_evento(evento)
         elif self.formulario:
             self.formulario.manejar_evento(evento)
-            
-    
+        elif self.esperando_seleccion:
+            # Verificar si se selecciona un nodo en el área del mapa
+            if evento.type == pygame.MOUSEBUTTONUP and evento.button == 1 and self.area_mapa.collidepoint(evento.pos):
+                nodo_id = self.interfaz_grafo.seleccionar_nodo(evento)
+                if nodo_id:
+                    self.nodo_seleccionado = nodo_id
+                    print(f"Nodo seleccionado para 'todos_todos': {self.nodo_seleccionado}")    
+                self.todos_todos()  # Calcular y mostrar el camino tras seleccionar
+                
     def dibujar(self):
         if self.sub_interfaz_usuario:
             self.sub_interfaz_usuario.dibujar()
