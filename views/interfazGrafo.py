@@ -147,6 +147,20 @@ class InterfazGrafo:
         if camino:
             self.resaltar_nodo(camino[0][-1], color=(0,255,0), grosor=4)
     
+    def mostrar_caminos(self, caminos):
+        self.limpiar_resaltado()
+        
+        for destino, (costo, camino) in caminos.items():
+            for i in range(len(camino) - 1):
+                origen = camino[i]
+                siguiente = camino[i + 1]
+                self.resaltar_arista(origen, siguiente, color=(0,255,0), grosor=3)
+                self.resaltar_nodo(origen, color=(0,255,0), grosor=3)
+                
+            # Resaltar el ultimo nodo del camino
+            if camino:
+                self.resaltar_nodo(camino[-1], color=(0,255,0), grosor=3)
+        
     def dibujar(self):
         """Dibuja el grafo completo."""
         self.dibujar_aristas()

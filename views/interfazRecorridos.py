@@ -120,9 +120,8 @@ class InterfazRecorridos:
             
             #Mostrarlo en interfaz
             self.interfaz_grafo.mostrar_camino(camino)
-            
-            self.on_finish()
-            
+            self.mostrar_informacion(camino)
+                        
         self.sub_interfaz_usuario = None
     
     
@@ -155,7 +154,7 @@ class InterfazRecorridos:
             print("Caminooo", camino)
             #Mostrarlo en interfaz
             self.interfaz_grafo.mostrar_camino(camino)
-            self.on_finish()
+            self.mostrar_informacion(camino)
                         
         self.sub_interfaz_usuario = None
     
@@ -168,9 +167,9 @@ class InterfazRecorridos:
         camino = self.recorrido.camino_disntacias_minimas_desde_nodo_dado(self.nodo_seleccionado) 
         print("Camino: ", camino)
         #Mostrarlo en interfaz
-        self.interfaz_grafo.mostrar_camino(camino)
+        self.interfaz_grafo.mostrar_caminos(camino)
+        self.mostrar_informacion(camino)
         self.esperando_seleccion = False 
-        self.on_finish()        
         
     
     def mostrar_subinterfaz(self, campos, callback):
@@ -201,29 +200,78 @@ class InterfazRecorridos:
             
             return nombre_inicio, descripcion_inicio, nombre_fin, descripcion_fin, informacion_nodos
         return None
-    
+
+    def sacar_informacion_todos(self, caminos_dict):
+        informacion_rutas = {}
+        
+        for destino, (costo, camino) in caminos_dict.items():
+            if not camino:
+                continue
+            
+            origen = camino[0]
+            fin = camino[-1]
+
+            nombre_inicio = self.grafo.nodos[origen].nombre
+            descripcion_inicio = self.grafo.nodos[origen].descripcion
+            nombre_fin = self.grafo.nodos[fin].nombre
+            descripcion_fin = self.grafo.nodos[fin].descripcion
+
+            informacion_nodos = {}
+            for i in camino:
+                nodo = self.grafo.nodos[i] if self.grafo.nodos[i].tipo == 1 else None
+                if nodo is not None:
+                    informacion_nodos[i] = (
+                        nodo.riesgo,
+                        nodo.accidentalidad,
+                        nodo.popularidad,
+                        nodo.dificultad
+                    )
+            # Guardar la información asociada
+            informacion_rutas[destino] = (
+                nombre_inicio,
+                descripcion_inicio,
+                nombre_fin,
+                descripcion_fin,
+                informacion_nodos,
+                costo
+            )
+
+        return informacion_rutas
     
     def mostrar_informacion(self, camino):
-        datos = self.sacar_informacion(camino)
-        if not datos:
-            self.mensaje = "No se encontro un recorrido valido"
-            return
+        
+        if isinstance(camino, dict):
+            datos = self.sacar_informacion_todos(camino)
+            lineas = []
+            for destino, (nombre_inicio, _, nombre_fin, _, info_control, costo) in datos.items():
+                lineas.extend([
+                    f"{nombre_inicio} -> {nombre_fin} ({destino}) ",
+                    f" Costo: {costo}",
+                    f" Nodos de control: {len(info_control)}",
+                ])
+        else:  
+            datos = self.sacar_informacion(camino)
+        
+            print(datos)
+            if not datos:
+                self.mensaje = "No se encontro un recorrido valido"
+                return
 
-        nombre_inicio, descripcion_inicio, nombre_fin, descripcion_fin, info_control = datos
-        lineas = [
-            f"Inicio: {nombre_inicio}",
-            f"Descripción: {descripcion_inicio}",
-            f"",
-            f"Fin: {nombre_fin}",
-            f"Descripción: {descripcion_fin}",
-            f"",
-            f"Detalles nodos de control:"
-        ]
-        
-        for id_nodo, (riesgo, accidentalidad, popularidad, dificultad) in info_control.items():
-            linea = f"Nodo {id_nodo} - Riesgo: {riesgo}, Accidentalidad: {accidentalidad}, Popularidad: {popularidad}, Dificultad: {dificultad}"
-            lineas.append(linea)
-        
+            nombre_inicio, descripcion_inicio, nombre_fin, descripcion_fin, info_control = datos
+            lineas = [
+                f"Inicio: {nombre_inicio}",
+                f"Descripción: {descripcion_inicio}",
+                f"",
+                f"Fin: {nombre_fin}",
+                f"Descripción: {descripcion_fin}",
+                f"",
+                f"Detalles nodos de control:"
+            ]
+
+            for id_nodo, (riesgo, accidentalidad, popularidad, dificultad) in info_control.items():
+                linea = f"Nodo {id_nodo} - Riesgo: {riesgo}, Accidentalidad: {accidentalidad}, \n  Popularidad: {popularidad}, Dificultad: {dificultad}"
+                lineas.append(linea)
+
         self.mensaje = "\n".join(lineas)
         self.dibujar()
         
