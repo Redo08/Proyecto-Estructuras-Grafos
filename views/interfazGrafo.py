@@ -135,7 +135,18 @@ class InterfazGrafo:
         punto3 = (fin[0] - largo * math.cos(angulo + math.pi/6), fin[1] - largo * math.sin(angulo + math.pi/6))
         pygame.draw.polygon(self.screen, color, [punto1, punto2, punto3])        
         
+    def mostrar_camino(self, camino):
+        self.limpiar_resaltado()
         
+        for i in range(len(camino[0])-1):
+            origen = camino[0][i]
+            destino = camino[0][i + 1]
+            self.resaltar_arista(origen, destino, color=(0,255,0), grosor=4)
+            self.resaltar_nodo(origen, color=(0,255,0), grosor=4)
+            
+        if camino:
+            self.resaltar_nodo(camino[0][-1], color=(0,255,0), grosor=4)
+    
     def dibujar(self):
         """Dibuja el grafo completo."""
         self.dibujar_aristas()

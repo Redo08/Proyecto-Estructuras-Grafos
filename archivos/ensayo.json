@@ -1,7 +1,7 @@
 {
     "nodos": [
         {
-            "id": "Ca1",
+            "id": "CA1",
             "nombre": "Cable",
             "descripcion": "Cable",
             "riesgo": null,
@@ -29,7 +29,7 @@
             ]
         },
         {
-            "id": "Mi1",
+            "id": "MI1",
             "nombre": "Milan",
             "descripcion": "Milan",
             "riesgo": null,
@@ -43,7 +43,7 @@
             ]
         },
         {
-            "id": "Ca2",
+            "id": "CA2",
             "nombre": "CASA A",
             "descripcion": "Casa A",
             "riesgo": null,
@@ -57,7 +57,7 @@
             ]
         },
         {
-            "id": "Su1",
+            "id": "SU1",
             "nombre": "Sultana",
             "descripcion": "Sultana",
             "riesgo": null,
@@ -101,68 +101,68 @@
     ],
     "aristas": [
         {
-            "origen": "Ca1",
+            "origen": "CA1",
             "destino": "PC1",
             "peso": 1
         },
         {
-            "origen": "Ca1",
+            "origen": "CA1",
             "destino": "PC3",
             "peso": 10
         },
         {
             "origen": "PC1",
-            "destino": "Mi1",
+            "destino": "MI1",
             "peso": 1
         },
         {
             "origen": "PC1",
-            "destino": "Ca1",
+            "destino": "CA1",
             "peso": 1
         },
         {
-            "origen": "Mi1",
+            "origen": "MI1",
             "destino": "PC1",
             "peso": 0.5
         },
         {
-            "origen": "Mi1",
-            "destino": "Ca2",
+            "origen": "MI1",
+            "destino": "CA2",
             "peso": 10
         },
         {
-            "origen": "Ca2",
-            "destino": "Mi1",
+            "origen": "CA2",
+            "destino": "MI1",
             "peso": 11
         },
         {
-            "origen": "Ca2",
+            "origen": "CA2",
             "destino": "PC2",
             "peso": 20
         },
         {
-            "origen": "Su1",
-            "destino": "Ca2",
+            "origen": "SU1",
+            "destino": "CA2",
             "peso": 15
         },
         {
-            "origen": "Su1",
+            "origen": "SU1",
             "destino": "PC3",
             "peso": 10
         },
         {
             "origen": "PC2",
-            "destino": "Su1",
+            "destino": "SU1",
             "peso": 10
         },
         {
             "origen": "PC3",
-            "destino": "Su1",
+            "destino": "SU1",
             "peso": 10
         },
         {
             "origen": "PC3",
-            "destino": "Ca1",
+            "destino": "SU1",
             "peso": 10
         }
     ]

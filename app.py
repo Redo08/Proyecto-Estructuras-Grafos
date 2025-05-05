@@ -5,12 +5,12 @@ from views.Interfaz import Visualizador
 
 # Inicialización de Pygame
 pygame.init()
-ANCHO, ALTO = 1300, 650
+ANCHO, ALTO = 1350, 650
 
 # Instancias
 helpers = Helpers()
 grafo = Grafo()
-data = helpers.cargar_texto_manual("archivos/MapaxVacio.json")
+data = helpers.cargar_texto_manual("archivos/predefinido.json")
 grafo.cargar_json(data)
 
 visualizador = Visualizador(grafo, ANCHO, ALTO)

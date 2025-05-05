@@ -1,5 +1,5 @@
 class Usuario:
-    def __init__(self, nombre, experiencia, distancia_max, riesgo_max, accidentalidad_max, dificultad_max):
+    def __init__(self, nombre, experiencia=None, distancia_max=None, riesgo_max=None, accidentalidad_max=None, dificultad_max=None):
         self.nombre = nombre
         self.experiencia = experiencia
         self.distancia_max = distancia_max

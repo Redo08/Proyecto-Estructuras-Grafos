@@ -24,7 +24,7 @@ class Visualizador:
         margen = 10 
         self.area_mapa = pygame.Rect(margen, self.altura_titulo+margen, ancho * 0.60 -2 * margen, alto-self.altura_titulo-2 * margen)  # 75% del ancho para el mapa
         self.area_control = pygame.Rect(ancho * 0.60, 0, ancho * 0.4, alto)  # 25% para controles
-        
+        self.area_info = pygame.Rect(self.area_control.x + 20, self.area_control.y + 280, self.area_control.width - 30, 350)
         #Grafo
         self.interfaz_grafo = InterfazGrafo(self.grafo, self.area_mapa, self.screen)
         
@@ -35,13 +35,13 @@ class Visualizador:
         self.botones = [
             Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 380, 50, 150, 40), "Validar", self.validar_grafo, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen),
             Boton(pygame.Rect(self.area_control.x + 200, 110, 150, 40), "Eliminar nodo", self.iniciar_eliminar_nodo, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Recorridos", self.iniciar_recorridos, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 230, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 200, 230, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 290, 150, 40), "Validar", self.validar_grafo, self.screen)  # Botón de validación
+            Boton(pygame.Rect(self.area_control.x + 380, 110, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 380, 170, 150, 40), "Recorridos", self.iniciar_recorridos, self.screen),
         ]
         
        
@@ -72,6 +72,7 @@ class Visualizador:
         # Dibujar áreas
         pygame.draw.rect(self.screen, NEGRO, self.area_mapa, 2)
         pygame.draw.rect(self.screen, GRIS, self.area_control)
+        pygame.draw.rect(self.screen, BLANCO, self.area_info)
         
         # Dibujar grafo
         self.interfaz_grafo.dibujar()
@@ -83,7 +84,7 @@ class Visualizador:
         # Dibujar formulario
         if self.modo_actual:
             self.modo_actual.dibujar()
-            
+                    
     def cargar_mapa(self):
         datos = Helpers.cargar_texto()
         grafo = Grafo()
@@ -151,7 +152,7 @@ class Visualizador:
     def iniciar_recorridos(self):
         def on_finish():
             self.modo_actual = None
-        self.modo_actual = InterfazRecorridos(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, self.usuario, on_finish)
+        self.modo_actual = InterfazRecorridos(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, self.usuario, self.area_info, on_finish)
         
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""

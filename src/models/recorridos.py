@@ -304,7 +304,6 @@ class Recorridos:
                 
         return resultados
     
-    
 ### ==== Evaluación de experiencia ====
     def evaluar_camino(self, camino):
         criterios = self.valores_segun_experiencia()
@@ -349,4 +348,3 @@ class Recorridos:
             }
         else:
             raise ValueError(f"Nivel de experiencia {experiencia} no válido. Debe ser 1, 2 o 3.")
-

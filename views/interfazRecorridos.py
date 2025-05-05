@@ -4,33 +4,52 @@ from views.Formulario import Formulario
 from views.interfazUsuario import InterfazUsuario
 import pygame
 class InterfazRecorridos:
-    def __init__(self, screen, area_mapa, grafo, interfaz_grafo, usuario, on_finish):
+    def __init__(self, screen, area_mapa, grafo, interfaz_grafo, usuario, area_info, on_finish):
         self.screen = screen
         self.area_mapa = area_mapa
+        self.area_info = area_info
         self.usuario = usuario
+        self.grafo = grafo
         self.recorrido = Recorridos(grafo, self.usuario)
         self.interfaz_grafo = interfaz_grafo
         self.on_finish = on_finish  
         self.formulario = None
         self.botones = self.crear_botones()
         self.sub_interfaz_usuario = None 
+        self.mensaje = ""
 
     def crear_botones(self):
         botones = [
-            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 100 + i* 50, 150, 40),
-                  texto,
-                  lambda tipo = t: self.seleccionar_tipo_recorrido(tipo),
+            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 150, 150, 40),
+                  "Camino más apropiado experiencia",
+                  lambda: self.seleccionar_tipo_recorrido("mejor_experiencia"),
                   self.screen,
-                  color_fondo=(100,100,255)
-                  
-                )
-            for i, (t,texto) in enumerate([
-                ("mejor_experiencia", "Camino más apropiado experiencia"),
-                ("menos_peligroso", "Camino menos peligroso"),
-                ("balanceado", "Camino equilibrado distancia, dificultad y riesgo"),
-                ("mejor_experiencia_distancia", "Camino más apropiado experiencia, distancia y dificultad"),
-                ("todos_todos", "De un nodo a todos")
-            ])
+                  color_fondo=(100,100,255)),
+            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 150, 150, 40),
+                  "Camino menos peligroso",
+                  lambda: self.seleccionar_tipo_recorrido("menos_peligroso"),
+                  self.screen,
+                  color_fondo=(100,100,255)),
+            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 210, 150, 40),
+                  "Camino equilibrado distancia, dificultad y riesgo",
+                  lambda: self.seleccionar_tipo_recorrido("balanceado"),
+                  self.screen,
+                  color_fondo=(100,100,255)),
+            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 210, 150, 40),
+                  "Camino más apropiado experiencia(2)",
+                  lambda: self.seleccionar_tipo_recorrido("mejor_experiencia_distancia"),
+                  self.screen,
+                  color_fondo=(100,100,255)),
+            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 270, 150, 40),
+                  "De un nodo a todos",
+                  lambda: self.seleccionar_tipo_recorrido("todos_todos"),
+                  self.screen,
+                  color_fondo=(100,100,255)),
+            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 270, 150, 40),
+                  "Volver",
+                  lambda: self.on_finish(),
+                  self.screen,
+                  color_fondo=(255,0,0)),
         ]
         self.formulario = Formulario(
             self.screen,
@@ -70,10 +89,11 @@ class InterfazRecorridos:
             #Llamar recorrido
             self.recorrido.recalcular_usuario(self.usuario)
             camino = self.recorrido.camino_mas_apropiado_experiencia()
+            print("Caminooo", camino)
             
             #Mostrarlo en interfaz
-            #self.interfaz_grafo.mostrar_camino(camino)
-            self.on_finish()
+            self.interfaz_grafo.mostrar_camino(camino)
+            self.mostrar_informacion(camino)
             
         self.sub_interfaz_usuario = None
     
@@ -84,9 +104,11 @@ class InterfazRecorridos:
             #Llamar recorrido
             self.recorrido.recalcular_usuario(self.usuario)
             camino = self.recorrido.camino_menos_peligroso()
+            print("Caminoo", camino)
             
             #Mostrarlo en interfaz
-            #self.interfaz_grafo.mostrar_camino(camino)
+            self.interfaz_grafo.mostrar_camino(camino)
+            
             self.on_finish()
             
         self.sub_interfaz_usuario = None
@@ -101,10 +123,10 @@ class InterfazRecorridos:
             #Llamar recorrido
             self.recorrido.recalcular_usuario(self.usuario)
             camino = self.recorrido.camino_por_distancia_riesgo_dificultad_deseada() 
-
+            print("Caminooo", camino)
             #Mostrarlo en interfaz
-            #self.interfaz_grafo.mostrar_camino(camino)
-            self.on_finish()
+            self.interfaz_grafo.mostrar_camino(camino)
+            self.mostrar_informacion(camino)
                         
         self.sub_interfaz_usuario = None
 
@@ -118,8 +140,9 @@ class InterfazRecorridos:
             self.recorrido.recalcular_usuario(self.usuario)
             camino = self.recorrido.camino_distancia_dificultad_experiencia() 
 
+            print("Caminooo", camino)
             #Mostrarlo en interfaz
-            #self.interfaz_grafo.mostrar_camino(camino)
+            self.interfaz_grafo.mostrar_camino(camino)
             self.on_finish()
                         
         self.sub_interfaz_usuario = None
@@ -128,8 +151,9 @@ class InterfazRecorridos:
         #Sacar nodo clickeado (Esto esta en interfazGrafo)
         #Llamar recorrido de floyd-warshall y mostrarlo
         camino = self.recorrido.camino_disntacias_minimas_desde_nodo_dado() 
+        print("Caminooo", camino)
         #Mostrarlo en interfaz
-        #self.interfaz_grafo.mostrar_camino(camino)
+        self.interfaz_grafo.mostrar_camino(camino)
         self.on_finish()        
         
     
@@ -140,13 +164,52 @@ class InterfazRecorridos:
             on_finish=callback,
             campos=campos
         )
+        
+    def sacar_informacion(self, camino):
+        if camino:
+            origen = camino[0][0]
+            fin = camino[0][-1]
+            
+            nombre_inicio = self.grafo.nodos[origen].nombre
+            descripcion_inicio = self.grafo.nodos[origen].descripcion
+            nombre_fin = self.grafo.nodos[fin].nombre
+            descripcion_fin = self.grafo.nodos[fin].descripcion
 
-    def aplicar_recorridos(self, modificador_usuario_fn, metodo_recorrido):
-        modificador_usuario_fn()
-        self.recorrido.recalcular_usuario(self.usuario)
-        camino = metodo_recorrido()
-        self.on_finish()
-        self.sub_interfaz_usuario = None
+            informacion_nodos = {}
+            for i in camino[-1]:
+                riesgo_nodo = self.grafo.nodos[i].riesgo
+                accidentalidad_nodo = self.grafo.nodos[i].accidentalidad
+                popularidad_nodo = self.grafo.nodos[i].popularidad
+                dificultad_nodo = self.grafo.nodos[i].dificultad
+                informacion_nodos.update({i: (riesgo_nodo, accidentalidad_nodo, popularidad_nodo, dificultad_nodo)})            
+            
+            return nombre_inicio, descripcion_inicio, nombre_fin, descripcion_fin, informacion_nodos
+        return None
+    
+    
+    def mostrar_informacion(self, camino):
+        datos = self.sacar_informacion(camino)
+        if not datos:
+            self.mensaje = "No se encontro un recorrido valido"
+            return
+
+        nombre_inicio, descripcion_inicio, nombre_fin, descripcion_fin, info_control = datos
+        lineas = [
+            f"Inicio: {nombre_inicio}",
+            f"Descripción: {descripcion_inicio}",
+            f"",
+            f"Fin: {nombre_fin}",
+            f"Descripción: {descripcion_fin}",
+            f"",
+            f"Detalles nodos de control:"
+        ]
+        
+        for id_nodo, (riesgo, accidentalidad, popularidad, dificultad) in info_control.items():
+            linea = f"Nodo {id_nodo} - Riesgo: {riesgo}, Accidentalidad: {accidentalidad}, Popularidad: {popularidad}, Dificultad: {dificultad}"
+            lineas.append(linea)
+        
+        self.mensaje = "\n".join(lineas)
+        self.dibujar()
         
     def manejar_evento(self, evento):
         if self.sub_interfaz_usuario:
@@ -160,4 +223,10 @@ class InterfazRecorridos:
             self.sub_interfaz_usuario.dibujar()
         elif self.formulario:
             self.formulario.dibujar()
-    
+        if self.mensaje:
+            y = self.area_info.y + 10
+            for linea in self.mensaje.split("\n"):
+                pygame.draw.rect(self.screen, (0, 255, 0), self.area_info, 2)  # borde verde
+                texto = pygame.font.Font(None, 24).render(linea, True, (0,0,0))
+                self.screen.blit(texto, (self.area_info.x + 10, y))
+                y += 25

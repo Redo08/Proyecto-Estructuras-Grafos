@@ -13,12 +13,7 @@ class InterfazUsuario:
         
     def iniciar_formulario(self, campos=None):
         campos = [
-            "Nombre",
-            "Nivel de experiencia (1,3)",
-            "Distancia máxima",
-            "Riesgo máximo (1,5)",
-            "Accidentalidad máxima (1,5)",
-            "Dificultad máxima (1,5)"
+            "Nombre"
         ] if campos is None else campos
         formulario = Formulario(self.screen, campos, area_mapa=self.area_mapa)
         return formulario
@@ -29,15 +24,22 @@ class InterfazUsuario:
         #Verificar si ya se completó o canceló
         if self.formulario.esta_listo():
             datos = self.formulario.campos
-            if self.verificacion(datos) or self.olvidar_validacion:
+            if self.verificacion(datos):
                 try:
+                    #Sacamos datos si existen
+                    nombre = datos.get("Nombre", "").strip()
+                    experiencia = int(datos.get("Nivel de experiencia (1,3)", 1))
+                    distancia = float(datos.get("Distancia máxima", 0))
+                    riesgo = int(datos.get("Riesgo máximo (1,5)", 1))
+                    accidentalidad = int(datos.get("Accidentalidad máxima (1,5)", 1))
+                    dificultad = int(datos.get("Dificultad máxima (1,5)", 1))
                     usuario = Usuario(
-                        nombre = datos["Nombre"] if datos["Nombre"] is not None else "",
-                        experiencia = int(datos["Nivel de experiencia (1,3)"]) if datos["Nivel de experiencia (1,3)"] is not None else 1,
-                        distancia_max = int(datos["Distancia máxima"]) if datos["Distancia máxima"] else None,
-                        riesgo_max = int(datos["Riesgo máximo (1,5)"]) if datos["Riesgo máximo (1,5)"] else None,
-                        accidentalidad_max = int(datos["Accidentalidad máxima (1,5)"]) if datos["Accidentalidad máxima (1,5)"] else None,
-                        dificultad_max = int(datos["Dificultad máxima (1,5)"]) if datos["Dificultad máxima (1,5)"] else None
+                        nombre = nombre,
+                        experiencia = experiencia,
+                        distancia_max = distancia,
+                        riesgo_max = riesgo,
+                        accidentalidad_max = accidentalidad,
+                        dificultad_max = dificultad
                     )
                     self.on_finish(usuario)
                 except Exception as e:
@@ -48,16 +50,18 @@ class InterfazUsuario:
             self.on_finish(None)
                 
     def verificacion(self, datos):
-        nombre = datos["Nombre"].strip()
+        if self.olvidar_validacion:
+            return True
+        nombre = datos.get("Nombre", "").strip()
         if not nombre:
             print("El nombre no puede estar vacío.")
             return False
         
-        experiencia = int(datos["Nivel de experiencia (1,3)"])
-        riesgo = int(datos["Riesgo máximo (1,5)"])
-        accidentalidad = int(datos["Accidentalidad máxima (1,5)"])
-        dificultad = int(datos["Dificultad máxima (1,5)"])
-        distancia = float(datos["Distancia máxima"])
+        experiencia = int(datos.get("Nivel de experiencia (1,3)", 1))
+        distancia = float(datos.get("Distancia máxima", 1))
+        riesgo = int(datos.get("Riesgo máximo (1,5)", 1))
+        accidentalidad = int(datos.get("Accidentalidad máxima (1,5)", 1))
+        dificultad = int(datos.get("Dificultad máxima (1,5)", 1))
         
         for campo, valor in [
             ("riesgo", riesgo),
