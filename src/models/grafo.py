@@ -1,9 +1,11 @@
 from src.models.arista import Arista
+from src.helpers import Helpers
 from src.models.nodo import Nodo
 from src.models.recorridos import Recorridos
 class Grafo:
     def __init__(self):
-        self.nodos = {} #id -> Nodo
+        self.nodos = [] #Nodo
+        self.aristas = []  # Aristas
         self.recorridos = Recorridos(self,None) #Recorridos del grafo
 
     def proximo_id(self, tipo, nombre=""):
@@ -17,12 +19,12 @@ class Grafo:
         else:
             prefix = "ND" #No definido
 
-        for id_nodo in self.nodos:
+        for nodo in self.nodos:
             #Verificamos si el prefio ya existe
-            if id_nodo.startswith(prefix):
+            if nodo.id.startswith(prefix):
                 #Extraemos los digitos del final
                 num_str = ''
-                for char in reversed(id_nodo):
+                for char in reversed(nodo.id):
                     if char.isdigit():
                         num_str = char + num_str
                     else:
@@ -36,12 +38,15 @@ class Grafo:
         return f"{prefix}{max_id + 1}" #Retornamos el prefijo más el siguietne numreo
     
         
-    def agregar_nodo(self, id, nombre=None, descripcion=None, riesgo=None, tipo=0, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
+    def agregar_nodo_interes(self, id, nombre=None, descripcion=None, riesgo=None, tipo=0, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
         if id not in self.nodos:
-            self.nodos[id] = Nodo(id, nombre, descripcion, riesgo, tipo, accidentalidad, popularidad, dificultad, posicion)
-
+            self.nodos.append(Nodo(id, nombre, descripcion, riesgo, 0, accidentalidad, popularidad, dificultad, posicion))
+            
+    def agregar_nodo_control(self, id, riesgo, accidentalidad, popularidad, dificultad, posicion):
+        return Nodo(id, None, None, riesgo, 1, accidentalidad, popularidad, dificultad, posicion)
+    
     def eliminar_nodo(self, id_nodo):
-        if id_nodo in self.nodos:
+        if Helpers.hallar_id(self.nodos, id_nodo):
             # Eliminar aristas que salen del nodo y las que llegan a él
             for vecino in list(self.nodos[id_nodo].vecinos.keys()):
                 self.eliminar_arista(id_nodo, vecino)
@@ -50,6 +55,7 @@ class Grafo:
                 if otro_nodo != id_nodo and id_nodo in self.nodos[otro_nodo].vecinos:
                     self.eliminar_arista(otro_nodo, id_nodo)
             # Eliminar el nodo
+            self.nodos.
             del self.nodos[id_nodo]
 
     def validar_eliminacion_nodo(self, nodo_id):
@@ -106,10 +112,10 @@ class Grafo:
         if not nodos_a_eliminar:
             print("Todos los nodos tipo 1 cumplen las restricciones.")
 
-    def agregar_arista(self, id_origen, id_destino, peso=1):
-        if id_origen in self.nodos and id_destino in self.nodos:
-            arista = Arista(id_destino, peso)
-            self.nodos[id_origen].vecinos[id_destino] = arista
+    def agregar_arista(self, id_origen, id_destino, peso=1, nodo_control=None):
+        if Helpers.hallar_id(self.nodos, id_origen) and Helpers.hallar_id(self.nodos, id_destino):
+            arista = Arista(id_origen, id_destino, peso, nodo_control)
+            self.aristas.append(arista)
     
     def eliminar_arista(self, id_origen, id_destino):
         if id_origen in self.nodos and id_destino in self.nodos:

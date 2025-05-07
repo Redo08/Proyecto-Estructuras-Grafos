@@ -56,6 +56,10 @@ class InterfazArista:
                     mensaje += " (No existe arista)"
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, mensaje, accion="eliminar_arista")
 
+    def añadir_punto_control(self):
+        pass
+    
+    
     def _manejar_formulario(self, event):
         self.formulario.manejar_evento(event)
         if self.formulario.fue_cancelado():

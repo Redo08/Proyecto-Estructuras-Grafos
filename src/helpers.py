@@ -37,4 +37,11 @@ class Helpers:
         if numero_str.endswith('.0'):
             return int(numero)
         return numero
-        
+    
+    # Si el nodo existe
+    def hallar_id(self, lista_nodos, id_nodo):
+        for i in lista_nodos:
+            if i.id == id_nodo:
+                return True
+        return False
+    

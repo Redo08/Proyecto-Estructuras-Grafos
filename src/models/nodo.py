@@ -4,7 +4,6 @@ class Nodo:
         self.nombre = nombre
         self.descripcion = descripcion
         self.tipo = tipo # Tipo -> 0 Punto de interes, 1 Punto de control
-        self.vecinos = {} # id_nodo_destino -> Arista
         self.posicion = posicion # (x,y)
         
         #Si es un punto de control, tiene los atributos de punto de control.
