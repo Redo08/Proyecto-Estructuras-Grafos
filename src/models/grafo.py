@@ -46,23 +46,22 @@ class Grafo:
         return Nodo(id, None, None, riesgo, 1, accidentalidad, popularidad, dificultad, posicion)
     
     def eliminar_nodo(self, id_nodo):
+        #Si existe el id
         if Helpers.hallar_id(self.nodos, id_nodo):
-            # Eliminar aristas que salen del nodo y las que llegan a él
-            for vecino in list(self.nodos[id_nodo].vecinos.keys()):
-                self.eliminar_arista(id_nodo, vecino)
-            # Eliminar todas las aristas que terminen en el nodo a eliminar
-            for otro_nodo in list(self.nodos.keys()):
-                if otro_nodo != id_nodo and id_nodo in self.nodos[otro_nodo].vecinos:
-                    self.eliminar_arista(otro_nodo, id_nodo)
-            # Eliminar el nodo
-            self.nodos.
-            del self.nodos[id_nodo]
+            #Buscar el index
+            index_nodo = Helpers.hallar_index_por_id(self.nodos, id_nodo)
+            if index_nodo != -1: #Si el nodo existe
+                for arista in self.aristas[:]: #Recorremos una copia
+                    #Si el nodo es origen o destino
+                    if id_nodo == arista.origen or id_nodo == arista.destino:
+                        self.eliminar_arista(arista.origen, arista.destino)
+                
+                #Eliminar el nodo de la lista
+                del self.nodos[index_nodo]
 
     def validar_eliminacion_nodo(self, nodo_id):
-        if nodo_id not in self.nodos:
+        if Helpers.hallar_id(self.nodos, nodo_id):
             return False, "Nodo no existe"
-        ##if len(self.nodos) == 1:
-            ##return False, "No se puede eliminar el único nodo"
         return True, None
 
     def validar_nodo(self, id_nodo):
@@ -118,9 +117,12 @@ class Grafo:
             self.aristas.append(arista)
     
     def eliminar_arista(self, id_origen, id_destino):
-        if id_origen in self.nodos and id_destino in self.nodos:
-            if id_destino in self.nodos[id_origen].vecinos:
-                del self.nodos[id_origen].vecinos[id_destino]
+        # Buscamos la arista especifica
+        for arista in self.aristas[:]: #Recorremos una copia de la lista
+            if arista.origen == id_origen and arista.destino == id_destino:
+                # Eliminamos la arista de la lista
+                self.aristas.remove(arista)
+                return #Se sale despues de salir
 
     def validar_agregar_arista(self, id_origen, id_destino):
         if len(self.nodos) < 2:

@@ -45,3 +45,10 @@ class Helpers:
                 return True
         return False
     
+    def hallar_index_por_id(self, lista_nodos, id_nodo):
+        contador = 0
+        for i in lista_nodos:
+            if i.id == id_nodo:
+                return contador
+            contador +=1
+        return -1
