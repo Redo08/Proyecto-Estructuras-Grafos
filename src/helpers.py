@@ -39,9 +39,27 @@ class Helpers:
         return numero
     
     # Si el nodo existe
-    def hallar_id(self, lista_nodos, id_nodo):
-        for i in lista_nodos:
-            if i.id == id_nodo:
-                return True
-        return False
+    def hallar_nodo( lista_nodos, id_nodo):
+        for nodo in lista_nodos:
+            if nodo.id == id_nodo:
+                return nodo
+        return None
+    def hallar_arista_por_nodo_control(lista_aristas, id_nodo_control):
+        """
+        Busca la arista que contiene un nodo de control con el ID especificado.
+        Retorna la arista si la encuentra, None si no.
+        """
+        for arista in lista_aristas:
+            if Helpers.hallar_nodo(arista.nodos_control, id_nodo_control):
+                return arista
+        return None
     
+    def hallar_indice_arista_por_nodo_control(lista_aristas, id_nodo_control):
+        """
+        Busca el índice de la arista que contiene un nodo de control con el ID especificado.
+        Retorna el índice si lo encuentra, -1 si no.
+        """
+        for idx, arista in enumerate(lista_aristas):
+            if Helpers.hallar_nodo(arista.nodos_control, id_nodo_control):
+                return idx
+        return -1
