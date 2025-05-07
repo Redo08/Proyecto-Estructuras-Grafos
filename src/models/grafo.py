@@ -137,10 +137,8 @@ class Grafo:
 
         
     def validar_eliminacion_nodo(self, nodo_id):
-        if nodo_id not in self.nodos:
+        if Helpers.hallar_id(self.nodos, nodo_id):
             return False, "Nodo no existe"
-        ##if len(self.nodos) == 1:
-            ##return False, "No se puede eliminar el único nodo"
         return True, None
 
     def validar_nodo(self, id_nodo):
@@ -193,9 +191,12 @@ class Grafo:
    
     
     def eliminar_arista(self, id_origen, id_destino):
-        if id_origen in self.nodos and id_destino in self.nodos:
-            if id_destino in self.nodos[id_origen].vecinos:
-                del self.nodos[id_origen].vecinos[id_destino]
+        # Buscamos la arista especifica
+        for arista in self.aristas[:]: #Recorremos una copia de la lista
+            if arista.origen == id_origen and arista.destino == id_destino:
+                # Eliminamos la arista de la lista
+                self.aristas.remove(arista)
+                return #Se sale despues de salir
 
     def validar_agregar_arista(self, id_origen, id_destino):
         if len(self.nodos) < 2:
