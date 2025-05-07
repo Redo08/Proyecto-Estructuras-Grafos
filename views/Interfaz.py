@@ -84,7 +84,16 @@ class Visualizador:
         # Dibujar formulario
         if self.modo_actual:
             self.modo_actual.dibujar()
-                    
+        
+        #Dibujar usuario
+        if self.usuario:
+            font = pygame.font.Font(None, 32)
+            mensaje = f"Bienvenido, {self.usuario.nombre}"
+            texto = font.render(mensaje, True, (0, 0, 0))  # Verde oscuro
+            x = self.area_control.x + 25
+            y = self.area_control.y + 240
+            self.screen.blit(texto, (x, y))
+            
     def cargar_mapa(self):
         datos = Helpers.cargar_texto()
         grafo = Grafo()
@@ -132,27 +141,21 @@ class Visualizador:
         def on_finish(usuario_creado):
             self.usuario = usuario_creado
             self.modo_actual = None
-            if self.usuario is not None:
-                print("Usuario creado:", self.usuario)
-                print("Usuario:", self.usuario.nombre)
-                print("Experiencia:", self.usuario.experiencia)
-                print("Riesgo:", self.usuario.riesgo_max)
-                print("Accidentalidad:", self.usuario.accidentalidad_max)
-                print("Dificultad:", self.usuario.dificultad_max)
-                print("Distancia:", self.usuario.distancia_max)
-                recorridos = Recorridos(self.grafo, self.usuario)
-                print("Mejor recorrido respecto exp:",recorridos.camino_mas_apropiado_experiencia())
-                print("Recorrido menos riesgo: ", recorridos.camino_menos_peligroso())
-                print("Mejor recorrido segun el usuario:", recorridos.camino_por_distancia_riesgo_dificultad_deseada())
-                print("Mejor recorrido (El punto 7): ", recorridos.camino_distancia_dificultad_experiencia())
-                print("Distnacias minimas entre este nodo y todos: (CA1)", recorridos.camino_disntacias_minimas_desde_nodo_dado("CA1"))
-        
         self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)
     
     def iniciar_recorridos(self):
-        def on_finish():
-            self.modo_actual = None
-        self.modo_actual = InterfazRecorridos(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, self.usuario, self.area_info, on_finish)
+        if not self.usuario:
+            # Mandar a crear usuario
+            def on_finish(usuario_creado):
+                self.usuario = usuario_creado
+                self.modo_actual = None
+                # Se vuelve a mandar a los recorridos
+                self.iniciar_recorridos()
+            self.modo_actual = InterfazUsuario(self.screen, self.area_mapa, on_finish)
+        else:
+            def on_finish():
+                self.modo_actual = None
+            self.modo_actual = InterfazRecorridos(self.screen, self.area_mapa, self.grafo, self.interfaz_grafo, self.usuario, self.area_info, on_finish)
         
     def manejar_eventos(self):
         """Maneja los eventos de Pygame"""

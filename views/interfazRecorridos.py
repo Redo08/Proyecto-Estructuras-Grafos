@@ -67,10 +67,9 @@ class InterfazRecorridos:
             self.mostrar_subinterfaz(["Nivel de experiencia (1,3)"], self.actualizar_experiencia)
             self.formulario = None
         elif tipo == "menos_peligroso":
-            self.mostrar_subinterfaz(["Riesgo máximo (1,5)"], self.actualizar_riesgo)
+            self.actualizar_riesgo()
             self.formulario = None
         elif tipo == "balanceado":
-            
             self.mostrar_subinterfaz([
                 "Distancia máxima",
                 "Riesgo máximo (1,5)",
@@ -79,7 +78,6 @@ class InterfazRecorridos:
             self.formulario = None
             
         elif tipo == "mejor_experiencia_distancia":
-            
             self.mostrar_subinterfaz([
                 "Nivel de experiencia (1,3)",
                 "Distancia máxima",
@@ -95,83 +93,36 @@ class InterfazRecorridos:
            
 
     def actualizar_experiencia(self, nuevo_usuario):
-        if nuevo_usuario:
-            self.usuario.experiencia = nuevo_usuario.experiencia
-            print("Experiencia actualizada", self.usuario.experiencia)
-            #Llamar recorrido
-            self.recorrido.recalcular_usuario(self.usuario)
-            camino = self.recorrido.camino_mas_apropiado_experiencia()
-            print("Caminooo", camino)
-            
-            #Mostrarlo en interfaz
-            self.interfaz_grafo.mostrar_camino(camino)
-            self.mostrar_informacion(camino)
-            
-        self.sub_interfaz_usuario = None
+        self.actualizar_recorrido(nuevo_usuario, ["experiencia"], "camino_mas_apropiado_experiencia")
     
-    def actualizar_riesgo(self, nuevo_usuario):
-        if nuevo_usuario:
-            self.usuario.riesgo_max = nuevo_usuario.riesgo_max
-            print("Riesgo actualizada", self.usuario.riesgo_max)
-            #Llamar recorrido
-            self.recorrido.recalcular_usuario(self.usuario)
-            camino = self.recorrido.camino_menos_peligroso()
-            print("Caminoo", camino)
-            
-            #Mostrarlo en interfaz
-            self.interfaz_grafo.mostrar_camino(camino)
-            self.mostrar_informacion(camino)
-                        
-        self.sub_interfaz_usuario = None
-    
+    def actualizar_riesgo(self):
+        #Llamar recorrido
+        camino = self.recorrido.camino_menos_peligroso()            
+        #Mostrarlo en interfaz
+        self.mostrar_en_interfaz(camino)
     
     def actualizar_balanceado(self, nuevo_usuario):
-        if nuevo_usuario:
-            self.usuario.distancia_max  = nuevo_usuario.distancia_max
-            self.usuario.riesgo_max = nuevo_usuario.riesgo_max
-            self.usuario.dificultad_max = nuevo_usuario.dificultad_max
-            print("distancia actualizada", self.usuario.distancia_max)
-            #Llamar recorrido
-            self.recorrido.recalcular_usuario(self.usuario)
-            camino = self.recorrido.camino_por_distancia_riesgo_dificultad_deseada() 
-            print("Caminooo", camino)
-            #Mostrarlo en interfaz
-            self.interfaz_grafo.mostrar_camino(camino)
-            self.mostrar_informacion(camino)
-                        
-        self.sub_interfaz_usuario = None
+        self.actualizar_recorrido(nuevo_usuario, ["distancia_max", "riesgo_max", "dificultad_max"], "camino_por_distancia_riesgo_dificultad_deseada")
 
     def actualizar_experiencia_distancia(self, nuevo_usuario):
-        if nuevo_usuario:
-            self.usuario.distancia_max  = nuevo_usuario.distancia_max
-            self.usuario.experiencia = nuevo_usuario.experiencia
-            self.usuario.dificultad_max = nuevo_usuario.dificultad_max
-            print("distancia actualizada", self.usuario.distancia_max)
-            #Llamar recorrido
-            self.recorrido.recalcular_usuario(self.usuario)
-            camino = self.recorrido.camino_distancia_dificultad_experiencia() 
+        self.actualizar_recorrido(nuevo_usuario, ["experiencia", "distancia_max", "dificultad_max"], "camino_distancia_dificultad_experiencia")
 
-            print("Caminooo", camino)
-            #Mostrarlo en interfaz
-            self.interfaz_grafo.mostrar_camino(camino)
-            self.mostrar_informacion(camino)
-                        
-        self.sub_interfaz_usuario = None
-    
     def todos_todos(self):
         if self.nodo_seleccionado is None:
             self.mensaje = "Por favor, selecciona un nodo haciendo clic en el mapa."
             return
-        #Sacar nodo clickeado (Esto esta en interfazGrafo)
+
+        if self.grafo.nodos[self.nodo_seleccionado].tipo == 1:
+            self.mensaje = "Por favor, selecciona un nodo de Interes, no uno de control."
+            return
+        
         #Llamar recorrido de floyd-warshall y mostrarlo
         camino = self.recorrido.camino_disntacias_minimas_desde_nodo_dado(self.nodo_seleccionado) 
-        print("Camino: ", camino)
+        print("Camino:", camino)
         #Mostrarlo en interfaz
-        self.interfaz_grafo.mostrar_caminos(camino)
-        self.mostrar_informacion(camino)
+        self.mostrar_en_interfaz(camino)
         self.esperando_seleccion = False 
         
-    
     def mostrar_subinterfaz(self, campos, callback):
         self.sub_interfaz_usuario = InterfazUsuario(
             self.screen,
@@ -179,6 +130,31 @@ class InterfazRecorridos:
             on_finish=callback,
             campos=campos
         )
+        
+    def mostrar_en_interfaz(self, camino):
+        if isinstance(camino, dict):
+            self.interfaz_grafo.mostrar_caminos(camino)
+        else:
+            self.interfaz_grafo.mostrar_camino(camino)
+        self.mostrar_informacion(camino)
+        
+    def actualizar_recorrido(self, nuevo_usuario, atributos_usuario, metodo_recorrido):
+        if nuevo_usuario:
+            for attr in atributos_usuario:
+                setattr(self.usuario, attr, getattr(nuevo_usuario, attr))
+            print(f"Atributos actualizados: {[getattr(self.usuario, attr) for attr in atributos_usuario]}") 
+            self.recorrido.recalcular_usuario(self.usuario)
+            try:    
+                camino = getattr(self.recorrido, metodo_recorrido)()
+                if not camino:
+                    self.mensaje = f"No existe un recorrido valido con las opciones dadas."
+                else:
+                    # Mostrar en interfaz
+                    self.mostrar_en_interfaz(camino)
+            except Exception as e:
+                self.mensaje = f"Error al calcular el recorrido: \n {e}"
+                
+        self.sub_interfaz_usuario = None
         
     def sacar_informacion(self, camino):
         if camino:
