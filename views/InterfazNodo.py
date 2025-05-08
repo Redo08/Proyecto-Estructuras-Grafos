@@ -1,5 +1,6 @@
 import pygame
 from views.Formulario import Formulario
+import math
 
 class InterfazNodo:
     def __init__(self, screen, area_mapa, grafo, interfaz_grafo, on_finish, modo):
@@ -13,14 +14,9 @@ class InterfazNodo:
         self.esperando_seleccion = self.modo == "eliminar"
         self.nodo_seleccionado = None
         self.posicion_nuevo_nodo = None
-        self.condiciones = {
-            "tipo": {
-                "0": ["nombre", "descripcion"],
-                "1": ["riesgo", "accidentalidad", "popularidad", "dificultad"]
-            }
-        } if modo == "agregar" else None
+        
         self.formulario = None
-        self.campos_iniciales = ["tipo"] if self.modo == "agregar" else None
+        #self.campos_iniciales = ["tipo"] if self.modo == "agregar" else None
 
     def manejar_evento(self, event):
         #Si es agregar
@@ -32,58 +28,82 @@ class InterfazNodo:
             self._manejar_formulario(event)
 
     def _manejar_seleccion_posicion(self, event):
+        """Captura la posición donde se agregará el nodo."""
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.area_mapa.collidepoint(event.pos):
             self.posicion_nuevo_nodo = event.pos
             self.esperando_posicion = False
-            self.formulario = Formulario(self.screen, self.campos_iniciales, self.condiciones, self.area_mapa)
+            # Crear formulario con campos iniciales
+            campos_iniciales = ["nombre", "descripcion"]
+            self.formulario = Formulario(self.screen, campos_iniciales,None, self.area_mapa)
             print(f"Posición seleccionada para nuevo nodo: {self.posicion_nuevo_nodo}")
 
     def _manejar_seleccion_nodo(self, event):
-        nodo_id = self.interfaz_grafo.seleccionar_nodo(event)
-        if nodo_id:
-            self.nodo_seleccionado = nodo_id
-            self.esperando_seleccion = False
-            self.interfaz_grafo.resaltar_nodo(nodo_id, color=(0, 0, 255), grosor=4)
-            nodo = self.grafo.nodos[nodo_id]
-            nombre = nodo.nombre or "CP" if nodo.tipo == 0 else f"CP (Riesgo: {nodo.riesgo})"
-            self.formulario = Formulario(self.screen, None, None, self.area_mapa, f"¿Eliminar nodo {nombre}?", accion="eliminar")
-            print(f"Formulario de eliminación creado para nodo: {nodo_id}")
+        """Selecciona un nodo para eliminar (modo eliminar)."""
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.area_mapa.collidepoint(event.pos):
+            nodo = self.interfaz_grafo.seleccionar_nodo(event)
+            self.nodo_seleccionado = nodo
+            if nodo is not None:
+                # Resaltar el nodo seleccionado
+                self.nodo_seleccionado = nodo
+                self.interfaz_grafo.nodos_resaltados.append(nodo)
+                self.esperando_seleccion = False
+                # Mostrar formulario de confirmación
+                self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
+                                            f"¿Eliminar nodo {nodo.id}?", accion="confirmar")
+            else:
+                self.esperando_seleccion = False
+                self.formulario = Formulario(self.screen, [], None, self.area_mapa, "Error: No se seleccionó ningún nodo.", accion="error")
 
+   
+    
     def _manejar_formulario(self, event):
         self.formulario.manejar_evento(event)
         if self.formulario.fue_cancelado():
             print("Acción cancelada.")
             self.interfaz_grafo.limpiar_resaltado()
+            self.nodo_seleccionado = None
             self.on_finish()
         elif self.formulario.esta_listo():
             if self.modo == "agregar":
-                self._procesar_nodo_agregar()
+                self.agregar_nodo()
             elif self.modo == "eliminar":
-                self._procesar_nodo_eliminar() 
+                if self.formulario.accion == "confirmar" and self.nodo_seleccionado is not None:
+                    self.eliminar_nodo(self.nodo_seleccionado)
+                else:
+                    # Formulario de error, solo cerrar                    
+                    self.interfaz_grafo.limpiar_resaltado()
+                    self.nodo_seleccionado = None
+                    self.on_finish()
                 
-    def _procesar_nodo_agregar(self):
-        self.procesar_nodo(self.formulario.campos, self.posicion_nuevo_nodo)
-        print(f"Nodo agregado en posición: {self.posicion_nuevo_nodo}")
+    
+
+    def eliminar_nodo(self,nodo):
+        """Elimina un nodo del grafo (modo eliminar)."""
+        # Eliminar nodo del grafo
+        if nodo.tipo == 0:
+            self.grafo.eliminar_nodo_interes(nodo.id)
+        if nodo.tipo == 1:
+            self.grafo.eliminar_nodo_control(nodo.id)
+
         self.interfaz_grafo.limpiar_resaltado()
+        self.nodo_seleccionado = None
+        # Imprimir mensaje
+        print(f"Nodo {nodo.id} eliminado.")
+        self.on_finish() 
+
+    def agregar_nodo(self):
+        data = self.formulario.campos
+        nombre = data.get("nombre", "Indefinido").strip()
+        descripcion = data.get("descripcion", "").strip()
+        nodo=self.grafo.agregar_nodo_interes(nombre, descripcion, posicion=self.posicion_nuevo_nodo)
+        # Actualizar visualización
+        
+        print(f"Nodo {nodo.id} agregado en posición: {self.posicion_nuevo_nodo}")
         self.on_finish()
-
-    def _procesar_nodo_eliminar(self):
-        try:
-            valido, mensaje = self.grafo.validar_eliminacion_nodo(self.nodo_seleccionado)
-            if not valido:
-                self.formulario = Formulario(self.screen, None, None, self.area_mapa, mensaje, accion="error")
-                print(f"Error al eliminar nodo: {mensaje}")
-                return
-            self.grafo.eliminar_nodo(self.nodo_seleccionado)
-            self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()
-            print(f"Nodo {self.nodo_seleccionado} eliminado.")
-            self.interfaz_grafo.limpiar_resaltado()
-            self.on_finish()
-        except Exception as e:
-            self.formulario = Formulario(self.screen, None, None, self.area_mapa, f"Error al eliminar nodo: {str(e)}", accion="error")
-            print(f"Excepción al eliminar nodo: {str(e)}")
-
-    def procesar_nodo(self, data, posicion):
+        """
+        if self.grafo.hallar_id(self.grafo.nodos, id_nodo):
+            raise ValueError("El ID ya existe en el grafo.")
+        
         if data['tipo'] == '0':
             nombre = data['nombre'].strip() or "Indefinido"
             nuevo_id = self.grafo.proximo_id(0, nombre)
@@ -95,7 +115,7 @@ class InterfazNodo:
             popularidad = str(data['popularidad']).strip() or "Desconocido"
             dificultad = str(data['dificultad']).strip() or "Desconocido"
             self.grafo.agregar_nodo(nuevo_id, None, None, riesgo, 1, accidentalidad, popularidad, dificultad, posicion)
-        self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()
+        self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones() """
 
     def dibujar(self):
         if self.formulario:

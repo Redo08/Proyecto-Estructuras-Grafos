@@ -10,61 +10,50 @@ class InterfazArista:
         self.interfaz_grafo = interfaz_grafo
         self.on_finish = on_finish
         self.modo = modo  # "agregar_arista" o "eliminar_arista"
-        self.esperando_primer_nodo = True
-        self.esperando_segundo_nodo = False
-        self.primer_nodo = None
-        self.segundo_nodo = None
+        self.esperando_seleccion = True
+        self.nodos_seleccionados = []
         self.formulario = None
-        self.campos_iniciales = ["peso"] if modo == "agregar_arista" else None
-        self.condiciones = None
+        #self.campos_iniciales = ["peso"] if modo == "agregar_arista" else None
+        #self.condiciones = None
     
     def manejar_evento(self, event):
-        if self.esperando_primer_nodo:
-            self._manejar_seleccion_primer_nodo(event)
-        elif self.esperando_segundo_nodo:
-            self._manejar_seleccion_segundo_nodo(event)
+        if self.esperando_seleccion:
+            self._manejar_seleccion_nodos(event)
         elif self.formulario:
             self._manejar_formulario(event)
 
-    def _manejar_seleccion_primer_nodo(self, event):
-        nodo_id = self.interfaz_grafo.seleccionar_nodo(event)
-        if nodo_id:
-            self.primer_nodo = nodo_id
-            self.esperando_primer_nodo = False
-            self.esperando_segundo_nodo = True
-            self.interfaz_grafo.resaltar_nodo(nodo_id, color=(0, 255, 0), grosor=2)
-            print(f"Primer nodo asignado: {nodo_id}")
+    def _manejar_seleccion_nodos(self, event):
+        """Selecciona dos nodos de tipo 0 secuencialmente."""
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.area_mapa.collidepoint(event.pos):
+            nodo = self.interfaz_grafo.seleccionar_nodo(event)
+            if nodo:
+                if len(self.nodos_seleccionados) == 0:
+                    self.nodos_seleccionados.append(nodo)
+                    self.interfaz_grafo.nodos_resaltados.append(nodo)
+                    print(f"Primer nodo seleccionado: {nodo.id}")
+                elif len(self.nodos_seleccionados) == 1:
+                    if nodo.id == self.nodos_seleccionados[0].id:
+                        self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
+                                                    "Error: No puede seleccionar el mismo nodo.", accion="error")
+                    else:
+                        self.nodos_seleccionados.append(nodo)
+                        self.interfaz_grafo.nodos_resaltados.append(nodo)
+                        print(f"Segundo nodo seleccionado: {nodo.id}")
+                        self.esperando_seleccion = False
+                        campos_iniciales = ["peso", "riesgo", "accidentalidad", "popularidad", "dificultad"]
+                        self.formulario = Formulario(self.screen, campos_iniciales, None, self.area_mapa, 
+                                                    accion="agregar_arista")
+            else:
+                self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
+                                            "Error: Seleccione un nodo de interés (tipo 0).", accion="error")
+                self.esperando_seleccion = False
 
-    def _manejar_seleccion_segundo_nodo(self, event):
-        nodo_id = self.interfaz_grafo.seleccionar_nodo(event)
-        if nodo_id and nodo_id != self.primer_nodo:
-            self.segundo_nodo = nodo_id
-            self.esperando_segundo_nodo = False
-            self.interfaz_grafo.resaltar_nodo(nodo_id, color=(0, 255, 0), grosor=2)
-            print(f"Segundo nodo asignado: {nodo_id}")
-            arista_existe = (self.primer_nodo in self.grafo.nodos and self.segundo_nodo in self.grafo.nodos and self.segundo_nodo in self.grafo.nodos[self.primer_nodo].vecinos)
-            if self.modo == "agregar_arista":
-                self.formulario = Formulario(self.screen, self.campos_iniciales, None, self.area_mapa, accion="agregar_arista")
-            elif self.modo == "eliminar_arista":
-                nodo1, nodo2 = self.grafo.nodos[self.primer_nodo], self.grafo.nodos[self.segundo_nodo]
-                nombre1 = nodo1.nombre or "CP" if nodo1.tipo == 0 else f"CP (Riesgo: {nodo1.riesgo})"
-                nombre2 = nodo2.nombre or "CP" if nodo2.tipo == 0 else f"CP (Riesgo: {nodo2.riesgo})"
-                mensaje = f"¿Eliminar arista entre {nombre1} y {nombre2}?"
-                if arista_existe:
-                    self.interfaz_grafo.resaltar_arista(self.primer_nodo, self.segundo_nodo, color=(255, 255, 0), grosor=8)
-                else:
-                    mensaje += " (No existe arista)"
-                self.formulario = Formulario(self.screen, None, None, self.area_mapa, mensaje, accion="eliminar_arista")
-
-    def añadir_punto_control(self):
-        pass
-    
-    
     def _manejar_formulario(self, event):
         self.formulario.manejar_evento(event)
         if self.formulario.fue_cancelado():
             print(f"Acción de {self.modo} cancelada.")
             self.interfaz_grafo.limpiar_resaltado()
+            self.nodos_seleccionados = []
             self.on_finish()
         elif self.formulario.esta_listo():
             if self.modo == "agregar_arista":
@@ -78,14 +67,19 @@ class InterfazArista:
             if peso <= 0:
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, "El peso debe ser positivo.", accion="error")
                 return
-            valido, mensaje = self.grafo.validar_agregar_arista(self.primer_nodo, self.segundo_nodo)
-            if not valido:
-                self.formulario = Formulario(self.screen, None, None, self.area_mapa, mensaje, accion="error")
+            riesgo = self.formulario.campos["riesgo"].strip()
+            accidentalidad = self.formulario.campos["accidentalidad"].strip()
+            popularidad = self.formulario.campos["popularidad"].strip()
+            dificultad = self.formulario.campos["dificultad"].strip()
+            if not (riesgo and accidentalidad and popularidad and dificultad):
+                self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
+                                            "Error: Todos los campos del nodo de control deben estar completos.", accion="error")
                 return
-            self.grafo.agregar_arista(self.primer_nodo, self.segundo_nodo, peso)
-            self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()
-            print(f"Arista agregada: {self.primer_nodo} -> {self.segundo_nodo}, peso: {peso}")
+            
+            self.grafo.agregar_arista(self.nodos_seleccionados[0].id, self.nodos_seleccionados[1].id, peso, riesgo, accidentalidad, popularidad, dificultad)
+            print(f"Arista agregada: {self.nodos_seleccionados[0].id} -> {self.nodos_seleccionados[1].id}, peso: {peso}")
             self.interfaz_grafo.limpiar_resaltado()
+            self.nodos_seleccionados = []
             self.on_finish()
         except ValueError:
             self.formulario = Formulario(self.screen, None, None, self.area_mapa, "Peso inválido.", accion="error")

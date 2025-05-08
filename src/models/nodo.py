@@ -1,10 +1,12 @@
 class Nodo:
     def __init__(self, id, nombre, descripcion, riesgo, tipo, accidentalidad, popularidad, dificultad, posicion=None):
         self.id = id
-        self.nombre = nombre
-        self.descripcion = descripcion
-        self.tipo = tipo # Tipo -> 0 Punto de interes, 1 Punto de control
-        self.posicion = posicion # (x,y)
+        self.tipo = tipo  # 0 para punto de interés, 1 para punto de control
+        self.posicion = posicion  #(x,y)
+        if self.tipo ==0:
+            self.nombre = nombre
+            self.descripcion = descripcion
+           
         
         #Si es un punto de control, tiene los atributos de punto de control.
         if self.tipo == 1:
@@ -13,4 +15,4 @@ class Nodo:
             self.riesgo = riesgo
             self.accidentalidad = accidentalidad
             self.popularidad = popularidad
-            self.dificultad = dificultad       
+            self.dificultad = dificultad   
