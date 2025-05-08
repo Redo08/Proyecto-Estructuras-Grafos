@@ -15,7 +15,7 @@ class Grafo:
         if tipo == 1:
             prefix = "PC"
         elif tipo == 0 and len(nombre) >= 2:
-            prefix = nombre[:2].capitalize() if len(nombre) >= 2 else "PI" #Primeras 2 letras y en mayuscula
+            prefix = nombre[:2].upper() if len(nombre) >= 2 else "PI" #Primeras 2 letras y en mayuscula
         max_id = 0
 
         for nodo in self.nodos:
@@ -55,7 +55,7 @@ class Grafo:
         arista.agregar_nodo_control(nodo_control)
         return nodo_control
         
-    def agregar_arista(self, id_origen, id_destino, peso=1, nodo_control=None, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
+    def agregar_arista(self, id_origen, id_destino, peso=1, nodo_control=None, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, crear_nodo_control=True):
        
         nodo_origen = Helpers.hallar_nodo(self.nodos, id_origen)
         nodo_destino = Helpers.hallar_nodo(self.nodos, id_destino)
@@ -77,7 +77,8 @@ class Grafo:
        
         arista = Arista(nodo_origen, nodo_destino, peso)            
         self.aristas.append(arista)
-        self.agregar_nodo_control(len(self.aristas)-1, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, posicion=None)
+        if crear_nodo_control:
+            self.agregar_nodo_control(len(self.aristas)-1, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, posicion=None)
         return arista
     
 
@@ -141,6 +142,7 @@ class Grafo:
             return False, "Nodo no existe"
         return True, None
 
+    ## TOCA CAMBIAR ##
     def validar_nodo(self, id_nodo):
         nodo = self.nodos.get(id_nodo)
         if not nodo:
@@ -173,7 +175,7 @@ class Grafo:
         
         return True, None  # Nodos tipo 0 (rojos) siempre son válidos
 
-    
+    ## TOCA CAMBIAR ## 
     def validar_todos_con_boton(self):
         """Valida todos los nodos tipo 1 y elimina los que no cumplen al presionar un botón."""
         nodos_a_eliminar = []
@@ -198,6 +200,7 @@ class Grafo:
                 self.aristas.remove(arista)
                 return #Se sale despues de salir
 
+    ## TOCA CAMBIAR ##
     def validar_agregar_arista(self, id_origen, id_destino):
         if len(self.nodos) < 2:
             return False, "Se necesitan al menos dos nodos para agregar una arista."
@@ -209,6 +212,7 @@ class Grafo:
             return False, "Ya existe una arista entre estos nodos."
         return True, None
     
+    ## TOCA CAMBIAR ##
     def validar_eliminar_arista(self, id_origen, id_destino):
         if id_origen not in self.nodos or id_destino not in self.nodos:
             return False, "Uno o ambos nodos no existen."
@@ -216,31 +220,60 @@ class Grafo:
             return False, "No existe una arista entre estos nodos."
         return True, None      
        
-    
+    ## TOCA CAMBIAR ##
     def cargar_json(self, datos):
         if datos is not None:
             #Agregar nodos
             for nodo in datos['nodos']:
-                self.agregar_nodo(
-                    id=nodo['id'],
-                    nombre=nodo['nombre'],
-                    descripcion=nodo['descripcion'],
-                    riesgo=nodo['riesgo'],
-                    tipo=nodo['tipo'],
-                    accidentalidad=nodo['accidentalidad'],
-                    popularidad=nodo['popularidad'],
-                    dificultad=nodo['dificultad'],
-                    posicion=nodo.get('posicion')
-                )
+                if nodo['tipo'] == 0:
+                    self.agregar_nodo_interes(
+                        nombre=nodo['nombre'],
+                        descripcion=nodo['descripcion'],
+                        posicion=nodo.get('posicion')
+                    )
 
-            #Agregar aristas
+            #Agregar aristas y sus nodos de control
             for arista in datos['aristas']:
-                self.agregar_arista(
-                    id_origen=arista['origen'],
-                    id_destino=arista['destino'],
-                    peso=arista['peso']
+                id_origen = arista['origen'],
+                id_destino = arista['destino'],
+                if isinstance(id_origen, (tuple, list)):
+                    id_origen = id_origen[0] if id_origen else ""
+                if isinstance(id_destino, (tuple, list)):
+                    id_destino = id_destino[0] if id_destino else ""                
+                
+                peso = arista['peso']
+                nodos_control = arista.get('nodos_control', [])
+                
+                # Depuración: Imprimir IDs para verificar
+                print(f"Procesando arista: id_origen={id_origen}, id_destino={id_destino}, peso={peso}")
+                
+                # Crear la arista   
+                arista = self.agregar_arista(
+                    id_origen=id_origen,
+                    id_destino=id_destino,
+                    peso=peso,
+                    crear_nodo_control=False
                 )
-        
+                
+                if arista:
+                    #Añadir nodos de control
+                    for nodo_control in nodos_control:
+                        nodo_control = Nodo(
+                            id=nodo_control['id'],
+                            nombre=None,
+                            descripcion=None,
+                            riesgo=nodo_control['riesgo'],
+                            tipo=1,
+                            accidentalidad=nodo_control['accidentalidad'],
+                            popularidad=nodo_control['popularidad'],
+                            dificultad=nodo_control['dificultad'],
+                            posicion=nodo_control.get('posicion')
+                        )
+                        arista.agregar_nodo_control(nodo_control)
+                else:
+                    print(f"No se pudo crear la arista: {id_origen} -> {id_destino} ")            
+    
+    ## TOCA CAMBIAR ##  
     def guardar_json(self):
         data = {
             "nodos": [],
@@ -248,7 +281,7 @@ class Grafo:
         }
         
         #Guardar nodos
-        for nodo_id, nodo in self.nodos.items():
+        for nodo in self.nodos:
             if nodo.tipo == 0:
                 data["nodos"].append({
                     "id": nodo.id,
@@ -261,26 +294,28 @@ class Grafo:
                     "dificultad": None,
                     "posicion": nodo.posicion
                 })
-            elif nodo.tipo == 1:
-                data["nodos"].append({
-                    "id": nodo.id,
-                    "nombre": None,
-                    "descripcion": None,
-                    "riesgo": nodo.riesgo,
-                    "tipo": nodo.tipo,
-                    "accidentalidad": nodo.accidentalidad,
-                    "popularidad": nodo.popularidad,
-                    "dificultad": nodo.dificultad,
-                    "posicion": nodo.posicion
-                })
             
         # Guardar aristas
-        for origen_id, nodo in self.nodos.items():
-            for destino_id, arista in nodo.vecinos.items():
-                data["aristas"].append({
-                    "origen": origen_id,
-                    "destino": destino_id,
-                    "peso": arista.peso
+        for arista in self.aristas:
+            nodos_control = []
+            for nodo_control in arista.nodos_control:
+                nodos_control.append({
+                    "id": nodo_control.id,
+                    "nombre": None,
+                    "descripcion": None,
+                    "riesgo": nodo_control.riesgo,
+                    "tipo": 1,
+                    "accidentalidad": nodo_control.accidentalidad,
+                    "popularidad": nodo_control.popularidad,
+                    "dificultad": nodo_control.dificultad,
+                    "posicion": nodo_control.posicion if nodo_control.posicion else None
                 })
+                
+            data["aristas"].append({
+                "origen": arista.origen.id,
+                "destino": arista.destino.id,
+                "peso": arista.peso,
+                "nodos_control": nodos_control
+            })
             
         return data 
