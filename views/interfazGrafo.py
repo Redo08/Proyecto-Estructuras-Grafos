@@ -7,31 +7,35 @@ class InterfazGrafo:
         self.screen = screen
         self.grafo = grafo
         self.area_mapa = area_mapa
-        self.posiciones_nodos = self.calcular_posiciones() 
-        self.aristas_resaltadas = []  # Lista de (id_origen, id_destino, color, grosor)
-        self.nodos_resaltados = []  # Lista de (id_nodo, color, grosor)        
+        self.aristas_resaltadas = []  
+        self.nodos_resaltados = []      
         
         
-    def calcular_posiciones(self):
-        return {id_nodo: nodo.posicion for id_nodo, nodo in self.grafo.nodos.items() if nodo.posicion}
-
     def seleccionar_nodo(self, event):
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.area_mapa.collidepoint(event.pos):
-            for nodo_id, pos in self.posiciones_nodos.items():
-                if math.hypot(pos[0] - event.pos[0], pos[1] - event.pos[1]) <= 15:
-                    print(f"Nodo seleccionado: {nodo_id}")
-                    return nodo_id    
+        """Selecciona un nodo basado en un clic y retorna su ID o None."""
+        #if event.type == pygame.MOUSEBUTTONUP and event.button == 1 and self.area_mapa.collidepoint(event.pos):
+        # Buscar en nodos de interés
+        nodo = self.buscar_nodo_en_lista(self.grafo.nodos, event.pos, radio=15, es_control=False)
+        if nodo is not None:
+            return nodo
+        # Buscar en nodos de control
+        for arista in self.grafo.aristas:
+            nodo = self.buscar_nodo_en_lista(arista.nodos_control, event.pos, radio=15, es_control=True)
+            if nodo is not None:
+                return nodo
+            
         return None
     
-    def resaltar_nodo(self, id_nodo, color=(0, 255, 0), grosor=2):
-        """Añade un nodo a la lista de resaltados."""
-        if id_nodo in self.posiciones_nodos:
-            # Evitar duplicados
-            self.nodos_resaltados = [nodo for nodo in self.nodos_resaltados
-                                    if nodo[0] != id_nodo]
-            self.nodos_resaltados.append((id_nodo, color, grosor))
-        else:
-            print(f"No se puede resaltar nodo: Posición no disponible para {id_nodo}")
+    def buscar_nodo_en_lista(self, lista_nodos, pos_clic, radio=15, es_control=False):
+        """Busca un nodo en la lista cuyo círculo contenga el punto del clic."""
+        for nodo in lista_nodos:
+            if nodo and nodo.posicion and math.hypot(nodo.posicion[0] - pos_clic[0], nodo.posicion[1] - pos_clic[1]) <= radio:
+                tipo = "control" if es_control else "interés"
+                print(f"Nodo de {tipo} seleccionado: {nodo.id}")
+                return nodo
+        return None
+    
+    
     
     def resaltar_arista(self, id_origen, id_destino, color=(255,255,0), grosor=4):
         if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
@@ -40,29 +44,38 @@ class InterfazGrafo:
                                       if not (arista[0] == id_origen and arista[1] == id_destino)]
             self.aristas_resaltadas.append((id_origen, id_destino, color, grosor))
         else:
-            print(f"No se puede resaltar arista: Posiciones no disponibles para {id_origen}, {id_destino}")
-
-    
+            print(f"No se puede resaltar arista: Posiciones no disponibles para {id_origen}, {id_destino}")   
 
     def limpiar_resaltado(self):
         """Limpia los resaltados de nodos y aristas."""
         self.aristas_resaltadas = []
         self.nodos_resaltados = []
 
-    def dibujar_nodos(self):
-        for nodo_id, pos in self.posiciones_nodos.items():
-            nodo = self.grafo.nodos[nodo_id]
-            pygame.draw.circle(self.screen, (255, 0, 0), pos, 15)
-            
-            etiqueta = nodo.id if nodo.tipo == 0 and nodo.id else str(nodo_id) if nodo.tipo == 1 else "CP"
-            texto = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
-            self.screen.blit(texto, texto.get_rect(center=pos))
+    def dibujar_nodos_interes(self):
+        for nodo in self.grafo.nodos:
+            if nodo.posicion:
+                color = (255, 0, 0) if nodo.tipo == 0 else (0, 0, 255)
+                pygame.draw.circle(self.screen, color, nodo.posicion, 15)                
+                etiqueta = nodo.id 
+                texto = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
+                self.screen.blit(texto, texto.get_rect(center=nodo.posicion))
+
+    def dibujar_nodos_control(self):
+        for arista in self.grafo.aristas:
+            for nodo_control in arista.nodos_control:
+                if nodo_control.posicion:
+                    pygame.draw.circle(self.screen, (0, 255, 0), nodo_control.posicion, 10)
+                    etiqueta = nodo_control.id 
+                    texto = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
+                    self.screen.blit(texto, texto.get_rect(center=nodo_control.posicion))
+
 
     def dibujar_nodos_resaltados(self):
         """Dibuja los nodos resaltados."""
-        for id_nodo, color, grosor in self.nodos_resaltados:
-            if id_nodo in self.posiciones_nodos:
-                pygame.draw.circle(self.screen, color, self.posiciones_nodos[id_nodo], 18, grosor)               
+        color = (255, 255, 0)  # Color amarillo
+        grosor = 4
+        for nodo in self.nodos_resaltados:
+            pygame.draw.circle(self.screen, color, nodo.posicion, 18, grosor)               
     
     def dibujar_aristas(self):
         """Dibuja las aristas entre los nodos, evitando la superposición de dos aristas."""
@@ -163,14 +176,11 @@ class InterfazGrafo:
         
     def dibujar(self):
         """Dibuja el grafo completo."""
-        self.dibujar_aristas()
-        self.dibujar_nodos()
-        self.dibujar_aristas_resaltadas()
+        #self.dibujar_aristas()
+        self.dibujar_nodos_interes()
         self.dibujar_nodos_resaltados()
+        self.dibujar_nodos_control()
+        #self.dibujar_aristas_resaltadas()
+        #self.dibujar_nodos_resaltados()
     
-    def obtener_nodo_seleccionado(self, mouse_pos):
-        for nodo_id, pos in self.posiciones_nodos.items():
-            distancia = math.hypot(pos[0] - mouse_pos[0], pos[1] - mouse_pos[1])
-            if distancia <= 15:
-                return nodo_id
-        return None
+    

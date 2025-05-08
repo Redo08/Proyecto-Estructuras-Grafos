@@ -11,7 +11,7 @@ ANCHO, ALTO = 1350, 650
 helpers = Helpers()
 grafo = Grafo()
 data = helpers.cargar_texto_manual("archivos/predefinido.json")
-grafo.cargar_json(data)
+#grafo.cargar_json(data)
 
 visualizador = Visualizador(grafo, ANCHO, ALTO)
 

@@ -89,7 +89,7 @@ class Formulario:
                     texto = f"{campo}: "
                 superficie = fuente.render(texto, True, (0, 0, 0))
                 self.screen.blit(superficie, (x, y + i * 30))
-        elif self.accion in ["eliminar", "eliminar_arista", "error"]:
+        elif self.accion in ["eliminar", "eliminar_arista", "error","confirmar"]:
             mensaje = self.mensaje_confirmacion or "¿Está seguro?"
             superficie_mensaje = fuente.render(mensaje, True, (0, 0, 0))
             self.screen.blit(superficie_mensaje, (self.form_rect.x + 20, self.form_rect.y + 20))

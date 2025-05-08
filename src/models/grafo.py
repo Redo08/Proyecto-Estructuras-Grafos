@@ -7,6 +7,8 @@ class Grafo:
     def __init__(self):
         self.nodos = [] #Listo de nodos de punto de interes, nodos tipo 0
         self.aristas = []  # Aristas
+       
+
         
 
     def proximo_id(self, tipo, nombre=""):
@@ -42,8 +44,9 @@ class Grafo:
         tipo=0
         id=self.proximo_id(tipo, nombre)
         if not Helpers.hallar_nodo(self.nodos, id):
+            nodo=Nodo(id, nombre, descripcion, None, tipo, None, None, None, posicion)
             self.nodos.append(Nodo(id, nombre, descripcion, None, tipo, None, None, None, posicion))
-
+        return nodo
             
     def agregar_nodo_control (self, arista_index, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None):
         if not (0 <= arista_index < len(self.aristas)):
@@ -51,7 +54,7 @@ class Grafo:
             return None
         arista = self.aristas[arista_index] 
         id_control = self.proximo_id(tipo=1)
-        nodo_control = Nodo(id_control, None, None, riesgo, 1, accidentalidad, popularidad, dificultad)
+        nodo_control = Nodo(id_control, None, None, riesgo, 1, accidentalidad, popularidad, dificultad, None)
         arista.agregar_nodo_control(nodo_control)
         return nodo_control
         
@@ -172,21 +175,7 @@ class Grafo:
         return True, None  # Nodos tipo 0 (rojos) siempre son válidos
 
     
-    def validar_todos_con_boton(self):
-        """Valida todos los nodos tipo 1 y elimina los que no cumplen al presionar un botón."""
-        nodos_a_eliminar = []
-        for id_nodo in self.nodos:
-            if self.nodos[id_nodo].tipo == 1:
-                valido, mensaje = self.validar_nodo(id_nodo)
-                if not valido:
-                    print(f"Error: {mensaje}. Marcando nodo {id_nodo} para eliminación.")
-                    nodos_a_eliminar.append(id_nodo)
-        for id_nodo in nodos_a_eliminar:
-            self.eliminar_nodo(id_nodo)
-        if not nodos_a_eliminar:
-            print("Todos los nodos tipo 1 cumplen las restricciones.")
-
-   
+       
     
     def eliminar_arista(self, id_origen, id_destino):
         # Buscamos la arista especifica

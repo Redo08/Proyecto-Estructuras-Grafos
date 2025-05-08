@@ -83,3 +83,4 @@ class Helpers:
             if arista.origen.id == id_origen and arista.destino.id == id_destino:
                 return idx
         return -1
+    
