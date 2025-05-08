@@ -63,3 +63,23 @@ class Helpers:
             if Helpers.hallar_nodo(arista.nodos_control, id_nodo_control):
                 return idx
         return -1
+
+    def hallar_arista_por_nodos(lista_aristas, id_origen, id_destino):
+        """
+        Busca la arista que tiene los nodos con id_origen y id_destino como origen y destino.
+        Retorna la arista si la encuentra, None si no.
+        """
+        for arista in lista_aristas:
+            if arista.origen.id == id_origen and arista.destino.id == id_destino:
+                return arista
+        return None
+    
+    def hallar_indice_arista_por_nodos(lista_aristas, id_origen, id_destino):
+        """
+        Busca el índice de la arista que tiene los nodos con id_origen y id_destino como origen y destino.
+        Retorna el índice si lo encuentra, -1 si no.
+        """
+        for idx, arista in enumerate(lista_aristas):
+            if arista.origen.id == id_origen and arista.destino.id == id_destino:
+                return idx
+        return -1

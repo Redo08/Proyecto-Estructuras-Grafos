@@ -45,7 +45,7 @@ class Grafo:
             self.nodos.append(Nodo(id, nombre, descripcion, None, tipo, None, None, None, posicion))
 
             
-    def agregar_nodo_control (self, arista_index, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
+    def agregar_nodo_control (self, arista_index, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None):
         if not (0 <= arista_index < len(self.aristas)):
             print("Índice de arista inválido.")
             return None
@@ -55,7 +55,7 @@ class Grafo:
         arista.agregar_nodo_control(nodo_control)
         return nodo_control
         
-    def agregar_arista(self, id_origen, id_destino, peso=1, nodo_control=None, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, posicion=None):
+    def agregar_arista(self, id_origen, id_destino, peso=1, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None):
        
         nodo_origen = Helpers.hallar_nodo(self.nodos, id_origen)
         nodo_destino = Helpers.hallar_nodo(self.nodos, id_destino)
@@ -77,7 +77,7 @@ class Grafo:
        
         arista = Arista(nodo_origen, nodo_destino, peso)            
         self.aristas.append(arista)
-        self.agregar_nodo_control(len(self.aristas)-1, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, posicion=None)
+        self.agregar_nodo_control(len(self.aristas)-1, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None)
         return arista
     
 
@@ -91,7 +91,7 @@ class Grafo:
         # Eliminar todas las aristas que incluyen este nodo como origen o destino
         self.aristas = [
             arista for arista in self.aristas
-            if arista.origen.id != id_nodo and arista.destino.id != id_nodo
+            if arista.origen.id != id_nodo and arista.destino.id != id_nodo #Probar si es or
         ]
 
         # Eliminar el nodo de la lista de nodos
@@ -122,24 +122,22 @@ class Grafo:
             return True
 
 
-        # Eliminar el nodo de control
-        arista.nodos_control = [n for n in arista.nodos_control if n.id != id_nodo_control]
-
-        # Si no quedan nodos de control, eliminar la arista
-        if not arista.nodos_control:
-            self.aristas.pop(arista_idx)
-            print(f"Arista eliminada porque no tiene nodos de control.")
-            return True
-
         print(f"Nodo de control {id_nodo_control} eliminado.")
         return True
+    
+    def eliminar_arista(self, id_origen, id_destino):
+        """
+        Elimina la arista que conecta los nodos con id_origen y id_destino.
+        Retorna True si se eliminó, False si no se encontró.
+        """
+        arista_idx = Helpers.hallar_indice_arista_por_nodos(self.aristas, id_origen, id_destino)
+        if arista_idx == -1:
+            print(f"No se encontró arista entre {id_origen} y {id_destino}.")
+            return False
 
-
-        
-    def validar_eliminacion_nodo(self, nodo_id):
-        if Helpers.hallar_id(self.nodos, nodo_id):
-            return False, "Nodo no existe"
-        return True, None
+        self.aristas.pop(arista_idx)
+        print(f"Arista entre {id_origen} y {id_destino} eliminada.")
+        return True
 
     def validar_nodo(self, id_nodo):
         nodo = self.nodos.get(id_nodo)
@@ -198,24 +196,9 @@ class Grafo:
                 self.aristas.remove(arista)
                 return #Se sale despues de salir
 
-    def validar_agregar_arista(self, id_origen, id_destino):
-        if len(self.nodos) < 2:
-            return False, "Se necesitan al menos dos nodos para agregar una arista."
-        if id_origen not in self.nodos or id_destino not in self.nodos:
-            return False, "Uno o ambos nodos no existen."
-        if id_origen == id_destino:
-            return False, "No se pueden agregar aristas de un nodo a sí mismo."
-        if id_destino in self.nodos[id_origen].vecinos:
-            return False, "Ya existe una arista entre estos nodos."
-        return True, None
+   
     
-    def validar_eliminar_arista(self, id_origen, id_destino):
-        if id_origen not in self.nodos or id_destino not in self.nodos:
-            return False, "Uno o ambos nodos no existen."
-        if id_destino not in self.nodos[id_origen].vecinos:
-            return False, "No existe una arista entre estos nodos."
-        return True, None      
-       
+   
     
     def cargar_json(self, datos):
         if datos is not None:
@@ -248,7 +231,7 @@ class Grafo:
         }
         
         #Guardar nodos
-        for nodo_id, nodo in self.nodos.items():
+        for nodo in self.nodos:
             if nodo.tipo == 0:
                 data["nodos"].append({
                     "id": nodo.id,
