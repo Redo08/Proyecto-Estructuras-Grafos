@@ -55,7 +55,7 @@ class Grafo:
         arista.agregar_nodo_control(nodo_control)
         return nodo_control
         
-    def agregar_arista(self, id_origen, id_destino, peso=1, nodo_control=None, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, crear_nodo_control=True):
+    def agregar_arista(self, id_origen, id_destino, peso, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None, crear_nodo_control=True):
        
         nodo_origen = Helpers.hallar_nodo(self.nodos, id_origen)
         nodo_destino = Helpers.hallar_nodo(self.nodos, id_destino)
@@ -78,7 +78,7 @@ class Grafo:
         arista = Arista(nodo_origen, nodo_destino, peso)            
         self.aristas.append(arista)
         if crear_nodo_control:
-            self.agregar_nodo_control(len(self.aristas)-1, riesgo=None, accidentalidad=None, popularidad=None, dificultad=None)
+            self.agregar_nodo_control(len(self.aristas)-1, riesgo, accidentalidad, popularidad, dificultad)
         return arista
     
 

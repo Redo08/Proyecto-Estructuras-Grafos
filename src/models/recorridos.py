@@ -117,6 +117,19 @@ class Recorridos:
     
     def recalcular_usuario(self, usuario):
         self.usuario = usuario
+        
+    def obtener_nodos_control(self, camino):
+        nodos_control = []
+        for i in range(len(camino) - 1):
+            u = camino[i]
+            v = camino[i + 1]
+            for arista in self.grafo.aristas:
+                if arista.origen.id == u and arista.destino.id == v:
+                    nodos_control.extend([nc.id for nc in arista.nodos_control])
+                    break
+                
+        return nodos_control
+
 ### ==== Rutas básicas ====
     def camino_menor_distancia(self, inicio, fin):
         """
@@ -177,16 +190,17 @@ class Recorridos:
         
         for inicio in nodos_validos:
             for fin in nodos_validos:
-                if inicio != fin:
-                    camino, distancia, nodos_control = self.camino_menor_distancia(inicio, fin)
+                if inicio != fin and self.distancias[inicio][fin] != float('inf'):
+                    camino = self.reconstruccion_camino(inicio, fin, self.caminos)
                     if camino:
                         penalizacion = self.evaluar_camino(camino)
-                        if penalizacion < mejor_penalizacion or \
-                            (penalizacion == mejor_penalizacion and distancia < mejor_distancia):
+                        distancia = self.distancias[inicio][fin]
+                        
+                        if (penalizacion * 1000 + distancia) < (mejor_penalizacion * 1000 + mejor_distancia):
                             mejor_camino = camino
                             mejor_distancia = distancia
                             mejor_penalizacion = penalizacion
-                            mejor_nodos_control = nodos_control
+                            mejor_nodos_control = self.obtener_nodos_control(camino)
                             
         return mejor_camino, mejor_distancia, mejor_penalizacion, mejor_nodos_control
 
