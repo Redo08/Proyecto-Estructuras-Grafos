@@ -8,6 +8,7 @@ from views.InterfazNodo import InterfazNodo
 from views.interfazUsuario import InterfazUsuario
 from views.InterfazArista import InterfazArista
 from views.interfazRecorridos import InterfazRecorridos
+AZUL=(1,46,67)
 
 class Visualizador:
     def __init__(self, grafo, ancho, alto):
@@ -34,15 +35,15 @@ class Visualizador:
         #Botones
         self.botones = [
 
-            Boton(pygame.Rect(self.area_control.x + 380, 50, 150, 40), "Nuevo nodo conrol", self.iniciar_agregar_nodo_control, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "Nuevo nodo", self.iniciar_agregar_nodo, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 200, 110, 150, 40), "Eliminar nodo", self.iniciar_eliminar_nodo, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 380, 110, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen),
-            Boton(pygame.Rect(self.area_control.x + 380, 170, 150, 40), "Recorridos", self.iniciar_recorridos, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 380, 50, 150, 40), "New nodo control", self.iniciar_agregar_nodo_control, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 20, 50, 150, 40), "Cargar mapa", self.cargar_mapa, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 200, 50, 150, 40), "Guardar mapa", self.guardar_mapa, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 20, 110, 150, 40), "New nodo", self.iniciar_agregar_nodo, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 200, 110, 150, 40), "Eliminar nodo", self.iniciar_eliminar_nodo, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 380, 110, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen,AZUL),
+            Boton(pygame.Rect(self.area_control.x + 380, 170, 150, 40), "Recorridos", self.iniciar_recorridos, self.screen,AZUL),
         ]
         
        
@@ -56,15 +57,16 @@ class Visualizador:
         NEGRO = (0, 0, 0)
         BLANCO = (255, 255, 255)
         ROJO = (255, 0, 0)
-        GRIS = (150, 150, 150)
+        GRIS = (234, 235, 237)
         VERDE = (0, 255, 0)
+        
     
         # Fondo
         self.screen.fill(BLANCO)
     
         # Titulo
         font = pygame.font.Font(None, 36)
-        texto_mapa = font.render("MAPA", True, NEGRO)
+        texto_mapa = font.render("RUTAS POR LA CIUDAD", True, AZUL)
         ancho_texto = texto_mapa.get_width()
         pos_x = (self.ancho * 0.6 / 2) - (ancho_texto / 2)
         pos_y = (self.altura_titulo / 2) - (texto_mapa.get_height() / 2)
@@ -72,8 +74,8 @@ class Visualizador:
         
         # Dibujar áreas
         pygame.draw.rect(self.screen, NEGRO, self.area_mapa, 2)
-        pygame.draw.rect(self.screen, GRIS, self.area_control)
-        pygame.draw.rect(self.screen, BLANCO, self.area_info)
+        pygame.draw.rect(self.screen, BLANCO, self.area_control)
+        pygame.draw.rect(self.screen, GRIS, self.area_info)
         
         # Dibujar grafo
         self.interfaz_grafo.dibujar()

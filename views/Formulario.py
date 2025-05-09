@@ -1,6 +1,8 @@
 import pygame
 from views.boton import Boton
-
+GRIS = (234, 235, 237)
+ROJO = (208, 32, 38)
+VERDE =(138,195,139)
 class Formulario:
     def __init__(self, screen, campos_iniciales=None, condiciones=None, area_mapa=None, mensaje_confirmacion=None, accion="agregar", botones=None):
         self.screen = screen
@@ -23,16 +25,16 @@ class Formulario:
                     boton_confirmar_texto,
                     self.marcar_completo,
                     self.screen,
-                    color_fondo=(0, 255, 0),
-                    color_texto=(255, 255, 255)
+                    color_fondo=VERDE,
+                    color_texto=(240, 240, 240)
                 ),
                 Boton(
                     pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40),
                     "Cancelar",
                     self.marcar_cancelado,
                     self.screen,
-                    color_fondo=(255, 0, 0),
-                    color_texto=(255, 255, 255)
+                    color_fondo=ROJO,
+                    color_texto=(240, 240, 240)
                  ) 
             ]
         else:
@@ -73,7 +75,7 @@ class Formulario:
             boton.manejar_evento(evento)
 
     def dibujar(self):
-        pygame.draw.rect(self.screen, (200, 200, 200), self.form_rect)
+        pygame.draw.rect(self.screen, GRIS, self.form_rect)
         fuente = pygame.font.Font(None, 30)
         if self.accion in ["agregar", "agregar_arista","agregar_nodo_control"]:
             instruccion = "Ingrese los datos solicitados"

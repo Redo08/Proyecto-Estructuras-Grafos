@@ -302,6 +302,7 @@ class Recorridos:
                         valido = True
                         penalizaciones = 0
                         
+                        #Accedemos a los nodos de control de las aristas del camino
                         for nodo_id in nodos_control:
                             for arista in self.grafo.aristas:
                                 for i in arista.nodos_control:

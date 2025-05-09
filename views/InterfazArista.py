@@ -48,15 +48,17 @@ class InterfazArista:
                         self.esperando_seleccion = False
                         
                         if self.modo == "agregar_arista":
-                            campos_iniciales = ["peso", "riesgo", "accidentalidad", "popularidad", "dificultad"]
+                            campos_iniciales = ["Peso", "Riesgo (1-5)", "Accidentalidad (1-5)", "Popularidad (1-5)", "Dificultad (1-5)"]
                             self.formulario = Formulario(self.screen, campos_iniciales, None, self.area_mapa,
                                                         accion="agregar_arista")
+                                                       
+                            
                         elif self.modo == "agregar_nodo_control":
                             # Verificar si la arista existe
                             arista = Helpers.hallar_arista_por_nodos(self.grafo.aristas,self.nodos_seleccionados[0].id, self.nodos_seleccionados[1].id)
                             if arista:
-                                campos_iniciales = ["riesgo", "accidentalidad", "popularidad", "dificultad"]
-                                print(f"Campos iniciales para formulario: {campos_iniciales}")  # Depuración
+                                campos_iniciales = ["Riesgo (1-5)", "Accidentalidad (1-5)", "Popularidad (1-5)", "Dificultad (1-5)"]
+                               
                                 self.formulario = Formulario(self.screen, campos_iniciales, None, self.area_mapa,
                                                             accion="agregar_nodo_control")
                             else:
@@ -87,22 +89,34 @@ class InterfazArista:
 
     def _agregar_arista(self):
         try:
-            peso = Helpers.quitar_decimales_si_no_hay(float(self.formulario.campos["peso"]))
-            if peso <= 0:
-                self.formulario = Formulario(self.screen, None, None, self.area_mapa, "El peso debe ser positivo.", accion="error")
+            # Obtener y validar Peso
+            peso_str = self.formulario.campos["Peso"].strip()
+            if not peso_str:
+                self.formulario = Formulario(self.screen, [], None, self.area_mapa,
+                                            "Error: El campo Peso debe estar completo.", accion="error")
                 return
-            riesgo = self.formulario.campos["riesgo"].strip()
-            accidentalidad =int( self.formulario.campos["accidentalidad"].strip())
+            try:
+                peso = Helpers.quitar_decimales_si_no_hay(float(peso_str))
+                if peso <= 0:
+                    self.formulario = Formulario(self.screen, [], None, self.area_mapa,
+                                                "Error: El peso debe ser positivo.", accion="error")
+                    return
+            except ValueError:
+                self.formulario = Formulario(self.screen, [], None, self.area_mapa,
+                                            "Error: El peso debe ser un número válido.", accion="error")
+                return
+            riesgo = self.formulario.campos["Riesgo (1-5)"].strip()
+            accidentalidad =int( self.formulario.campos["Accidentalidad (1-5)"].strip())
             if accidentalidad <0 or accidentalidad > 5:
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, "Accidentalidad debe ser entre 0 y 5.", accion="error")
                 return
             #print(f"Accidentalidad: {accidentalidad}")
-            popularidad = int(self.formulario.campos["popularidad"].strip())
+            popularidad = int(self.formulario.campos["Popularidad (1-5)"].strip())
             if popularidad <0 or popularidad > 5:
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, "Popularidad debe ser entre 0 y 5.", accion="error")
                 return
             #print(f"Popularidad: {popularidad}")
-            dificultad = int(self.formulario.campos["dificultad"].strip())
+            dificultad = int(self.formulario.campos["Dificultad (1-5)"].strip())
             if dificultad <0 or dificultad > 5:
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, "Dificultad debe ser entre 0 y 5.", accion="error")
                 return

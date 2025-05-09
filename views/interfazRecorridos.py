@@ -4,6 +4,8 @@ from views.Formulario import Formulario
 from views.interfazUsuario import InterfazUsuario
 from src.helpers import Helpers
 import pygame
+AZUL=(1,46,67)
+ROJO = (208, 32, 38)
 class InterfazRecorridos:
     def __init__(self, screen, area_mapa, grafo, interfaz_grafo, usuario, area_info, on_finish):
         self.screen = screen
@@ -26,28 +28,28 @@ class InterfazRecorridos:
             Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 160, 150, 40),
                   "Experiencia",
                   lambda: self.seleccionar_tipo_recorrido("mejor_experiencia"),
-                  self.screen),
+                  self.screen,AZUL),
             Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 160, 150, 40),
                   "Menos peligroso",
                   lambda: self.seleccionar_tipo_recorrido("menos_peligroso"),
-                  self.screen),
+                  self.screen,AZUL),
             Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 220, 150, 40),
                   "DDR",
                   lambda: self.seleccionar_tipo_recorrido("balanceado"),
-                  self.screen),
+                  self.screen, AZUL),
             Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 220, 150, 40),
                   "EDD",
                   lambda: self.seleccionar_tipo_recorrido("mejor_experiencia_distancia"),
-                  self.screen),
+                  self.screen, AZUL),
             Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 280, 150, 40),
                   "De uno a todos",
                   lambda: self.seleccionar_tipo_recorrido("todos_todos"),
-                  self.screen),
+                  self.screen,AZUL),
             Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 280, 150, 40),
                   "Volver",
                   lambda: self.on_finish(),
                   self.screen,
-                  color_fondo=(255,0,0)),
+                  ROJO),
         ]
         self.formulario = Formulario(
             self.screen,

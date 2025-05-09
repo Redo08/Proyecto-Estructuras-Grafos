@@ -2,13 +2,13 @@ import pygame
 import math
 from src.helpers import Helpers
 # Definición de colores
-COLOR_NODO_INTERES_1 = (255, 0, 0)    # Rojo (tipo 0)
-COLOR_NODO_INTERES_2 = (0, 0, 255)    # Azul (tipo 1)
-COLOR_NODO_CONTROL = (0, 255, 0)      # Verde
-COLOR_ETIQUETA = (255, 255, 255)      # Blanco
+COLOR_NODO_INTERES_1 = (26,154,177)    # Rojo (tipo 0)
+
+COLOR_NODO_CONTROL = (254, 182, 20)      # Verde
+COLOR_ETIQUETA = (89,48,11)      # Blanco
 COLOR_ARISTA = (0, 0, 0)              # Negro
-COLOR_PESO = (0, 255, 0)              # Verde
-COLOR_RESALTADO = (255, 255, 0)       # Amarillo
+COLOR_PESO = (0, 0, 0)              # Verde
+COLOR_RESALTADO = (255, 253, 85)       # Amarillo
 COLOR_CAMINO = (0, 255, 0)            # Verde
 
 # Constantes de tamaño
@@ -51,15 +51,7 @@ class InterfazGrafo:
                 return nodo
         return None
     
-    """"
-    def resaltar_arista(self, id_origen, id_destino, color=(255,255,0), grosor=4):
-        if Helpers.el_nodo_existe(self.grafo.nodos, id_origen) and Helpers.el_nodo_existe(self.grafo.nodos, id_destino):
-            # Evitar duplicados
-            self.aristas_resaltadas = [arista for arista in self.aristas_resaltadas
-                                      if not (arista[0] == id_origen and arista[1] == id_destino)]
-            self.aristas_resaltadas.append((id_origen, id_destino, color, grosor))
-        else:
-            print(f"No se puede resaltar arista: Posiciones no disponibles para {id_origen}, {id_destino}") """  
+     
 
     def limpiar_resaltado(self):
         """Limpia los resaltados de nodos y aristas."""
