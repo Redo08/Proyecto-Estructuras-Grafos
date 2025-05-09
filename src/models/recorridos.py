@@ -67,6 +67,46 @@ class Recorridos:
             
         return camino
     
+    def dijkstra_por_experiencia(self, inicio, fin):
+        criterios = self.valores_segun_experiencia()
+        visitados = set()
+        heap = [(0, 0 , inicio, [])] # Penalización, distancia_acumulada, nodo_actual, camino_actual
+        
+        while heap:
+            penalizacion, distancia_acumulada, nodo_actual, camino = heapq.heappop(heap)
+            
+            if nodo_actual in visitados: # No repetir
+                continue
+            
+            camino = camino + [nodo_actual]
+            visitados.add(nodo_actual)
+            
+            if nodo_actual == fin:
+                nodos_control = self.obtener_nodos_control(camino)
+                return camino, distancia_acumulada, penalizacion, nodos_control
+            
+            # Buscar en vecinos
+            for arista in self.grafo.aristas:
+                if arista.origen.id == nodo_actual:
+                    vecino = arista.destino.id
+                    if vecino not in visitados:
+                        nueva_penalizacion = penalizacion
+                        
+                        # Verifica criterios para nodos control
+                        for nodo_control in arista.nodos_control:
+                            if int(nodo_control.riesgo) not in criterios['riesgo']:
+                                nueva_penalizacion += 1
+                            if int(nodo_control.accidentalidad) not in criterios['accidentalidad']:
+                                nueva_penalizacion += 1
+                            if int(nodo_control.dificultad) not in criterios['dificultad']:
+                                nueva_penalizacion += 4
+                            if int(nodo_control.popularidad) not in criterios['popularidad']:
+                                nueva_penalizacion +=1
+                            
+                        heapq.heappush(heap, (nueva_penalizacion, distancia_acumulada + arista.peso, vecino, camino))
+                        
+        return [], float('inf'), float('inf'), []
+            
     def dijkstra_por_riesgo(self, inicio, fin):
         visitados = set()
         heap = [(0, 0, inicio, [])] #Suma riesgo, cantidad_puntos_control, nodo_actual, camino
@@ -192,16 +232,15 @@ class Recorridos:
         for inicio in nodos_validos:
             for fin in nodos_validos:
                 if inicio != fin and self.distancias[inicio][fin] != float('inf'):
-                    camino = self.reconstruccion_camino(inicio, fin, self.caminos)
+                    camino, distancia, penalizacion, nodos_control = self.dijkstra_por_experiencia(inicio, fin)
                     if camino:
-                        penalizacion = self.evaluar_camino(camino)
-                        distancia = self.distancias[inicio][fin]
                         
-                        if (penalizacion * 1000 + distancia) < (mejor_penalizacion * 1000 + mejor_distancia):
+                        if penalizacion < mejor_penalizacion or \
+                            (penalizacion == mejor_penalizacion and distancia < mejor_distancia):
                             mejor_camino = camino
                             mejor_distancia = distancia
                             mejor_penalizacion = penalizacion
-                            mejor_nodos_control = self.obtener_nodos_control(camino)
+                            mejor_nodos_control = nodos_control
                             
         return mejor_camino, mejor_distancia, mejor_penalizacion, mejor_nodos_control
 
