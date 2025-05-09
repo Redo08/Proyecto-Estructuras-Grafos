@@ -30,7 +30,7 @@ class InterfazArista:
                  # Asegurarse de que el nodo sea de interés (tipo 0)
                 if nodo.tipo != 0:
                     self.formulario = Formulario(self.screen, [], None, self.area_mapa,
-                                                "Error: Seleccione un nodo de interés (tipo 0).", accion="error")
+                                                "Error: Seleccione un nodo de interés(tipo 0).", accion="error")
                     self.esperando_seleccion = False
                     return
                 if len(self.nodos_seleccionados) == 0:
@@ -61,13 +61,13 @@ class InterfazArista:
                                                             accion="agregar_nodo_control")
                             else:
                                 self.formulario = Formulario(self.screen, [], None, self.area_mapa,
-                                                            "Error: No existe una arista entre los nodos seleccionados.", accion="error")
+                                                            "Error: Entre los nodos no hay arista.", accion="error")
                                 return
                         elif self.modo == "eliminar_arista":
                             self._procesar_eliminar_arista()
             else:
                 self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
-                                            "Error: Seleccione un nodo de interés (tipo 0).", accion="error")
+                                            "Error: Seleccione un nodo de interés(tipo 0).", accion="error")
                 self.esperando_seleccion = False
 
     def _manejar_formulario(self, event):
@@ -92,12 +92,24 @@ class InterfazArista:
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, "El peso debe ser positivo.", accion="error")
                 return
             riesgo = self.formulario.campos["riesgo"].strip()
-            accidentalidad = self.formulario.campos["accidentalidad"].strip()
-            popularidad = self.formulario.campos["popularidad"].strip()
-            dificultad = self.formulario.campos["dificultad"].strip()
+            accidentalidad =int( self.formulario.campos["accidentalidad"].strip())
+            if accidentalidad <0 or accidentalidad > 5:
+                self.formulario = Formulario(self.screen, None, None, self.area_mapa, "Accidentalidad debe ser entre 0 y 5.", accion="error")
+                return
+            #print(f"Accidentalidad: {accidentalidad}")
+            popularidad = int(self.formulario.campos["popularidad"].strip())
+            if popularidad <0 or popularidad > 5:
+                self.formulario = Formulario(self.screen, None, None, self.area_mapa, "Popularidad debe ser entre 0 y 5.", accion="error")
+                return
+            #print(f"Popularidad: {popularidad}")
+            dificultad = int(self.formulario.campos["dificultad"].strip())
+            if dificultad <0 or dificultad > 5:
+                self.formulario = Formulario(self.screen, None, None, self.area_mapa, "Dificultad debe ser entre 0 y 5.", accion="error")
+                return
+            #print(f"Dificultad: {dificultad}")
             if not (riesgo and accidentalidad and popularidad and dificultad):
                 self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
-                                            "Error: Todos los campos del nodo de control deben estar completos.", accion="error")
+                                            "Error: Complete todos los campos.", accion="error")
                 return
             
             self.grafo.agregar_arista(self.nodos_seleccionados[0].id, self.nodos_seleccionados[1].id, peso, riesgo, accidentalidad, popularidad, dificultad)
@@ -134,7 +146,19 @@ class InterfazArista:
                 self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
                                             "Error: Todos los campos del nodo de control deben estar completos.", accion="error")              
                 return
-
+            try:
+                riesgo = int(riesgo)
+                accidentalidad = int(accidentalidad)
+                popularidad = int(popularidad)
+                dificultad = int(dificultad)
+                if not (1 <= riesgo <= 5 and 1 <= accidentalidad <= 5 and 1 <= popularidad <= 5 and 1 <= dificultad <= 5):
+                    self.formulario = Formulario(self.screen, [], None, self.area_mapa,
+                                                "Error: Riesgo, accidentalidad, popularidad y dificultad deben estar entre 1 y 5.", accion="error")
+                    return
+            except ValueError:
+                self.formulario = Formulario(self.screen, [], None, self.area_mapa,
+                                            "Error: Los valores deben ser números enteros.", accion="error")
+                return
             indice=Helpers.hallar_indice_arista_por_nodos(self.grafo.aristas,self.nodos_seleccionados[0].id, self.nodos_seleccionados[1].id)
             self.grafo.agregar_nodo_control(indice,riesgo, accidentalidad, popularidad, dificultad)
             print(f"Nodo de control agregado entre: {self.nodos_seleccionados[0].id} y {self.nodos_seleccionados[1].id}")

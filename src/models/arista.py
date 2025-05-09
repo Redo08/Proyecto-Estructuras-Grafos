@@ -22,6 +22,8 @@ class Arista:
         self.nodos_control.append(nodo_control)
         if self.origen.posicion and self.destino.posicion:
             self.calcular_posiciones(self.origen.posicion, self.destino.posicion)
+        Helpers.mostrar_nodo(nodo_control)
+        
     
     
     def remover_nodo_control(self, id_nodo_control):

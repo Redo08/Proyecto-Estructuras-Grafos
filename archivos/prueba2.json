@@ -1,0 +1,167 @@
+{
+    "nodos": [
+        {
+            "id": "CA1",
+            "nombre": "Cable Plaza",
+            "descripcion": "Centro comercial grande",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                497,
+                495
+            ]
+        },
+        {
+            "id": "MI1",
+            "nombre": "Milan",
+            "descripcion": "Barrio pupi, muchos restaurantes",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                165,
+                593
+            ]
+        },
+        {
+            "id": "CH1",
+            "nombre": "Chipre",
+            "descripcion": "Mirador de chipre, zona turistica",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                623,
+                106
+            ]
+        },
+        {
+            "id": "PA1",
+            "nombre": "Parque Caldas",
+            "descripcion": "Centro comercial del centro",
+            "riesgo": null,
+            "tipo": 0,
+            "accidentalidad": null,
+            "popularidad": null,
+            "dificultad": null,
+            "posicion": [
+                377,
+                182
+            ]
+        }
+    ],
+    "aristas": [
+        {
+            "origen": "CA1",
+            "destino": "MI1",
+            "peso": 5,
+            "nodos_control": [
+                {
+                    "id": "PC1",
+                    "nombre": null,
+                    "descripcion": null,
+                    "riesgo": "2",
+                    "tipo": 1,
+                    "accidentalidad": "2",
+                    "popularidad": "4",
+                    "dificultad": "2",
+                    "posicion": [
+                        331.0,
+                        544.0
+                    ]
+                }
+            ]
+        },
+        {
+            "origen": "CA1",
+            "destino": "PA1",
+            "peso": 7,
+            "nodos_control": [
+                {
+                    "id": "PC2",
+                    "nombre": null,
+                    "descripcion": null,
+                    "riesgo": "3",
+                    "tipo": 1,
+                    "accidentalidad": "3",
+                    "popularidad": "4",
+                    "dificultad": "2",
+                    "posicion": [
+                        437.0,
+                        338.5
+                    ]
+                }
+            ]
+        },
+        {
+            "origen": "CA1",
+            "destino": "CH1",
+            "peso": 7,
+            "nodos_control": [
+                {
+                    "id": "PC4",
+                    "nombre": null,
+                    "descripcion": null,
+                    "riesgo": "3",
+                    "tipo": 1,
+                    "accidentalidad": "3",
+                    "popularidad": "3",
+                    "dificultad": "3",
+                    "posicion": [
+                        560.0,
+                        300.5
+                    ]
+                }
+            ]
+        },
+        {
+            "origen": "PA1",
+            "destino": "CH1",
+            "peso": 6,
+            "nodos_control": [
+                {
+                    "id": "PC3",
+                    "nombre": null,
+                    "descripcion": null,
+                    "riesgo": "2",
+                    "tipo": 1,
+                    "accidentalidad": "3",
+                    "popularidad": "3",
+                    "dificultad": "4",
+                    "posicion": [
+                        500.0,
+                        144.0
+                    ]
+                }
+            ]
+        },
+        {
+            "origen": "MI1",
+            "destino": "PA1",
+            "peso": 5,
+            "nodos_control": [
+                {
+                    "id": "PC5",
+                    "nombre": null,
+                    "descripcion": null,
+                    "riesgo": null,
+                    "tipo": 1,
+                    "accidentalidad": null,
+                    "popularidad": null,
+                    "dificultad": null,
+                    "posicion": [
+                        271.0,
+                        387.5
+                    ]
+                }
+            ]
+        }
+    ]
+}
