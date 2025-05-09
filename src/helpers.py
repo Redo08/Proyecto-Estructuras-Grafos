@@ -44,6 +44,16 @@ class Helpers:
             if nodo.id == id_nodo:
                 return nodo
         return None
+    
+    def hallar_nodo_control(lista_aristas, id_control):
+        """
+        Aqui practicamente lo que se hace es recorrer las aristas, buscando dentro de cada una si esta el nodo de control, y si se encuentra, se devuelve
+        """
+        for arista in lista_aristas:
+            for i in arista.nodos_control:
+                if i.id == id_control:
+                    return i
+                
     def hallar_arista_por_nodo_control(lista_aristas, id_nodo_control):
         """
         Busca la arista que contiene un nodo de control con el ID especificado.
@@ -84,3 +94,9 @@ class Helpers:
                 return idx
         return -1
     
+    def el_nodo_existe(lista_nodos, id_nodo):
+        for nodo in lista_nodos:
+            if nodo.id == id_nodo:
+                return True
+        
+        return False

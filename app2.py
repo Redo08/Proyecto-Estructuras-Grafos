@@ -1,6 +1,7 @@
 # Crear un grafo
 from src.helpers import Helpers
 from src.models.grafo import Grafo
+from src.models.recorridos import Recorridos
 data = Helpers.cargar_texto_manual("archivos/nuevoJson.json")
 grafo = Grafo()
 grafo.cargar_json(data)
@@ -46,11 +47,13 @@ Helpers.guardar_texto(nuevo_json)
 nuevo_grafo = Grafo()
 data_nueva = Helpers.cargar_texto()
 nuevo_grafo.cargar_json(data_nueva)
+recorridos = Recorridos(nuevo_grafo, None)
 
 # Imprimir estado del nuevo grafo
 print("\nEstado del grafo cargado desde el JSON guardado:")
 print("Nodos de interés:", [nodo.id for nodo in nuevo_grafo.nodos])
 print("Aristas creadas:", [(arista.origen.id, arista.destino.id) for arista in nuevo_grafo.aristas])
+print("El nuevo floyd_warshall:", recorridos.menor_distancia())
 for i, arista in enumerate(nuevo_grafo.aristas):
     print(f"Nodos de control en arista {i} ({arista.origen.id} -> {arista.destino.id}):",
           [nodo.id for nodo in arista.nodos_control])
