@@ -77,6 +77,7 @@ class Recorridos:
             if actual in visitados:
                 continue
             
+            #Va agregaando los nodos por los que va pasando
             camino = camino + [actual]
             visitados.add(actual)
             

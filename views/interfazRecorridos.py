@@ -6,6 +6,7 @@ from src.helpers import Helpers
 import pygame
 AZUL=(1,46,67)
 ROJO = (208, 32, 38)
+VERDE =(138,195,139)
 class InterfazRecorridos:
     def __init__(self, screen, area_mapa, grafo, interfaz_grafo, usuario, area_info, on_finish):
         self.screen = screen
@@ -298,7 +299,7 @@ class InterfazRecorridos:
         if self.mensaje:
             y = self.area_info.y + 10
             for linea in self.mensaje.split("\n"):
-                pygame.draw.rect(self.screen, (0, 255, 0), self.area_info, 2)  # borde verde
+                pygame.draw.rect(self.screen, VERDE, self.area_info, 2)  # borde verde
                 texto = pygame.font.Font(None, 20).render(linea, True, (0,0,0))
                 self.screen.blit(texto, (self.area_info.x + 10, y))
                 y += 25
