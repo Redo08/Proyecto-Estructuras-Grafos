@@ -41,7 +41,7 @@ class Visualizador:
             Boton(pygame.Rect(self.area_control.x + 200, 110, 150, 40), "Eliminar nodo", self.iniciar_eliminar_nodo, self.screen),
             Boton(pygame.Rect(self.area_control.x + 380, 110, 150, 40), "Crear usuario", self.iniciar_crear_usuario, self.screen),
             Boton(pygame.Rect(self.area_control.x + 20, 170, 150, 40), "Agregar arista", self.iniciar_agregar_arista, self.screen),
-            #Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen),
+            Boton(pygame.Rect(self.area_control.x + 200, 170, 150, 40), "Eliminar arista", self.iniciar_eliminar_arista, self.screen),
             Boton(pygame.Rect(self.area_control.x + 380, 170, 150, 40), "Recorridos", self.iniciar_recorridos, self.screen),
         ]
         
