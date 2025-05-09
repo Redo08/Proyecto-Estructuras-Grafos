@@ -1,6 +1,6 @@
 import pygame
 class Boton:
-    def __init__(self, rect, texto, accion, screen, color_fondo=(40,40,40), color_texto=(255,255,255)):
+    def __init__(self, rect, texto, accion, screen, color_fondo=(40,40,40), color_texto=(255,255,255), fuente=None):
         self.screen = screen
         self.rect = rect
         self.texto = texto
@@ -8,6 +8,7 @@ class Boton:
         self.color_fondo = color_fondo
         self.color_texto = color_texto
         self.color_hover = self._oscurecer_color(color_fondo)
+        self.fuente = fuente
         
     def _oscurecer_color(self, color_fondo):
         # Reduce cada componente en 40, sin pasarse de 0 para dar el efecto de hover
@@ -22,8 +23,9 @@ class Boton:
         #Dibujamos el botón
         pygame.draw.rect(self.screen, color_actual, self.rect)
         
-        fuente = pygame.font.Font(None, 24)
-        texto = fuente.render(self.texto, True, self.color_texto)
+        if self.fuente is None:
+            self.fuente = pygame.font.Font(None, 24)
+        texto = self.fuente.render(self.texto, True, self.color_texto)
         #Posicionar texto en el centro del boton    
         texto_rect = texto.get_rect(center=self.rect.center)
         #Dibujar dentro del centro del boton

@@ -23,32 +23,27 @@ class InterfazRecorridos:
 
     def crear_botones(self):
         botones = [
-            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 150, 150, 40),
+            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 160, 150, 40),
                   "Experiencia",
                   lambda: self.seleccionar_tipo_recorrido("mejor_experiencia"),
-                  self.screen,
-                  color_fondo=(100,100,255)),
-            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 150, 150, 40),
+                  self.screen),
+            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 160, 150, 40),
                   "Menos peligroso",
                   lambda: self.seleccionar_tipo_recorrido("menos_peligroso"),
-                  self.screen,
-                  color_fondo=(100,100,255)),
-            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 210, 150, 40),
-                  "Dist-Dif-Rie",
+                  self.screen),
+            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 220, 150, 40),
+                  "DDR",
                   lambda: self.seleccionar_tipo_recorrido("balanceado"),
-                  self.screen,
-                  color_fondo=(100,100,255)),
-            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 210, 150, 40),
-                  "Exp-Dist-Dif",
+                  self.screen),
+            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 220, 150, 40),
+                  "EDD",
                   lambda: self.seleccionar_tipo_recorrido("mejor_experiencia_distancia"),
-                  self.screen,
-                  color_fondo=(100,100,255)),
-            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 270, 150, 40),
+                  self.screen),
+            Boton(pygame.Rect(self.area_mapa.x + 120, self.area_mapa.y + 280, 150, 40),
                   "De uno a todos",
                   lambda: self.seleccionar_tipo_recorrido("todos_todos"),
-                  self.screen,
-                  color_fondo=(100,100,255)),
-            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 270, 150, 40),
+                  self.screen),
+            Boton(pygame.Rect(self.area_mapa.x + 300, self.area_mapa.y + 280, 150, 40),
                   "Volver",
                   lambda: self.on_finish(),
                   self.screen,
@@ -302,6 +297,6 @@ class InterfazRecorridos:
             y = self.area_info.y + 10
             for linea in self.mensaje.split("\n"):
                 pygame.draw.rect(self.screen, (0, 255, 0), self.area_info, 2)  # borde verde
-                texto = pygame.font.Font(None, 24).render(linea, True, (0,0,0))
+                texto = pygame.font.Font(None, 20).render(linea, True, (0,0,0))
                 self.screen.blit(texto, (self.area_info.x + 10, y))
                 y += 25
