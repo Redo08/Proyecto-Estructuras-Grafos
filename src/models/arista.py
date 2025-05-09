@@ -6,14 +6,14 @@ class Arista:
         self.peso = peso
         self.nodos_control = [] # => Id nodo_control: Nodo(tipo=1)
 
-    def actualizar_posiciones(self, pos_origen, pos_destino):
+    def calcular_posiciones(self, pos_origen, pos_destino, desplazamiento=(0,0)):
         n= len(self.nodos_control)
         if n==0:
             return
         for i,nodo_control in enumerate(self.nodos_control):  #enumerate permite obtener tanto el índice como el elemento en una sola pasada por la lista, evitando la necesidad de manejar índices manualmente
             t=(i+1)/(n+1) # Factor de interpolación
-            x= pos_origen[0] + t*(pos_destino[0]-pos_origen[0])
-            y= pos_origen[1] + t*(pos_destino[1]-pos_origen[1])
+            x= pos_origen[0] + t*(pos_destino[0]-pos_origen[0]) + desplazamiento[0]
+            y= pos_origen[1] + t*(pos_destino[1]-pos_origen[1]) + desplazamiento[1]
             nodo_control.posicion = (x,y)
 
     # Añade un nodo de control a la arista y actualiza posiciones si es posible.
@@ -21,7 +21,8 @@ class Arista:
         
         self.nodos_control.append(nodo_control)
         if self.origen.posicion and self.destino.posicion:
-            self.actualizar_posiciones(self.origen.posicion, self.destino.posicion)
+            self.calcular_posiciones(self.origen.posicion, self.destino.posicion)
+    
     
     def remover_nodo_control(self, id_nodo_control):
         """
@@ -34,5 +35,5 @@ class Arista:
         self.nodos_control.remove(nodo_control)
         # Si quedan nodos de control, recalcular posiciones
         if self.nodos_control and self.origen.posicion and self.destino.posicion:
-            self.actualizar_posiciones(self.origen.posicion, self.destino.posicion)
+            self.calcular_posiciones(self.origen.posicion, self.destino.posicion)
         return True
