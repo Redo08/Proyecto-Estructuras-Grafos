@@ -140,6 +140,13 @@ class Grafo:
         print(f"Arista entre {id_origen} y {id_destino} eliminada.")
         return True
 
+    def validar_eliminar_arista(self, id_origen, id_destino):
+        if not Helpers.el_nodo_existe(self.nodos, id_origen) or not Helpers.el_nodo_existe(self.nodos, id_destino):
+            return False, "Uno o ambos nodos no existen."
+        if Helpers.hallar_indice_arista_por_nodos(self.aristas, id_origen, id_destino) == -1:
+            return False, "No existe una arista entre estos nodos."
+        return True, None      
+
     ## TOCA CAMBIAR ##
     def validar_nodo(self, id_nodo):
         nodo = self.nodos.get(id_nodo)
@@ -173,13 +180,13 @@ class Grafo:
         
         return True, None  # Nodos tipo 0 (rojos) siempre son válidos
     
-    def eliminar_arista(self, id_origen, id_destino):
-        # Buscamos la arista especifica
-        for arista in self.aristas[:]: #Recorremos una copia de la lista
-            if arista.origen == id_origen and arista.destino == id_destino:
-                # Eliminamos la arista de la lista
-                self.aristas.remove(arista)
-                return #Se sale despues de salir
+    # def eliminar_arista(self, id_origen, id_destino):
+    #     # Buscamos la arista especifica
+    #     for arista in self.aristas[:]: #Recorremos una copia de la lista
+    #         if arista.origen == id_origen and arista.destino == id_destino:
+    #             # Eliminamos la arista de la lista
+    #             self.aristas.remove(arista)
+    #             return #Se sale despues de salir
 
     def cargar_json(self, datos):
         if datos is not None:

@@ -109,13 +109,16 @@ class InterfazArista:
 
     def _procesar_eliminar_arista(self):
         try:
-            valido, mensaje = self.grafo.validar_eliminar_arista(self.primer_nodo, self.segundo_nodo)
+            print(self.nodos_seleccionados)
+            primer_nodo = self.nodos_seleccionados[0]
+            segundo_nodo = self.nodos_seleccionados[1]
+            valido, mensaje = self.grafo.validar_eliminar_arista(primer_nodo.id, segundo_nodo.id)
             if not valido:
                 self.formulario = Formulario(self.screen, None, None, self.area_mapa, mensaje, accion="error")
                 return
-            self.grafo.eliminar_arista(self.primer_nodo, self.segundo_nodo)
-            self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()
-            print(f"Arista eliminada: {self.primer_nodo} -> {self.segundo_nodo}")
+            self.grafo.eliminar_arista(primer_nodo.id, segundo_nodo.id)
+            #self.interfaz_grafo.posiciones_nodos = self.interfaz_grafo.calcular_posiciones()
+            print(f"Arista eliminada: {primer_nodo.id} -> {segundo_nodo.id}")
             self.interfaz_grafo.limpiar_resaltado()
             self.on_finish()
         except Exception as e:
