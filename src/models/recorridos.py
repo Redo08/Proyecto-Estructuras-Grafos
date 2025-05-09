@@ -180,9 +180,7 @@ class Recorridos:
                     camino, distancia, nodos_control = self.camino_menor_distancia(inicio, fin)
                     if camino:
                         penalizacion = self.evaluar_camino(camino)
-                        if penalizacion < mejor_penalizacion or \
-                            (penalizacion == mejor_penalizacion and distancia < mejor_distancia):
-                                
+                        if penalizacion < mejor_penalizacion:
                             mejor_camino = camino
                             mejor_distancia = distancia
                             mejor_penalizacion = penalizacion

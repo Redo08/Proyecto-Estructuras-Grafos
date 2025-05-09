@@ -138,6 +138,7 @@ class InterfazRecorridos:
         else:
             print(camino)
             self.interfaz_grafo.mostrar_camino(camino)
+        print(camino)
         self.mostrar_informacion(camino)
         
     def actualizar_recorrido(self, nuevo_usuario, atributos_usuario, metodo_recorrido):
@@ -158,7 +159,6 @@ class InterfazRecorridos:
                 
         self.sub_interfaz_usuario = None
         
-    #MODIFICAR
     def sacar_informacion(self, camino):
         if camino:
             origen = camino[0][0]
@@ -194,14 +194,19 @@ class InterfazRecorridos:
             
             origen = camino[0]
             fin = camino[-1]
+                        
+            nodo_origen = Helpers.hallar_nodo(self.grafo.nodos, origen)
+            nodo_fin = Helpers.hallar_nodo(self.grafo.nodos, fin)
 
-            nombre_inicio = self.grafo.nodos[origen].nombre
-            descripcion_inicio = self.grafo.nodos[origen].descripcion
-            nombre_fin = self.grafo.nodos[fin].nombre
-            descripcion_fin = self.grafo.nodos[fin].descripcion
+            nombre_inicio = nodo_origen.nombre
+            descripcion_inicio = nodo_origen.descripcion
+            nombre_fin = nodo_fin.nombre
+            descripcion_fin = nodo_fin.descripcion
 
             informacion_nodos = {}
+            nodos_control_camino = set()
             for i in camino:
+                print(i)
                 nodo = self.grafo.nodos[i] if self.grafo.nodos[i].tipo == 1 else None
                 if nodo is not None:
                     informacion_nodos[i] = (
