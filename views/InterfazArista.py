@@ -130,9 +130,9 @@ class InterfazArista:
                 self.formulario = Formulario(self.screen, [], None, self.area_mapa, 
                                             "Error: Todos los campos del nodo de control deben estar completos.", accion="error")              
                 return
-            
-            arista= Helpers.hallar_arista_por_nodos(self.grafo.aristas,self.nodos_seleccionados[0].id, self.nodos_seleccionados[1].id)
-            arista.agregar_nodo_control(self.nodos_seleccionados[0].id, self.nodos_seleccionados[1].id, riesgo, accidentalidad, popularidad, dificultad)
+
+            indice=Helpers.hallar_indice_arista_por_nodos(self.grafo.aristas,self.nodos_seleccionados[0].id, self.nodos_seleccionados[1].id)
+            self.grafo.agregar_nodo_control(indice,riesgo, accidentalidad, popularidad, dificultad)
             print(f"Nodo de control agregado entre: {self.nodos_seleccionados[0].id} y {self.nodos_seleccionados[1].id}")
             self.interfaz_grafo.limpiar_resaltado()
             self.nodos_seleccionados = []
