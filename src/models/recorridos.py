@@ -178,11 +178,11 @@ class Recorridos:
         for inicio in nodos_validos:
             for fin in nodos_validos:
                 if inicio != fin:
-                    camino, distancia, nodos_control = self.camino_menor_distancia(inicio, fin)
+                    camino, nodos_control = self.camino_menor_distancia(inicio, fin)
                     if camino:
                         penalizacion = self.evaluar_camino(camino)
                         if penalizacion < mejor_penalizacion or \
-                            (penalizacion == mejor_penalizacion and distancia < mejor_distancia):
+                            (penalizacion == mejor_penalizacion ):
                             mejor_camino = camino
                             mejor_distancia = distancia
                             mejor_penalizacion = penalizacion
