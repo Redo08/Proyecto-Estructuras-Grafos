@@ -180,9 +180,7 @@ class Recorridos:
                     camino, distancia, nodos_control = self.camino_menor_distancia(inicio, fin)
                     if camino:
                         penalizacion = self.evaluar_camino(camino)
-                        if penalizacion < mejor_penalizacion or \
-                            (penalizacion == mejor_penalizacion and distancia < mejor_distancia):
-                                
+                        if penalizacion < mejor_penalizacion:
                             mejor_camino = camino
                             mejor_distancia = distancia
                             mejor_penalizacion = penalizacion
@@ -351,7 +349,7 @@ class Recorridos:
                             if i.accidentalidad not in criterios['accidentalidad']:
                                 penalizaciones += 1
                             if i.dificultad not in criterios['dificultad']:
-                                penalizaciones += 1
+                                penalizaciones += 4
                             if i.popularidad not in criterios['popularidad']:
                                 penalizaciones += 1                    
 
@@ -368,10 +366,10 @@ class Recorridos:
             }
         elif experiencia == 2:
             return {
-                'riesgo': {1, 2, 3, 4},
-                'accidentalidad': {1, 2, 3, 4},
-                'dificultad': {3, 4},
-                'popularidad': {2, 3, 4, 5}
+                'riesgo': {2, 3},
+                'accidentalidad': {2, 3},
+                'dificultad': {2, 3},
+                'popularidad': {2, 3}
             }
         elif experiencia == 3:
             return {

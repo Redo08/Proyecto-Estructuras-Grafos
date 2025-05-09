@@ -138,6 +138,7 @@ class InterfazRecorridos:
         else:
             print(camino)
             self.interfaz_grafo.mostrar_camino(camino)
+        print(camino)
         self.mostrar_informacion(camino)
         
     def actualizar_recorrido(self, nuevo_usuario, atributos_usuario, metodo_recorrido):
@@ -158,7 +159,6 @@ class InterfazRecorridos:
                 
         self.sub_interfaz_usuario = None
         
-    #MODIFICAR
     def sacar_informacion(self, camino):
         if camino:
             origen = camino[0][0]
@@ -194,23 +194,40 @@ class InterfazRecorridos:
             
             origen = camino[0]
             fin = camino[-1]
+                        
+            nodo_origen = Helpers.hallar_nodo(self.grafo.nodos, origen)
+            nodo_fin = Helpers.hallar_nodo(self.grafo.nodos, fin)
 
-            nombre_inicio = self.grafo.nodos[origen].nombre
-            descripcion_inicio = self.grafo.nodos[origen].descripcion
-            nombre_fin = self.grafo.nodos[fin].nombre
-            descripcion_fin = self.grafo.nodos[fin].descripcion
+            nombre_inicio = nodo_origen.nombre
+            descripcion_inicio = nodo_origen.descripcion
+            nombre_fin = nodo_fin.nombre
+            descripcion_fin = nodo_fin.descripcion
 
             informacion_nodos = {}
-            for i in camino:
-                nodo = self.grafo.nodos[i] if self.grafo.nodos[i].tipo == 1 else None
-                if nodo is not None:
-                    informacion_nodos[i] = (
-                        nodo.riesgo,
-                        nodo.accidentalidad,
-                        nodo.popularidad,
-                        nodo.dificultad
-                    )
-            # Guardar la información asociada
+            
+            nodos_control_camino = set()
+            # Paso 1: Recolectar todos los nodos de control en las aristas del camino
+            nodos_control_camino = set()
+            for i in range(len(camino) - 1):
+                u, v = camino[i], camino[i + 1]
+                for arista in self.grafo.aristas:
+                    if arista.origen.id == u and arista.destino.id == v:
+                        for nodo_control in arista.nodos_control:
+                            nodos_control_camino.add(nodo_control.id)
+
+            # Paso 2: Extraer información de los nodos de control encontrados
+            for nodo_id in nodos_control_camino:
+                for arista in self.grafo.aristas:
+                    for nodo_control in arista.nodos_control:
+                        if nodo_control.id == nodo_id:
+                            informacion_nodos[nodo_id] = (
+                                nodo_control.riesgo,
+                                nodo_control.accidentalidad,
+                                nodo_control.popularidad,
+                                nodo_control.dificultad
+                            )
+                            break  # Rompe el bucle interno si ya se encontró el nodo            
+            
             informacion_rutas[destino] = (
                 nombre_inicio,
                 descripcion_inicio,
@@ -226,6 +243,9 @@ class InterfazRecorridos:
         
         if isinstance(camino, dict):
             datos = self.sacar_informacion_todos(camino)
+            if not datos:
+                self.mensaje = "No se encontro un recorrido valido"
+                return
             lineas = []
             for destino, (nombre_inicio, _, nombre_fin, _, info_control, costo) in datos.items():
                 lineas.extend([
