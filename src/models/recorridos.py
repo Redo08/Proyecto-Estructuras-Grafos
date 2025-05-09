@@ -377,7 +377,7 @@ class Recorridos:
             return {
                 'riesgo': {1, 2, 3, 4, 5},
                 'accidentalidad': {1, 2, 3, 4, 5},
-                'dificultad': {1, 2, 3, 4, 5},
+                'dificultad': {4, 5},
                 'popularidad': {1, 2, 3, 4, 5}
             }
         else:
