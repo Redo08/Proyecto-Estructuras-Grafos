@@ -136,6 +136,7 @@ class InterfazRecorridos:
         if isinstance(camino, dict):
             self.interfaz_grafo.mostrar_caminos(camino)
         else:
+            print(camino)
             self.interfaz_grafo.mostrar_camino(camino)
         self.mostrar_informacion(camino)
         

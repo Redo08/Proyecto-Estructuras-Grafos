@@ -1,7 +1,6 @@
 import pygame
 import math
-import networkx as nx
-
+from src.helpers import Helpers
 # Definición de colores
 COLOR_NODO_INTERES_1 = (255, 0, 0)    # Rojo (tipo 0)
 COLOR_NODO_INTERES_2 = (0, 0, 255)    # Azul (tipo 1)
@@ -55,7 +54,7 @@ class InterfazGrafo:
     
     
     def resaltar_arista(self, id_origen, id_destino, color=(255,255,0), grosor=4):
-        if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
+        if Helpers.el_nodo_existe(self.grafo.nodos, id_origen) and Helpers.el_nodo_existe(self.grafo.nodos, id_destino):
             # Evitar duplicados
             self.aristas_resaltadas = [arista for arista in self.aristas_resaltadas
                                       if not (arista[0] == id_origen and arista[1] == id_destino)]
@@ -127,8 +126,10 @@ class InterfazGrafo:
     def dibujar_aristas_resaltadas(self):
         """Dibuja las aristas resaltadas."""
         for id_origen, id_destino, color, grosor in self.aristas_resaltadas:
-            if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
-                pygame.draw.line(self.screen, color, self.posiciones_nodos[id_origen], self.posiciones_nodos[id_destino], grosor)
+            if Helpers.el_nodo_existe(self.grafo.nodos, id_origen) and Helpers.el_nodo_existe(self.grafo.nodos, id_destino):
+                origen = Helpers.hallar_nodo(self.grafo.nodos, id_origen)
+                destino = Helpers.hallar_nodo(self.grafo.nodos, id_destino)
+                pygame.draw.line(self.screen, color, origen.posicion, destino.posicion, grosor)
                 
 
     def dibujar_arista_con_flecha(self, inicio, fin, peso, desplazamiento, color=COLOR_ARISTA):
@@ -189,10 +190,16 @@ class InterfazGrafo:
             origen = camino[0][i]
             destino = camino[0][i + 1]
             self.resaltar_arista(origen, destino, color=(0,255,0), grosor=4)
-            self.resaltar_nodo(origen, color=(0,255,0), grosor=4)
+            nodo_origen = Helpers.hallar_nodo(self.grafo.nodos, origen)
+            nodo_destino = Helpers.hallar_nodo(self.grafo.nodos, destino)
+            
+            self.nodos_resaltados.append(nodo_origen)
+            self.nodos_resaltados.append(nodo_destino)
             
         if camino:
-            self.resaltar_nodo(camino[0][-1], color=(0,255,0), grosor=4)
+            ultimo = camino[0][-1]
+            ultimo_nodo = Helpers.hallar_nodo(self.grafo.nodos, ultimo)
+            self.nodos_resaltados.append(ultimo_nodo)
     
     def mostrar_caminos(self, caminos):
         self.limpiar_resaltado()
@@ -201,8 +208,9 @@ class InterfazGrafo:
             for i in range(len(camino) - 1):
                 origen = camino[i]
                 siguiente = camino[i + 1]
+                nodo_origen = Helpers.hallar_nodo(self.grafo.nodos, origen)
                 self.resaltar_arista(origen, siguiente, color=(0,255,0), grosor=3)
-                self.resaltar_nodo(origen, color=(0,255,0), grosor=3)
+                self.nodos_resaltados.append(nodo_origen)
                 
             # Resaltar el ultimo nodo del camino
             if camino:
