@@ -217,11 +217,12 @@ class InterfazGrafo:
         """Dibuja el grafo completo."""
         #self.dibujar_aristas()
         self.dibujar_aristas()
+        self.dibujar_aristas_resaltadas()
         self.dibujar_nodos_interes()
         self.dibujar_nodos_resaltados()
         
         self.dibujar_nodos_control()
-        self.dibujar_aristas_resaltadas()
+        
         #self.dibujar_nodos_resaltados()
     
     
