@@ -2,6 +2,7 @@ from src.models.recorridos import Recorridos
 from views.boton import Boton
 from views.Formulario import Formulario
 from views.interfazUsuario import InterfazUsuario
+from src.helpers import Helpers
 import pygame
 class InterfazRecorridos:
     def __init__(self, screen, area_mapa, grafo, interfaz_grafo, usuario, area_info, on_finish):
@@ -112,12 +113,12 @@ class InterfazRecorridos:
             self.mensaje = "Por favor, selecciona un nodo haciendo clic en el mapa."
             return
 
-        if self.grafo.nodos[self.nodo_seleccionado].tipo == 1:
+        if self.nodo_seleccionado.tipo == 1:
             self.mensaje = "Por favor, selecciona un nodo de Interes, no uno de control."
             return
         
         #Llamar recorrido de floyd-warshall y mostrarlo
-        camino = self.recorrido.camino_disntacias_minimas_desde_nodo_dado(self.nodo_seleccionado) 
+        camino = self.recorrido.camino_disntacias_minimas_desde_nodo_dado(self.nodo_seleccionado.id) 
         print("Camino:", camino)
         #Mostrarlo en interfaz
         self.mostrar_en_interfaz(camino)
@@ -156,27 +157,33 @@ class InterfazRecorridos:
                 
         self.sub_interfaz_usuario = None
         
+    #MODIFICAR
     def sacar_informacion(self, camino):
         if camino:
             origen = camino[0][0]
             fin = camino[0][-1]
             
-            nombre_inicio = self.grafo.nodos[origen].nombre
-            descripcion_inicio = self.grafo.nodos[origen].descripcion
-            nombre_fin = self.grafo.nodos[fin].nombre
-            descripcion_fin = self.grafo.nodos[fin].descripcion
+            nodo_origen = Helpers.hallar_nodo(self.grafo.nodos, origen)
+            nodo_fin = Helpers.hallar_nodo(self.grafo.nodos, fin)
+            
+            nombre_inicio = nodo_origen.nombre
+            descripcion_inicio = nodo_origen.descripcion
+            nombre_fin = nodo_fin.nombre
+            descripcion_fin = nodo_fin.descripcion
 
             informacion_nodos = {}
-            for i in camino[-1]:
-                riesgo_nodo = self.grafo.nodos[i].riesgo
-                accidentalidad_nodo = self.grafo.nodos[i].accidentalidad
-                popularidad_nodo = self.grafo.nodos[i].popularidad
-                dificultad_nodo = self.grafo.nodos[i].dificultad
+            for i in camino[-1]: #Ultima posicion porque ahi estan los nodos_control
+                nodo_control = Helpers.hallar_nodo_control(self.grafo.aristas, i)
+                riesgo_nodo = nodo_control.riesgo
+                accidentalidad_nodo = nodo_control.accidentalidad
+                popularidad_nodo = nodo_control.popularidad
+                dificultad_nodo = nodo_control.dificultad
                 informacion_nodos.update({i: (riesgo_nodo, accidentalidad_nodo, popularidad_nodo, dificultad_nodo)})            
             
             return nombre_inicio, descripcion_inicio, nombre_fin, descripcion_fin, informacion_nodos
         return None
 
+    #MODIFICAR
     def sacar_informacion_todos(self, caminos_dict):
         informacion_rutas = {}
         
@@ -259,9 +266,9 @@ class InterfazRecorridos:
         elif self.esperando_seleccion:
             # Verificar si se selecciona un nodo en el área del mapa
             if evento.type == pygame.MOUSEBUTTONUP and evento.button == 1 and self.area_mapa.collidepoint(evento.pos):
-                nodo_id = self.interfaz_grafo.seleccionar_nodo(evento)
-                if nodo_id:
-                    self.nodo_seleccionado = nodo_id
+                nodo = self.interfaz_grafo.seleccionar_nodo(evento)
+                if nodo:
+                    self.nodo_seleccionado = nodo
                     print(f"Nodo seleccionado para 'todos_todos': {self.nodo_seleccionado}")    
                 self.todos_todos()  # Calcular y mostrar el camino tras seleccionar
                 

@@ -1,4 +1,5 @@
 import heapq
+from src.helpers import Helpers 
 class Recorridos:
     def __init__(self, grafo, usuario):
         self.grafo = grafo
@@ -14,8 +15,8 @@ class Recorridos:
             dict: Dictionary of dictionaries with shortest distances between all pairs of nodes.
             dict: Dictionary of dictionaries with the routes between the nodes
         """
-        # Saca los nodos
-        nodes = list(self.grafo.nodos.keys())
+        # Saca el id de los nodos
+        nodes = [nodo.id for nodo in self.grafo.nodos] 
         
         #Inicia la matriz con infinito
         distances = {u: {v: float('inf') for v in nodes} for u in nodes}
@@ -26,11 +27,14 @@ class Recorridos:
         for u in nodes:
             #Pone valores en si mismos a 0
             distances[u][u] = 0
-            #Saca las distancias directas entre nodos vecinos
-            for v, arista in self.grafo.nodos[u].vecinos.items():
-                distances[u][v] = arista.peso
-                next_node[u][v] = v
+            #Buscar todas las aristas donde u es el origen
+            for arista in self.grafo.aristas:
+                if arista.origen.id == u:
+                    v = arista.destino.id
+                    distances[u][v] = arista.peso
+                    next_node[u][v] = v
 
+        ## La relajación de nodos
         # El k es nodo intermedio, verifica cada nodo como posible intermedio
         for k in nodes:
             #El i y j son par de nodos, y se verifica que distancia es menor, si la directa, o si tomando un intermedio
@@ -80,22 +84,35 @@ class Recorridos:
             if actual == fin:
                 #Calcular riesgo promedio
                 promedio = riesgo_acum / puntos_control if puntos_control > 0 else 0
-                nodos_control = [n for n in camino if self.grafo.nodos[n].tipo == 1]
+                #Obtener nodos control
+                nodos_control = []
+                for i in range(len(camino)-1):
+                    u = camino[i]
+                    v = camino[i + 1]
+                    # Buscar la arista entre esos 2 nodos de interes
+                    for arista in self.grafo.aristas:
+                        if arista.origen.id == u and arista.destino.id == v:
+                            nodos_control.extend([nodo.id for nodo in arista.nodos_control])
+                            break #Solo hay una arista con origen U y destino V
+                
                 return camino, promedio, nodos_control
             
-            for vecino_id, arista in self.grafo.nodos[actual].vecinos.items():
-                if vecino_id not in visitados:
-                    vecino = self.grafo.nodos[vecino_id]
-                    nuevo_riesgo = riesgo_acum
-                    nuevo_pc = puntos_control
-                    
-                    if vecino.tipo == 1: #Si es un punto de control suammos su riesgo
-                        nuevo_riesgo += int(vecino.riesgo)
-                        nuevo_pc +=1
+            # Explorar vecinos
+            for arista in self.grafo.aristas:
+                if arista.origen.id == actual:
+                    vecino_id = arista.destino.id
+                    if vecino_id not in visitados:
+                        nuevo_riesgo = riesgo_acum
+                        nuevo_pc = puntos_control
                         
-                    heapq.heappush(heap, (nuevo_riesgo, nuevo_pc, vecino_id, camino))
-                    
-        return [], float('inf'), []
+                        # Sumar riesgo y contar puntos de control dentro de la arista
+                        for nodo in arista.nodos_control:
+                            nuevo_riesgo += int(nodo.riesgo)
+                            nuevo_pc += 1
+                            
+                        heapq.heappush(heap, (nuevo_riesgo, nuevo_pc, vecino_id, camino))
+
+        return [], float('inf'), [] # Si no se encuentra un camino
     
     def recalcular_usuario(self, usuario):
         self.usuario = usuario
@@ -112,9 +129,10 @@ class Recorridos:
         Returns:
             tuple: (camino_completo (list), distancia_total (float), nodos_control(list))
         """
+        # Validación de que los nodos si sean de tipo 0
         # Validación de tipo de nodo
-        if self.grafo.nodos[inicio].tipo == 1 or self.grafo.nodos[fin].tipo == 1: #Si son puntos de control
-            print("Error, El nodo de inicio y fin no pueden ser puntos de control")
+        if not Helpers.el_nodo_existe(self.grafo.nodos, inicio) or not Helpers.el_nodo_existe(self.grafo.nodos, fin): #Si existen osea son nodos de interes
+            print("Error, El nodo de inicio y fin no existen")
             return [], float('inf'), []
 
                 
@@ -126,8 +144,16 @@ class Recorridos:
         # Reconstruir camino completo
         camino = self.reconstruccion_camino(inicio, fin, self.caminos)
         
-        # Filtrar nodos de tipo 1 (Puntos de control)
-        nodos_control = [n for n in camino[1:-1] if self.grafo.nodos[n].tipo == 1]
+        # Obtener nodos de control del camino
+        nodos_control = []
+        for i in range(len(camino) - 1):
+            u = camino[i]
+            v = camino[i + 1]
+            # Buscar la arista entre u y v
+            for arista in self.grafo.aristas:
+                if arista.origen.id == u and arista.destino.id == v:
+                    nodos_control.extend([nodo.id for nodo in arista.nodos_control])
+                    break #Solo hay 1 arista entre un origen U y un destino V
         
         distancia_total = self.distancias[inicio][fin]
         
@@ -142,7 +168,7 @@ class Recorridos:
             tuple: (camino (list), distancia_total (float), penalización (int), nodos_control (list))
         """
         #Sacamos todos los nodos validos
-        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        nodos_validos = [nodo.id for nodo in self.grafo.nodos]
         mejor_camino = []
         mejor_distancia = float('inf')
         mejor_penalizacion = float('inf')
@@ -156,7 +182,7 @@ class Recorridos:
                         penalizacion = self.evaluar_camino(camino)
                         if penalizacion < mejor_penalizacion or \
                             (penalizacion == mejor_penalizacion and distancia < mejor_distancia):
-                            
+                                
                             mejor_camino = camino
                             mejor_distancia = distancia
                             mejor_penalizacion = penalizacion
@@ -170,7 +196,7 @@ class Recorridos:
         Returns:
             tuple: (camino(list), promedio_riesgo (float), nodos_control (list))
         """
-        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        nodos_validos = [nodo.id for nodo in self.grafo.nodos]
         mejor_camino = []
         mejor_promedio_riesgo = float('inf')
         mejor_nodos_control = []
@@ -199,7 +225,7 @@ class Recorridos:
         dificultad_max = self.usuario.dificultad_max
         riesgo_max = self.usuario.riesgo_max
         
-        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        nodos_validos = [nodo.id for nodo in self.grafo.nodos]
         mejor_camino = []
         mejor_distancia = float('inf')
         mejor_diferencia = float('inf')
@@ -212,12 +238,16 @@ class Recorridos:
                     if camino:
                         # Validar si todos los nodos cumplen con los requisitos de riesgo y dificultad
                         valido = True
-                        for nodo_id in nodos_control:
-                            nodo = self.grafo.nodos[nodo_id]
-                            if int(nodo.riesgo) > riesgo_max or int(nodo.dificultad) > dificultad_max:
-                                valido = False
-                                break
-                            
+                        for nodo_id in nodos_control: # Recorremos la lisat de nodso de control
+                            for arista in self.grafo.aristas: # Y buscamos dentro de cada arista, cual nodo equivale a el nodo de control
+                                for i in arista.nodos_control:
+                                    #Si encuentra el nodo de control
+                                    if i.id == nodo_id:
+                                        #Verificación rangos
+                                        if int(i.riesgo) > riesgo_max or int(i.dificultad) > dificultad_max:
+                                            valido = False
+                                            break #Se sale si sobrepasa los rangos
+                                        
                         if valido:
                             diferencia = abs(distancia_deseada - distancia)
                             if diferencia < mejor_diferencia:
@@ -242,7 +272,7 @@ class Recorridos:
         criterios = self.valores_segun_experiencia()
         
         #Sacamos los nodos iterables (Tipo 0)
-        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        nodos_validos = [nodo.id for nodo in self.grafo.nodos]
         mejor_camino = []
         mejor_distancia = float('inf')
         mejor_penalizacion = float('inf')
@@ -259,17 +289,19 @@ class Recorridos:
                         penalizaciones = 0
                         
                         for nodo_id in nodos_control:
-                            nodo = self.grafo.nodos[nodo_id]
-                            if int(nodo.dificultad) > dificultad_max:
-                                valido = False
-                                break
-                            
-                            if nodo.riesgo not in criterios['riesgo']:
-                                penalizaciones += 1
-                            if nodo.accidentalidad not in criterios['accidentalidad']:
-                                penalizaciones +=1
-                            if nodo.popularidad not in criterios['popularidad']:
-                                penalizaciones +=1
+                            for arista in self.grafo.aristas:
+                                for i in arista.nodos_control:
+                                    if nodo_id == i.id:
+                                        if int(i.dificultad) > dificultad_max:
+                                            valido = False
+                                            break
+                                        
+                                        if i.riesgo not in criterios['riesgo']:
+                                            penalizaciones += 1
+                                        if i.accidentalidad not in criterios['accidentalidad']:
+                                            penalizaciones +=1
+                                        if i.popularidad not in criterios['popularidad']:
+                                            penalizaciones +=1
                             
                         if valido:
                             diferencia = abs(distancia_deseada - distancia)
@@ -294,7 +326,7 @@ class Recorridos:
             dict: {nodo_destino: (distancia, camino)}
         """
         resultados = {}
-        nodos_validos = [n for n in self.grafo.nodos if self.grafo.nodos[n].tipo == 0]
+        nodos_validos = [nodo.id for nodo in self.grafo.nodos]
         
         for nodo in nodos_validos:
             if nodo != nodo_inicio:
@@ -309,17 +341,19 @@ class Recorridos:
         criterios = self.valores_segun_experiencia()
         penalizaciones = 0
 
-        for nodo_id in camino[1:-1]:  # Omitir inicio y fin
-            nodo = self.grafo.nodos[nodo_id]
-            if nodo.tipo == 1:  # Solo si es un nodo de control
-                if nodo.riesgo not in criterios['riesgo']:
-                    penalizaciones += 1
-                if nodo.accidentalidad not in criterios['accidentalidad']:
-                    penalizaciones += 1
-                if nodo.dificultad not in criterios['dificultad']:
-                    penalizaciones += 1
-                if nodo.popularidad not in criterios['popularidad']:
-                    penalizaciones += 1                    
+        for nodo_id in camino[1:-1]:  # Omitir inicio y fin 
+            if not Helpers.el_nodo_existe(self.grafo.nodos, nodo_id): # Si el nodo no es de interes
+                for arista in self.grafo.aristas:
+                    for i in arista.nodos_control:
+                        if i.id == nodo_id: #i es el nodo de control
+                            if i.riesgo not in criterios['riesgo']:
+                                penalizaciones += 1
+                            if i.accidentalidad not in criterios['accidentalidad']:
+                                penalizaciones += 1
+                            if i.dificultad not in criterios['dificultad']:
+                                penalizaciones += 1
+                            if i.popularidad not in criterios['popularidad']:
+                                penalizaciones += 1                    
 
         return penalizaciones # Menor penalización -> mejor camino
 

@@ -8,9 +8,6 @@ class Grafo:
         self.nodos = [] #Listo de nodos de punto de interes, nodos tipo 0
         self.aristas = []  # Aristas
        
-
-        
-
     def proximo_id(self, tipo, nombre=""):
         prefix = ""
         #Determinar el prefijo según el tipo
