@@ -16,7 +16,7 @@ class Formulario:
         self.form_rect = pygame.Rect(area_mapa.x + 100, area_mapa.y + 100, 400, 300)
         # Botones
         if botones is None:
-            boton_confirmar_texto = "Guardar" if accion in ["agregar", "agregar_arista"] else "Sí"
+            boton_confirmar_texto = "Guardar" if accion in ["agregar", "agregar_arista","agregar_nodo_control"] else "Sí"
             self.botones = [
                 Boton(
                     pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40),
@@ -39,7 +39,7 @@ class Formulario:
             self.botones = botones #Botones que voy a enviar por InterfazRecorridos
 
     def manejar_evento(self, evento):
-        if self.accion in ["agregar", "agregar_arista"] and self.indice_campo_actual >= 0:
+        if self.accion in ["agregar", "agregar_arista","agregar_nodo_control"] and self.indice_campo_actual >= 0:
             campo_actual = self.orden_campos[self.indice_campo_actual]
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_RETURN:
@@ -75,7 +75,7 @@ class Formulario:
     def dibujar(self):
         pygame.draw.rect(self.screen, (200, 200, 200), self.form_rect)
         fuente = pygame.font.Font(None, 30)
-        if self.accion in ["agregar", "agregar_arista"]:
+        if self.accion in ["agregar", "agregar_arista","agregar_nodo_control"]:
             instruccion = "Ingrese los datos solicitados"
             superficie_inst = fuente.render(instruccion, True, (0, 0, 0))
             self.screen.blit(superficie_inst, (self.form_rect.x + 20, self.form_rect.y + 20))
