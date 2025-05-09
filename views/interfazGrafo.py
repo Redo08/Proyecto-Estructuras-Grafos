@@ -226,6 +226,6 @@ class InterfazGrafo:
         
         self.dibujar_nodos_control()
         
-        #self.dibujar_nodos_resaltados()
+
     
     

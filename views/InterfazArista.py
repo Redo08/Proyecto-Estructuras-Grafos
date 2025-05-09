@@ -62,6 +62,7 @@ class InterfazArista:
                             else:
                                 self.formulario = Formulario(self.screen, [], None, self.area_mapa,
                                                             "Error: No existe una arista entre los nodos seleccionados.", accion="error")
+                                return
                         elif self.modo == "eliminar_arista":
                             self._procesar_eliminar_arista()
             else:
