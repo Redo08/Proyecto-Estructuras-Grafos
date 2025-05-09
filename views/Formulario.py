@@ -18,25 +18,47 @@ class Formulario:
         self.form_rect = pygame.Rect(area_mapa.x + 100, area_mapa.y + 100, 400, 300)
         # Botones
         if botones is None:
-            boton_confirmar_texto = "Guardar" if accion in ["agregar", "agregar_arista","agregar_nodo_control"] else "Sí"
-            self.botones = [
-                Boton(
-                    pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40),
-                    boton_confirmar_texto,
-                    self.marcar_completo,
-                    self.screen,
-                    color_fondo=VERDE,
-                    color_texto=(240, 240, 240)
-                ),
-                Boton(
-                    pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40),
-                    "Cancelar",
-                    self.marcar_cancelado,
-                    self.screen,
-                    color_fondo=ROJO,
-                    color_texto=(240, 240, 240)
-                 ) 
-            ]
+            if accion == "error":
+                # For error messages, both buttons dismiss the form
+                self.botones = [
+                    Boton(
+                        pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40),
+                        "Sí",
+                        self.marcar_cancelado,  # Changed to marcar_cancelado
+                        self.screen,
+                        color_fondo=VERDE,
+                        color_texto=(240, 240, 240)
+                    ),
+                    Boton(
+                        pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40),
+                        "Cancelar",
+                        self.marcar_cancelado,
+                        self.screen,
+                        color_fondo=ROJO,
+                        color_texto=(240, 240, 240)
+                    )
+                ]
+            else:
+                boton_confirmar_texto = "Guardar" if accion in ["agregar", "agregar_arista","agregar_nodo_control"] else "Sí"
+                self.botones = [
+
+                    Boton(
+                        pygame.Rect(self.form_rect.x + 150, self.form_rect.y + 250, 100, 40),
+                        boton_confirmar_texto,
+                        self.marcar_completo,
+                        self.screen,
+                        color_fondo=VERDE,
+                        color_texto=(240, 240, 240)
+                    ),
+                    Boton(
+                        pygame.Rect(self.form_rect.x + 270, self.form_rect.y + 250, 100, 40),
+                        "Cancelar",
+                        self.marcar_cancelado,
+                        self.screen,
+                        color_fondo=ROJO,
+                        color_texto=(240, 240, 240)
+                    ) 
+                ]
         else:
             self.botones = botones #Botones que voy a enviar por InterfazRecorridos
 
