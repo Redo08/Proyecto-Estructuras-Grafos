@@ -107,6 +107,7 @@ class Recorridos:
                         
                         # Sumar riesgo y contar puntos de control dentro de la arista
                         for nodo in arista.nodos_control:
+                            
                             nuevo_riesgo += int(nodo.riesgo)
                             nuevo_pc += 1
                             
@@ -180,7 +181,8 @@ class Recorridos:
                     camino, distancia, nodos_control = self.camino_menor_distancia(inicio, fin)
                     if camino:
                         penalizacion = self.evaluar_camino(camino)
-                        if penalizacion < mejor_penalizacion:
+                        if penalizacion < mejor_penalizacion or \
+                            (penalizacion == mejor_penalizacion and distancia < mejor_distancia):
                             mejor_camino = camino
                             mejor_distancia = distancia
                             mejor_penalizacion = penalizacion
@@ -338,22 +340,33 @@ class Recorridos:
     def evaluar_camino(self, camino):
         criterios = self.valores_segun_experiencia()
         penalizaciones = 0
-
-        for nodo_id in camino[1:-1]:  # Omitir inicio y fin 
-            if not Helpers.el_nodo_existe(self.grafo.nodos, nodo_id): # Si el nodo no es de interes
+        
+        # Preparamos todos los IDs de nodos principales para verificación rápida
+        ids_nodos_principales = {nodo.id for nodo in self.grafo.nodos}
+        
+        for nodo_id in camino[1:-1]:  # Omitir inicio y fin
+            # Si NO es nodo principal (es nodo de control)
+            if nodo_id not in ids_nodos_principales:
+                # Buscamos el nodo de control en las aristas
+                encontrado = False
                 for arista in self.grafo.aristas:
-                    for i in arista.nodos_control:
-                        if i.id == nodo_id: #i es el nodo de control
-                            if i.riesgo not in criterios['riesgo']:
+                    for nodo_control in arista.nodos_control:
+                        if nodo_control.id == nodo_id:
+                            # Aplicamos penalizaciones
+                            if int(nodo_control.riesgo) not in criterios['riesgo']:
                                 penalizaciones += 1
-                            if i.accidentalidad not in criterios['accidentalidad']:
+                            if int(nodo_control.accidentalidad) not in criterios['accidentalidad']:
                                 penalizaciones += 1
-                            if i.dificultad not in criterios['dificultad']:
+                            if int(nodo_control.dificultad) not in criterios['dificultad']:
                                 penalizaciones += 4
-                            if i.popularidad not in criterios['popularidad']:
-                                penalizaciones += 1                    
-
-        return penalizaciones # Menor penalización -> mejor camino
+                            if int(nodo_control.popularidad) not in criterios['popularidad']:
+                                penalizaciones += 1
+                            encontrado = True
+                            break  # Salimos del for de nodos_control
+                    if encontrado:
+                        break  # Salimos del for de aristas
+                    
+        return penalizaciones
 
     def valores_segun_experiencia(self):
         experiencia = self.usuario.experiencia
