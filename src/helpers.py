@@ -100,3 +100,6 @@ class Helpers:
                 return True
         
         return False
+    def mostrar_nodo(nodo):
+        print(f"ID: {nodo.id},nombre: {nodo.nombre}, Riesgo {nodo.riesgo}, Tipo: {nodo.tipo},Accidentalidad {nodo.accidentalidad},Popularidad {nodo.popularidad},Dificultad{nodo.dificultad}, Posición: {nodo.posicion}")
+        
