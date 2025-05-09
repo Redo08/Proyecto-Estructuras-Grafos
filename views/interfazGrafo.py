@@ -52,7 +52,6 @@ class InterfazGrafo:
         return None
     
     
-    
     def resaltar_arista(self, id_origen, id_destino, color=(255,255,0), grosor=4):
         if Helpers.el_nodo_existe(self.grafo.nodos, id_origen) and Helpers.el_nodo_existe(self.grafo.nodos, id_destino):
             # Evitar duplicados
