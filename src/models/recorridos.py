@@ -349,7 +349,7 @@ class Recorridos:
                             if i.accidentalidad not in criterios['accidentalidad']:
                                 penalizaciones += 1
                             if i.dificultad not in criterios['dificultad']:
-                                penalizaciones += 1
+                                penalizaciones += 4
                             if i.popularidad not in criterios['popularidad']:
                                 penalizaciones += 1                    
 
@@ -366,16 +366,16 @@ class Recorridos:
             }
         elif experiencia == 2:
             return {
-                'riesgo': {1, 2, 3, 4},
-                'accidentalidad': {1, 2, 3, 4},
-                'dificultad': {3, 4},
-                'popularidad': {2, 3, 4, 5}
+                'riesgo': {2, 3},
+                'accidentalidad': {2, 3},
+                'dificultad': {2, 3},
+                'popularidad': {2, 3}
             }
         elif experiencia == 3:
             return {
                 'riesgo': {1, 2, 3, 4, 5},
                 'accidentalidad': {1, 2, 3, 4, 5},
-                'dificultad': {1, 2, 3, 4, 5},
+                'dificultad': {4, 5},
                 'popularidad': {1, 2, 3, 4, 5}
             }
         else:
