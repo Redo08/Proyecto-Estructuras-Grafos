@@ -8,10 +8,9 @@ pygame.init()
 ANCHO, ALTO = 1350, 650
 
 # Instancias
-helpers = Helpers()
 grafo = Grafo()
-data = helpers.cargar_texto_manual("archivos/predefinido.json")
-#grafo.cargar_json(data)
+data = Helpers.cargar_texto_manual("archivos/nuevoJson.json")
+grafo.cargar_json(data)
 
 visualizador = Visualizador(grafo, ANCHO, ALTO)
 

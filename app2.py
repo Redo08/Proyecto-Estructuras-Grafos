@@ -1,6 +1,9 @@
 # Crear un grafo
-import src.models.grafo as grafo
-grafo = grafo.Grafo()
+from src.helpers import Helpers
+from src.models.grafo import Grafo
+data = Helpers.cargar_texto_manual("archivos/nuevoJson.json")
+grafo = Grafo()
+grafo.cargar_json(data)
 
 # Agregar nodos de interés
 grafo.agregar_nodo_interes(nombre="Punto A", posicion=(100, 100))  # ID: Pu1
@@ -35,3 +38,21 @@ print("Aristas creadas:", [(arista.origen.id, arista.destino.id) for arista in g
 
 # Probar con un nodo de control inexistente
 grafo.eliminar_nodo_control("PC99")
+
+# Guardar el grafo en un nuevo JSON
+nuevo_json = grafo.guardar_json()
+Helpers.guardar_texto(nuevo_json)
+# Crear un nuevo grafo y cargar el JSON guardado
+nuevo_grafo = Grafo()
+data_nueva = Helpers.cargar_texto()
+nuevo_grafo.cargar_json(data_nueva)
+
+# Imprimir estado del nuevo grafo
+print("\nEstado del grafo cargado desde el JSON guardado:")
+print("Nodos de interés:", [nodo.id for nodo in nuevo_grafo.nodos])
+print("Aristas creadas:", [(arista.origen.id, arista.destino.id) for arista in nuevo_grafo.aristas])
+for i, arista in enumerate(nuevo_grafo.aristas):
+    print(f"Nodos de control en arista {i} ({arista.origen.id} -> {arista.destino.id}):",
+          [nodo.id for nodo in arista.nodos_control])
+    print(f"Posiciones de nodos de control en arista {i}:",
+          [nodo.posicion for nodo in arista.nodos_control])

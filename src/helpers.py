@@ -5,7 +5,7 @@ class Helpers:
     def __init__(self):
         pass
     
-    def cargar_texto_manual(self, ruta):
+    def cargar_texto_manual(ruta):
         if ruta:
             with open(ruta, 'r', encoding='utf-8') as archivo:
                 grafo = json.load(archivo)
