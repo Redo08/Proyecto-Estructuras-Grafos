@@ -2,6 +2,23 @@ import pygame
 import math
 import networkx as nx
 
+# Definición de colores
+COLOR_NODO_INTERES_1 = (255, 0, 0)    # Rojo (tipo 0)
+COLOR_NODO_INTERES_2 = (0, 0, 255)    # Azul (tipo 1)
+COLOR_NODO_CONTROL = (0, 255, 0)      # Verde
+COLOR_ETIQUETA = (255, 255, 255)      # Blanco
+COLOR_ARISTA = (0, 0, 0)              # Negro
+COLOR_PESO = (0, 255, 0)              # Verde
+COLOR_RESALTADO = (255, 255, 0)       # Amarillo
+COLOR_CAMINO = (0, 255, 0)            # Verde
+
+# Constantes de tamaño
+RADIO_NODO_INTERES = 15
+RADIO_NODO_CONTROL = 15
+RADIO_SELECCION = 15
+
+FPS = 60
+
 class InterfazGrafo:
     def __init__(self, grafo, area_mapa, screen):
         self.screen = screen
@@ -54,57 +71,58 @@ class InterfazGrafo:
     def dibujar_nodos_interes(self):
         for nodo in self.grafo.nodos:
             if nodo.posicion:
-                color = (255, 0, 0) if nodo.tipo == 0 else (0, 0, 255)
-                pygame.draw.circle(self.screen, color, nodo.posicion, 15)                
+                
+                pygame.draw.circle(self.screen, COLOR_NODO_INTERES_1, nodo.posicion, RADIO_NODO_INTERES)                
                 etiqueta = nodo.id 
-                texto = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
+                texto = pygame.font.Font(None, 20).render(etiqueta, True, COLOR_ETIQUETA)
                 self.screen.blit(texto, texto.get_rect(center=nodo.posicion))
 
     def dibujar_nodos_control(self):
         for arista in self.grafo.aristas:
-            for nodo_control in arista.nodos_control:
+            for nodo_control in arista.nodos_control:    
                 if nodo_control.posicion:
-                    pygame.draw.circle(self.screen, (0, 255, 0), nodo_control.posicion, 10)
+                    pygame.draw.circle(self.screen, COLOR_NODO_CONTROL, nodo_control.posicion, RADIO_NODO_CONTROL)
                     etiqueta = nodo_control.id 
-                    texto = pygame.font.Font(None, 20).render(etiqueta, True, (255, 255, 255))
+                    texto = pygame.font.Font(None, 20).render(etiqueta, True, COLOR_ETIQUETA)
                     self.screen.blit(texto, texto.get_rect(center=nodo_control.posicion))
 
 
     def dibujar_nodos_resaltados(self):
         """Dibuja los nodos resaltados."""
-        color = (255, 255, 0)  # Color amarillo
-        grosor = 4
+       
+        grosor = 3
         for nodo in self.nodos_resaltados:
-            pygame.draw.circle(self.screen, color, nodo.posicion, 18, grosor)               
+            pygame.draw.circle(self.screen, COLOR_RESALTADO, nodo.posicion, RADIO_NODO_INTERES + 3, grosor)               
     
     def dibujar_aristas(self):
         """Dibuja las aristas entre los nodos, evitando la superposición de dos aristas."""
-        dibujadas = set() #Para evitar repetidas
-
-        for id_nodo, nodo in self.grafo.nodos.items():
-            for id_destino, arista in nodo.vecinos.items():
-                if (id_nodo, id_destino) in dibujadas:
-                    continue # Ya esta
-                
-                inicio = self.posiciones_nodos[id_nodo]
-                fin = self.posiciones_nodos[id_destino]
-
-                #Si existe doble conexión
-                nodo_destino = self.grafo.nodos.get(id_destino)
-                if nodo_destino:
-                    #Verificar si el nodo destino tiene una arista que apunta al nodo actual
-                    vuelta = nodo_destino.vecinos.get(nodo.id)
-
-                if vuelta is not None:
-                    self.dibujar_arista_con_flecha((inicio[0] - 12, inicio[1] - 12), (fin[0] - 12, fin[1] - 12), arista.peso)  # Superior y a la izquierda
-                    self.dibujar_arista_con_flecha((fin[0] + 12, fin[1] + 12),(inicio[0] + 12, inicio[1] + 12), vuelta.peso)  # Inferior y a la derecha
-                        
-                    dibujadas.add((nodo.id, id_destino))
-                    dibujadas.add((id_destino, nodo.id))
+        bidireccionales=set()
+        for arista in self.grafo.aristas:
+            id_origen = arista.origen.id
+            id_destino = arista.destino.id
+            
+            if (id_destino, id_origen) in  [(a.origen.id, a.destino.id) for a in self.grafo.aristas]:
+             bidireccionales.add(tuple(sorted((id_origen, id_destino))))
+        for arista in self.grafo.aristas:
+            inicio = arista.origen.posicion
+            fin = arista.destino.posicion
+        # Calcular desplazamiento si es bidireccional
+            id_origen = arista.origen.id
+            id_destino = arista.destino.id
+            desplazamiento = (0, 0)  # Desplazamiento inicial
+            if tuple(sorted((id_origen, id_destino))) in bidireccionales:
+                if id_origen < id_destino:
+                    desplazamiento = (-12, -12)  # Desplazar hacia arriba y a la izquierda
                 else:
-                    #Solo una dirección
-                    self.dibujar_arista_con_flecha(inicio, fin, arista.peso)
-                    dibujadas.add((nodo.id,id_destino))
+                    desplazamiento = (12, 12)    # Desplazar hacia abajo y a la derecha
+                inicio_desplazado = (inicio[0] + desplazamiento[0], inicio[1] + desplazamiento[1])
+                fin_desplazado = (fin[0] + desplazamiento[0], fin[1] + desplazamiento[1])
+            else:
+                inicio_desplazado = inicio
+                fin_desplazado = fin
+            # Dibujar la arista con flecha y peso
+            self.dibujar_arista_con_flecha(inicio_desplazado, fin_desplazado, arista.peso,desplazamiento)
+            arista.calcular_posiciones(inicio, fin, desplazamiento)
 
     def dibujar_aristas_resaltadas(self):
         """Dibuja las aristas resaltadas."""
@@ -113,7 +131,7 @@ class InterfazGrafo:
                 pygame.draw.line(self.screen, color, self.posiciones_nodos[id_origen], self.posiciones_nodos[id_destino], grosor)
                 
 
-    def dibujar_arista_con_flecha(self, inicio, fin, peso, color=(0,0,0)):
+    def dibujar_arista_con_flecha(self, inicio, fin, peso, desplazamiento, color=COLOR_ARISTA):
         #Dibuja la linea
         pygame.draw.line(self.screen, color, inicio, fin, 2)
         #Dibujar la flecha
@@ -131,12 +149,28 @@ class InterfazGrafo:
         self.dibujar_flecha(fin_flecha, inicio, color)
 
         # Dibujar el peso
-        texto_peso = pygame.font.Font(None, 20).render(str(peso), True, (0, 255, 0))
-        medio = ((inicio[0] + fin[0]) // 2, (inicio[1] + fin[1]) // 2)
-        self.screen.blit(texto_peso, medio)
+        texto_peso = pygame.font.Font(None, 20).render(str(peso), True, COLOR_PESO)
+        t = 0.5
+        pos_base = (inicio[0] + t * (fin[0] - inicio[0]), inicio[1] + t * (fin[1] - inicio[1]))
+        # Calcular vector perpendicular
+        dx_norm = dx / distancia
+        dy_norm = dy / distancia
+        # Vector perpendicular (rotar 90 grados): (-dy, dx) o (dy, -dx)
+        # Usamos la dirección que coincide con el desplazamiento de la arista
+        if desplazamiento[0]  <= 0 and desplazamiento[1]  <= 0:  # Arriba/izquierda
+            perp_dx, perp_dy = -dy_norm, dx_norm
+        elif desplazamiento[0]  > 0 and desplazamiento[1]  > 0:  # Abajo/derecha
+            perp_dx, perp_dy = dy_norm, -dx_norm
+        else:  # Unidireccional, usamos (-dy, dx) por defecto
+            perp_dx, perp_dy = -dy_norm, dx_norm
+        # Desplazar un poco más de la mitad del radio del nodo de control
+        distancia_perp = RADIO_NODO_CONTROL + 5  # 23 con radio de 18
+        pos_peso = (pos_base[0] + perp_dx * distancia_perp, pos_base[1] + perp_dy * distancia_perp)
+        self.screen.blit(texto_peso, texto_peso.get_rect(center=pos_peso))
+
 
         
-    def dibujar_flecha(self, fin, inicio, color=(0,0,0)):
+    def dibujar_flecha(self, fin, inicio, color=COLOR_ARISTA):
         dx = fin[0] - inicio[0]
         dy = fin[1] - inicio[1]
         angulo = math.atan2(dy, dx)
@@ -177,8 +211,10 @@ class InterfazGrafo:
     def dibujar(self):
         """Dibuja el grafo completo."""
         #self.dibujar_aristas()
+        self.dibujar_aristas()
         self.dibujar_nodos_interes()
         self.dibujar_nodos_resaltados()
+        
         self.dibujar_nodos_control()
         #self.dibujar_aristas_resaltadas()
         #self.dibujar_nodos_resaltados()
