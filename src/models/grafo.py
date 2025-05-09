@@ -172,14 +172,14 @@ class Grafo:
             return True, None
         
         return True, None  # Nodos tipo 0 (rojos) siempre son válidos
-    
+    """
     def eliminar_arista(self, id_origen, id_destino):
         # Buscamos la arista especifica
         for arista in self.aristas[:]: #Recorremos una copia de la lista
             if arista.origen == id_origen and arista.destino == id_destino:
                 # Eliminamos la arista de la lista
                 self.aristas.remove(arista)
-                return #Se sale despues de salir
+                return #Se sale despues de salir """
 
     def cargar_json(self, datos):
         if datos is not None:

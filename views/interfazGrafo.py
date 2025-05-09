@@ -51,7 +51,7 @@ class InterfazGrafo:
                 return nodo
         return None
     
-    
+    """"
     def resaltar_arista(self, id_origen, id_destino, color=(255,255,0), grosor=4):
         if Helpers.el_nodo_existe(self.grafo.nodos, id_origen) and Helpers.el_nodo_existe(self.grafo.nodos, id_destino):
             # Evitar duplicados
@@ -59,7 +59,7 @@ class InterfazGrafo:
                                       if not (arista[0] == id_origen and arista[1] == id_destino)]
             self.aristas_resaltadas.append((id_origen, id_destino, color, grosor))
         else:
-            print(f"No se puede resaltar arista: Posiciones no disponibles para {id_origen}, {id_destino}")   
+            print(f"No se puede resaltar arista: Posiciones no disponibles para {id_origen}, {id_destino}") """  
 
     def limpiar_resaltado(self):
         """Limpia los resaltados de nodos y aristas."""
@@ -124,11 +124,9 @@ class InterfazGrafo:
 
     def dibujar_aristas_resaltadas(self):
         """Dibuja las aristas resaltadas."""
-        for id_origen, id_destino, color, grosor in self.aristas_resaltadas:
-            if Helpers.el_nodo_existe(self.grafo.nodos, id_origen) and Helpers.el_nodo_existe(self.grafo.nodos, id_destino):
-                origen = Helpers.hallar_nodo(self.grafo.nodos, id_origen)
-                destino = Helpers.hallar_nodo(self.grafo.nodos, id_destino)
-                pygame.draw.line(self.screen, color, origen.posicion, destino.posicion, grosor)
+        for nodo_origen, nodo_destino in self.aristas_resaltadas:
+            if Helpers.el_nodo_existe(self.grafo.nodos, nodo_origen.id) and Helpers.el_nodo_existe(self.grafo.nodos, nodo_destino.id):                
+                pygame.draw.line(self.screen, COLOR_RESALTADO, nodo_origen.posicion, nodo_destino.posicion, 2)
                 
 
     def dibujar_arista_con_flecha(self, inicio, fin, peso, desplazamiento, color=COLOR_ARISTA):
@@ -223,7 +221,7 @@ class InterfazGrafo:
         self.dibujar_nodos_resaltados()
         
         self.dibujar_nodos_control()
-        #self.dibujar_aristas_resaltadas()
+        self.dibujar_aristas_resaltadas()
         #self.dibujar_nodos_resaltados()
     
     
