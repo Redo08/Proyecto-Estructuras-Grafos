@@ -186,9 +186,10 @@ class InterfazGrafo:
         for i in range(len(camino[0])-1):
             origen = camino[0][i]
             destino = camino[0][i + 1]
-            self.resaltar_arista(origen, destino, color=(0,255,0), grosor=4)
+            
             nodo_origen = Helpers.hallar_nodo(self.grafo.nodos, origen)
             nodo_destino = Helpers.hallar_nodo(self.grafo.nodos, destino)
+            self.aristas_resaltadas.append((nodo_origen, nodo_destino))
             
             self.nodos_resaltados.append(nodo_origen)
             self.nodos_resaltados.append(nodo_destino)
@@ -206,12 +207,14 @@ class InterfazGrafo:
                 origen = camino[i]
                 siguiente = camino[i + 1]
                 nodo_origen = Helpers.hallar_nodo(self.grafo.nodos, origen)
-                self.resaltar_arista(origen, siguiente, color=(0,255,0), grosor=3)
+                nodo_siguiente = Helpers.hallar_nodo(self.grafo.nodos, siguiente)
+                self.aristas_resaltadas.append((nodo_origen, nodo_siguiente))
                 self.nodos_resaltados.append(nodo_origen)
                 
             # Resaltar el ultimo nodo del camino
             if camino:
-                self.resaltar_nodo(camino[-1], color=(0,255,0), grosor=3)
+                nodo_ultimo = Helpers.hallar_nodo(self.grafo.nodos, camino[-1])
+                self.nodos_resaltados.append(nodo_ultimo)
         
     def dibujar(self):
         """Dibuja el grafo completo."""
