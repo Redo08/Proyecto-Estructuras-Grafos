@@ -53,7 +53,6 @@ class InterfazGrafo:
         return None
     
     
-    
     def resaltar_arista(self, id_origen, id_destino, color=(255,255,0), grosor=4):
         if id_origen in self.posiciones_nodos and id_destino in self.posiciones_nodos:
             # Evitar duplicados
